@@ -1,0 +1,29 @@
+package com.blogspot.ludumdaresforfun.aholenewrace;
+
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+
+public class Counter extends Image {
+
+    final int LIFES;
+    public int currentLifes;
+
+    public Counter(int lifes) {
+        this.LIFES =  lifes;
+        this.currentLifes = lifes;
+    }
+
+    public int lostLife() {
+        this.currentLifes -= 1;
+        return this.currentLifes;
+    }
+
+    public int gainLife(int lifes) {
+    	this.currentLifes += lifes;
+    	if (this.currentLifes > this.LIFES)
+    	    this.currentLifes = this.LIFES;
+    	return this.currentLifes;
+    }
+
+
+
+}

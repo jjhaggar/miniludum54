@@ -13,7 +13,7 @@ public class DesktopLauncher {
 	    createPacker(); // Commented this line for not create packing.
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.height = 240;
-		config.width = 420;
+		config.width = 432;
 		new LwjglApplication(new AHoleNewRace(), config);
 		//Gdx.graphics.setDisplayMode(Gdx.graphics.getDesktopDisplayMode().width, Gdx.graphics.getDesktopDisplayMode().height, true);
 	}

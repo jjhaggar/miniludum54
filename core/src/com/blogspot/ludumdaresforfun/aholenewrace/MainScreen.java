@@ -56,7 +56,7 @@ public class MainScreen extends BaseScreen {
 
 	private final float GRAVITY = -600f;  //-10 * 60
 	final int SCREEN_HEIGHT = 240;
-	final int SCREEN_WIDTH = 400;
+	final int SCREEN_WIDTH = 432;
 	final int MAP_HEIGHT;
 	final int MAP_WIDTH;
 	final int POS_UPPER_WORLD;
@@ -87,7 +87,7 @@ public class MainScreen extends BaseScreen {
 	public MainScreen() {
 		this.shapeRenderer = new ShapeRenderer();
 
-		this.map = new TmxMapLoader().load("newtiles.tmx");
+		this.map = new TmxMapLoader().load("tilemap.tmx");
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
 		this.TILED_SIZE = (Integer) this.map.getProperties().get("tileheight");
@@ -105,7 +105,7 @@ public class MainScreen extends BaseScreen {
 
 		this.player = new Player(Assets.playerStand);
 
-		this.player.setPosition(200, 200);
+		this.player.setPosition(200, 310);
 
         this.configControllers = new ConfigControllers(this);
         this.configControllers.init();
@@ -113,6 +113,7 @@ public class MainScreen extends BaseScreen {
 		TiledMapTileLayer layerSpawn = (TiledMapTileLayer)(this.map.getLayers().get("Spawns"));
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
+
         for (int x = 0; x <= layerSpawn.getWidth(); x++) {
             for (int y = 0; y <= layerSpawn.getHeight(); y++) {
 				Cell cell = layerSpawn.getCell(x, y);
@@ -138,6 +139,7 @@ public class MainScreen extends BaseScreen {
                 }
             }
         }
+
 	}
 
 	@Override
@@ -198,7 +200,7 @@ public class MainScreen extends BaseScreen {
 		//this.collisionLifes(delta);
 		//this.updateEnemies(delta);
 		this.renderer.setView(this.camera);
-		this.renderer.render(new int[]{0, 1, 3});
+		this.renderer.render(new int[]{0, 1, 3});			//this line is totally a mistery
 
 		//this.renderEnemies(delta);
 		this.renderPlayer(delta);

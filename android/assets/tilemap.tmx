@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="27" height="15" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" width="27" height="30" tilewidth="16" tileheight="16">
  <tileset firstgid="1" name="newtiles" tilewidth="16" tileheight="16" spacing="2" margin="1">
   <image source="newtiles.png" trans="ff00ff" width="450" height="270"/>
  </tileset>
- <layer name="BackGrounds" width="27" height="15">
+ <layer name="BackGrounds" width="27" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYBzFo3gU0xSb0sEOKRpgUySMLG5MJkY2j1g501E8pDAAS5sgAA==
+   eJztw0EJADAMBLCrjdmYf29T0N8oFBJIJSl1/TP4ahMAfnnTcB6X
   </data>
  </layer>
- <layer name="Plattforms" width="27" height="15" visible="0">
+ <layer name="Plattforms" width="27" height="30" visible="0">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjIJRMAqoAwAGVAAB
+   eJxjYBgFo2AU0BqYDrQDyASmSJjW5uGSMx3FQwqPglEwCkbBKBgF1AIA8v8Ybw==
   </data>
  </layer>
- <layer name="Collisions" width="27" height="15">
+ <layer name="Collisions" width="27" height="30" visible="0">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AU0BqYDrQDyASmSJjW5uGSMx3FQwoDAEuNGG8=
+   eJxjYBgFo2AU0BqYDrQDyASmSJjW5uGSMx3FQwqPglEwCkbBKBgF1AIA8v8Ybw==
+  </data>
+ </layer>
+ <layer name="Spikes" width="27" height="30" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAIA6AFsX9O/xXwEBKQAN/NdQAAoCz+KAAd
+  </data>
+ </layer>
+ <layer name="Spawn" width="27" height="30" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDATYAsRb6WTXWSA+Rye7ngHxczrZNQpGwSgYBaNgFIyC4QsAAAYE0g==
   </data>
  </layer>
 </map>

@@ -5,7 +5,7 @@
  </tileset>
  <layer name="Backgrounds" width="27" height="30">
   <data encoding="base64" compression="zlib">
-   eJztw0EJADAMBLCrjdmYf29T0N8oFBJIJSl1/TP4ahMAfnnTcB6X
+   eJztlEsOwCAIRPEavYb34+zdE8ZCF2Mbh+QlBgnPT3SY2RBC/J6LyBQC4MYJlmdnOBh/xYXq/KFHdMVaT/JvXKg3ms+8XVcEeWMuW2P1DFf9K67Kvleuzl11aiqB/My3c2Iw//kbSy8/Ew==
   </data>
  </layer>
  <layer name="Platfs" width="27" height="30">

@@ -10,12 +10,12 @@
  </layer>
  <layer name="Platfs" width="27" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2DwA9OBdgCFYKi63xQJ09o8XHKmRGBCdlET09MucsNj1C7q20VNQGvzCdmJS55edg0GMJjdNgpGwShAAAA3ySH1
+   eJxjYBgFo2DwA9OBdgCFYKi63xQJ09o8XHKmRGBCdlET09MucsNj1C7q20UuINZ+agBi0ygueWoBavuLFmAwu20UjIJRgAAAZfUiyQ==
   </data>
  </layer>
  <layer name="Collisions" width="27" height="30">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2DwA9OBdgCFYKi63xQJ09o8XHKmRGBCdlET09MucsNj1C7q20VNQGvzCdmJS55edg0GMJjdNgpGwShAAAA3ySH1
+   eJxjYBgFo2DwA9OBdgCFYKi63xQJ09o8XHKmRGBCdlET09MucsNj1C7q20UuINZ+agBi0ygueWoBavuLFmAwu20UjIJRgAAAZfUiyQ==
   </data>
  </layer>
  <layer name="Spikes" width="27" height="30">

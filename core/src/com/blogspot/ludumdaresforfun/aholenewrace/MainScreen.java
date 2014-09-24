@@ -427,6 +427,7 @@ public class MainScreen extends BaseScreen {
 				}
 		    }
 		}
+		this.player.grounded = false;		//Im falling
 	}
 
 	private void checkThisTiles4(TiledMapTileLayer layerTiles, int startX,
@@ -444,13 +445,16 @@ public class MainScreen extends BaseScreen {
 					if(playerRect.overlaps(rect)){
 						this.player.desiredPosition.y = y * this.TILED_SIZE - this.player.getHeight();
 						this.player.velocity.y = 0;
-						if (!normalGravity)
+						if (!normalGravity){
 							this.player.grounded = true;
+							this.player.desiredPosition.y += 1;
+						}
 						return;
 					}
 				}
 		    }
 		}
+		this.player.grounded = false;		//Im falling
 	}
 
 	private void renderPlayer (float deltaTime) {

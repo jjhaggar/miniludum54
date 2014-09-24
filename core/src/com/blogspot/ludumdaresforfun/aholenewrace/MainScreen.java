@@ -166,12 +166,12 @@ public class MainScreen extends BaseScreen {
             	this.camera.position.x = this.player.getX();
 
             //update y
-			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD)
+			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD + TILED_SIZE)
                 this.camera.position.y = this.player.getY();
-            else if (this.player.getY() > this.POS_LOWER_WORLD)
-                this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2);
-            else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD)
-				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2);
+            else if (this.player.getY()  + TILED_SIZE > this.POS_LOWER_WORLD)
+                this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
+            else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD + TILED_SIZE)
+				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
 			else
                 this.camera.position.y = this.player.getY();
 
@@ -285,14 +285,14 @@ public class MainScreen extends BaseScreen {
 			//this.camera.position.y = this.POS_LOWER_WORLD;
 			if (this.normalGravity == true){
 				this.normalGravity = false;
-				this.player.velocity.y = -this.player.JUMP_VELOCITY * 1.01f;	//3 tiles in both
+				//this.player.velocity.y = -this.player.JUMP_VELOCITY * 1.01f;	//3 tiles in both
 			}
 		}
 		else {
 			//this.camera.position.y = 0;//this.yPosUpperWorld;
 			if (this.normalGravity == false){
 				this.normalGravity = true;
-				this.player.velocity.y = this.player.JUMP_VELOCITY / 1.3f;		//3 tiles in both
+				//this.player.velocity.y = this.player.JUMP_VELOCITY / 1.3f;		//3 tiles in both
 			}
 		}
 

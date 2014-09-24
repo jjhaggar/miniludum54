@@ -37,6 +37,7 @@ public class Player extends Image {
     public float offSetY;
     public float rightOffset = 0;
     public AtlasRegion actualFrame;
+    float superWidth, superHeight;
 
     public Player(Animation animation) {
         super(animation.getKeyFrame(0));
@@ -44,10 +45,17 @@ public class Player extends Image {
         this.actualFrame = ((AtlasRegion)Assets.playerWalk.getKeyFrame(0));
 		this.offSetX = this.actualFrame.offsetX;
 		this.offSetY = this.actualFrame.offsetY;
+		superWidth = this.actualFrame.packedWidth;
+		superHeight = this.actualFrame.packedHeight;
     }
 
     public Rectangle getRect() {
     	this.rect.set((this.getX() + this.actualFrame.offsetX) - this.offSetX, (this.getY() + this.actualFrame.offsetY) - this.offSetY , this.actualFrame.packedWidth, this.actualFrame.packedHeight);
+        return this.rect;
+    }
+
+    public Rectangle getRect2() {
+    	this.rect.set(this.getX(), this.getY(), superWidth, superHeight - 2);
         return this.rect;
     }
 

@@ -230,7 +230,9 @@ public class MainScreen extends BaseScreen {
 		this.player.desiredPosition.y = this.player.getY();
 
 		this.movingShootingJumping(deltaTime);
-		//this.gravityAndClamping(deltaTime);
+		this.gravityAndClamping(deltaTime);
+
+		this.checkCollisionWalls(deltaTime);
 
 		this.player.velocity.scl(deltaTime);
 
@@ -271,6 +273,184 @@ public class MainScreen extends BaseScreen {
 		    this.player.beingHit();
 		}
 		*/
+	}
+
+	private void gravityAndClamping(float deltaTime) {
+		if (this.normalGravity)
+			this.player.velocity.add(0, this.GRAVITY  * deltaTime);
+		else
+			this.player.velocity.add(0, -this.GRAVITY * deltaTime);
+
+		if (this.player.getY() < this.POS_LOWER_WORLD){
+			//this.camera.position.y = this.POS_LOWER_WORLD;
+			if (this.normalGravity == true){
+				this.normalGravity = false;
+				this.player.velocity.y = -this.player.JUMP_VELOCITY * 1.01f;	//3 tiles in both
+			}
+		}
+		else {
+			//this.camera.position.y = 0;//this.yPosUpperWorld;
+			if (this.normalGravity == false){
+				this.normalGravity = true;
+				this.player.velocity.y = this.player.JUMP_VELOCITY / 1.3f;		//3 tiles in both
+			}
+		}
+
+		// clamp the velocity to the maximum, x-axis only
+		if (Math.abs(this.player.velocity.x) > this.player.MAX_VELOCITY) {
+			this.player.velocity.x = Math.signum(this.player.velocity.x) * this.player.MAX_VELOCITY;
+		}
+
+		// clamp the velocity to 0 if it's < 1, and set the state to standign
+		if (Math.abs(this.player.velocity.x) < 1) {
+			this.player.velocity.x = 0;
+			if (this.player.grounded && Assets.playerAttack.isAnimationFinished(this.player.stateTime) &&
+					Assets.playerBeingHit.isAnimationFinished(this.player.stateTime) && !this.player.invincible)
+				this.player.state = Player.State.Standing;
+		}
+	}
+
+	private void checkCollisionWalls(float deltaTime) {
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer)(this.map.getLayers().get("Collisions"));
+		this.rectPool.freeAll(this.tiles);
+		this.tiles.clear();
+
+		//stop him in X
+		if (player.velocity.x > 0){
+			int startX = (int)Math.ceil((player.getX() + player.getWidth()) / 16f);										//lo que viene
+			int finalX = (int)Math.floor((player.getX() + player.getWidth() + player.velocity.x * deltaTime) / 16f);	//donde esté
+			int startY = (int)Math.floor(player.getY() / 16f);
+			int finalY = (int)Math.floor((player.getY() + player.getHeight()) / 16f);
+
+			checkThisTiles(layerTiles, startX, finalX, startY, finalY, deltaTime);
+
+		}
+		else if (player.velocity.x < 0){
+			int startX = (int)Math.floor((player.getX() + player.velocity.x * deltaTime) / 16f);										//lo que viene
+			int finalX = (int)Math.floor((player.getX()) / 16f);	//donde esté
+			int startY = (int)Math.floor(player.getY() / 16f);
+			int finalY = (int)Math.floor((player.getY() + player.getHeight()) / 16f);
+
+			checkThisTiles2(layerTiles, startX, finalX, startY, finalY, deltaTime);
+		}
+		else{ //velocity.x = 0
+		}
+
+		//Stop him in Y
+		if (player.velocity.y > 0){
+			int startX = (int)Math.floor(player.getX() / 16f);										//lo que viene
+			int finalX = (int)Math.floor((player.getX() + player.getWidth()) / 16f);	//donde esté
+			int startY = (int)Math.floor((player.getY()) / 16f);
+			int finalY = (int)Math.floor((player.getY() + player.getHeight()  + player.velocity.y * deltaTime) / 16f);
+
+			checkThisTiles4(layerTiles, startX, finalX, startY, finalY, deltaTime);
+		}
+		else if (player.velocity.y < 0){
+			int startX = (int)Math.floor(player.getX() / 16f);										//lo que viene
+			int finalX = (int)Math.floor((player.getX() + player.getWidth()) / 16f);	//donde esté
+			int startY = (int)Math.floor((player.getY() + player.velocity.y * deltaTime) / 16f);
+			int finalY = (int)Math.floor((player.getY() + player.getHeight()) / 16f);
+
+			checkThisTiles3(layerTiles, startX, finalX, startY, finalY, deltaTime);
+		}
+		else{ //velocity.y = 0
+
+		}
+
+
+	}
+
+	private void checkThisTiles(TiledMapTileLayer layerTiles, int startX,
+			int finalX, int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+		    for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle playerRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+					playerRect.set(this.player.getRect2().x, this.player.getRect2().y, this.player.getRect2().width + this.player.velocity.x * deltaTime,  this.player.getRect2().height);
+					System.out.println("cell is not null and y from tile is " + rect.y + " height is " + rect.height +
+							"playerRect y is " + playerRect.y + " and height is " + playerRect.height);
+					if(playerRect.overlaps(rect)){
+						System.out.println(x);
+						this.player.setX(x * this.TILED_SIZE - this.TILED_SIZE);
+						this.player.velocity.x = 0;
+						return;
+					}
+				}
+		    }
+		}
+	}
+
+	private void checkThisTiles2(TiledMapTileLayer layerTiles, int startX,
+			int finalX, int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+		    for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle playerRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+					playerRect.set(this.player.getRect2().x + this.player.velocity.x * deltaTime, this.player.getRect2().y, this.player.getRect2().width + Math.abs(this.player.velocity.x * deltaTime),  this.player.getRect2().height);
+					System.out.println("cell is not null and y from tile is " + rect.y + " height is " + rect.height +
+							"playerRect y is " + playerRect.y + " and height is " + playerRect.height);
+					if(playerRect.overlaps(rect)){
+						System.out.println(x);
+						this.player.setX(x * this.TILED_SIZE + this.TILED_SIZE);
+						this.player.velocity.x = 0;
+						return;
+					}
+				}
+		    }
+		}
+	}
+
+	private void checkThisTiles3(TiledMapTileLayer layerTiles, int startX,
+			int finalX, int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+		    for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle playerRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+					playerRect.set(this.player.getRect2().x, this.player.getRect2().y + this.player.velocity.y * deltaTime, this.player.getRect2().width - 2,  this.player.getRect2().height + Math.abs(this.player.velocity.y * deltaTime));
+
+					if(playerRect.overlaps(rect)){
+						this.player.desiredPosition.y = y * this.TILED_SIZE + this.TILED_SIZE;
+						this.player.velocity.y = 0;
+						if (normalGravity)
+							this.player.grounded = true;
+						return;
+					}
+				}
+		    }
+		}
+	}
+
+	private void checkThisTiles4(TiledMapTileLayer layerTiles, int startX,
+			int finalX, int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+		    for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle playerRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+					playerRect.set(this.player.getRect2().x, this.player.getRect2().y, this.player.getRect2().width - 2,  this.player.getRect2().height + Math.abs(this.player.velocity.y * deltaTime));
+					System.out.println("cell is not null and y from tile is " + rect.y + " height is " + rect.height +
+							"playerRect y is " + playerRect.y + " and height is " + playerRect.height);
+					if(playerRect.overlaps(rect)){
+						this.player.desiredPosition.y = y * this.TILED_SIZE - this.player.getHeight();
+						this.player.velocity.y = 0;
+						if (!normalGravity)
+							this.player.grounded = true;
+						return;
+					}
+				}
+		    }
+		}
 	}
 
 	private void renderPlayer (float deltaTime) {
@@ -336,10 +516,11 @@ public class MainScreen extends BaseScreen {
 		batch.draw(frame, (this.player.getX() + this.player.actualFrame.offsetX) - this.player.offSetX, (this.player.getY() + this.player.actualFrame.offsetY) - this.player.offSetY);
 
 		batch.end();
-		this.shapeRenderer.begin(ShapeType.Filled);
+
+		this.shapeRenderer.begin(ShapeType.Line);
 
 		this.shapeRenderer.setColor(Color.BLACK);
-
+		shapeRenderer.rect(this.player.getRect2().x, this.player.getRect2().y - this.SCREEN_HEIGHT + TILED_SIZE, this.player.getRect2().width, this.player.getRect2().height);
 		//this.getTiles(0, 0, 25, 15, this.tiles);
 		//for (Rectangle tile : this.tiles) {
 		//	shapeRenderer.rect(tile.x * 1.6f, tile.y * 2, tile.width * 2, tile.height * 2);
@@ -354,7 +535,7 @@ public class MainScreen extends BaseScreen {
 
 		if (this.player.noControl == false){
 			if (Gdx.input.isKeyJustPressed(Keys.S)){
-				//this.jump();
+				this.jump();
 				//this.player.stateTime = 0;
 			}
 
@@ -409,6 +590,18 @@ public class MainScreen extends BaseScreen {
 		}
 
 		*/
+	}
+
+	public void jump() {
+		if (this.player.grounded){
+			Assets.playSound("playerJump");
+			if (this.normalGravity)
+				this.player.velocity.y = this.player.JUMP_VELOCITY;
+			else
+				this.player.velocity.y = -this.player.JUMP_VELOCITY;
+			this.player.grounded = false;
+			this.player.state = Player.State.Jumping;
+		}
 	}
 
 }

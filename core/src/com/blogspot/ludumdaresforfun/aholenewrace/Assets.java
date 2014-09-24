@@ -15,10 +15,10 @@ import com.badlogic.gdx.utils.Array;
 
 public class Assets {
 	static AssetManager assetManager;
-    static Animation playerAttack, playerEmpty, playerIntro, playerStand, playerWalk, playerJump, playerBeingHit, playerDie;
+    static Animation playerAttack, playerEmpty, playerIntro, playerStand, playerWalk, playerRun, playerJump, playerBeingHit, playerDie;
     static Animation playerShot, playerShotHit;
     static Animation enemyWalk, enemyRun, enemyHurt, enemyAppearing;
-    static Animation bossGethit, bossStanding,  bossWalking, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
+    static Animation bossGethit, bossStanding,  bossWalking, bossRunning, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
     static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding;
     static Animation hudBase, hudBossHead, hudLifeBoss, hudLifePlayer;
 	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetBoosHead;
@@ -76,6 +76,10 @@ public class Assets {
 		playerWalk = new Animation(0.15f, regions);
 		playerWalk.setPlayMode(Animation.PlayMode.LOOP);
 
+		regions = atlas.findRegions("char_running");
+		playerRun = new Animation(0.15f, regions);
+		playerRun.setPlayMode(Animation.PlayMode.LOOP);
+
 		regions = atlas.findRegions("char_jumping");  //change to jumping
 		playerJump = new Animation(0, regions.get(1));
 
@@ -121,6 +125,10 @@ public class Assets {
 		regions = atlas.findRegions("boss_walking");
 		bossWalking = new Animation(0.15f, regions);
 		bossWalking.setPlayMode(PlayMode.LOOP);
+
+		regions = atlas.findRegions("boss_running");
+		bossRunning = new Animation(0.15f, regions);
+		bossRunning.setPlayMode(PlayMode.LOOP);
 
 		regions = atlas.findRegions("boss_jump_a");
 		bossJumping = new Animation(0.15f, regions);

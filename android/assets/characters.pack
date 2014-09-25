@@ -731,6 +731,20 @@ hud_boss_head
   orig: 400, 16
   offset: 162, 0
   index: -1
+item_chicken
+  rotate: false
+  xy: 1008, 941
+  size: 15, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+item_banana
+  rotate: false
+  xy: 1007, 923
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
 char_intro
   rotate: false
   xy: 549, 147
@@ -810,7 +824,7 @@ char_dying
   index: 1
 enemy_appearing
   rotate: false
-  xy: 119, 1
+  xy: 1007, 912
   size: 16, 9
   orig: 46, 51
   offset: 17, 1
@@ -822,6 +836,27 @@ enemy_dying
   orig: 46, 51
   offset: 11, 1
   index: 5
+item_invulnerability
+  rotate: false
+  xy: 527, 129
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+item_jump
+  rotate: false
+  xy: 952, 643
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+item_speed
+  rotate: false
+  xy: 545, 129
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
 char_attack_holy_water
   rotate: false
   xy: 936, 809
@@ -836,16 +871,23 @@ enemy_dying
   orig: 46, 51
   offset: 11, 1
   index: 6
+item_apple
+  rotate: false
+  xy: 613, 402
+  size: 14, 16
+  orig: 16, 16
+  offset: 1, 0
+  index: -1
 char_attack_holy_water_hit
   rotate: false
-  xy: 1008, 946
+  xy: 613, 389
   size: 12, 11
   orig: 30, 35
   offset: 15, 13
   index: 1
 enemy_dying
   rotate: false
-  xy: 1007, 930
+  xy: 613, 373
   size: 9, 14
   orig: 46, 51
   offset: 15, 1

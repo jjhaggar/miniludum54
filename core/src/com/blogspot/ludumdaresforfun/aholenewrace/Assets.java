@@ -21,6 +21,7 @@ public class Assets {
     static Animation bossGethit, bossStanding,  bossWalking, bossRunning, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
     static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding;
     static Animation hudBase, hudBossHead, hudLifeBoss, hudLifePlayer;
+    static AtlasRegion item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
 	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetBoosHead;
 	static Vector2 offsetLifeBoss, offsetLifePlayer;
 
@@ -36,6 +37,14 @@ public class Assets {
 
         TextureAtlas atlas = assetManager.get(TEXTURE_ATLAS_OBJECTS);
 		Array<AtlasRegion> regions;
+
+        // ITEMS (non animated)
+		item_apple  = atlas.findRegion("item_apple");
+		item_banana = atlas.findRegion("item_banana");
+		item_chicken = atlas.findRegion("item_chicken");
+		item_invulnerability = atlas.findRegion("item_invulnerability");
+		item_jump = atlas.findRegion("item_jump");
+		item_speed = atlas.findRegion("item_speed");
 
 		//BG
 		regions = atlas.findRegions("intro");

@@ -516,10 +516,12 @@ public class MainScreen extends BaseScreen {
 					playerRect.set(this.player.getRect2().x, this.player.getRect2().y,
 							this.player.getRect2().width + this.player.velocity.x * deltaTime,
 							this.player.getRect2().height);
-					System.out.println("cell is not null and y from tile is " + rect.y
-							+ " height is " + rect.height + "playerRect y is " + playerRect.y
-							+ " and height is " + playerRect.height);
-					if (playerRect.overlaps(rect)) {
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height +
+					 * "playerRect y is " + playerRect.y + " and height is " +
+					 * playerRect.height);
+					 */if (playerRect.overlaps(rect)) {
 						System.out.println(x);
 						this.player.setX(x * this.TILED_SIZE - this.TILED_SIZE);
 						this.player.velocity.x = 0;
@@ -543,10 +545,11 @@ public class MainScreen extends BaseScreen {
 					bossRect.set(this.boss.getRect2().x, this.boss.getRect2().y,
 							this.boss.getRect2().width + this.boss.velocity.x * deltaTime,
 							this.boss.getRect2().height);
-					System.out.println("cell is not null and y from tile is " + rect.y
-							+ " height is " + rect.height + "bossRect y is " + bossRect.y
-							+ " and height is " + bossRect.height);
-					if (bossRect.overlaps(rect)) {
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height + "bossRect y is "
+					 * + bossRect.y + " and height is " + bossRect.height);
+					 */if (bossRect.overlaps(rect)) {
 						System.out.println(x);
 						this.boss.setX(x * this.TILED_SIZE - this.TILED_SIZE);
 						this.boss.velocity.x = 0;
@@ -573,10 +576,12 @@ public class MainScreen extends BaseScreen {
 							this.player.getRect2().width
 									+ Math.abs(this.player.velocity.x * deltaTime),
 							this.player.getRect2().height);
-					System.out.println("cell is not null and y from tile is " + rect.y
-							+ " height is " + rect.height + "playerRect y is " + playerRect.y
-							+ " and height is " + playerRect.height);
-					if (playerRect.overlaps(rect)) {
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height +
+					 * "playerRect y is " + playerRect.y + " and height is " +
+					 * playerRect.height);
+					 */if (playerRect.overlaps(rect)) {
 						System.out.println(x);
 						this.player.setX(x * this.TILED_SIZE + this.TILED_SIZE);
 						this.player.velocity.x = 0;
@@ -602,10 +607,11 @@ public class MainScreen extends BaseScreen {
 							this.boss.getRect2().y,
 							this.boss.getRect2().width + Math.abs(this.boss.velocity.x * deltaTime),
 							this.boss.getRect2().height);
-					System.out.println("cell is not null and y from tile is " + rect.y
-							+ " height is " + rect.height + "bossRect y is " + bossRect.y
-							+ " and height is " + bossRect.height);
-					if (bossRect.overlaps(rect)) {
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height + "bossRect y is "
+					 * + bossRect.y + " and height is " + bossRect.height);
+					 */if (bossRect.overlaps(rect)) {
 						System.out.println(x);
 						this.boss.setX(x * this.TILED_SIZE + this.TILED_SIZE);
 						this.boss.velocity.x = 0;
@@ -692,10 +698,12 @@ public class MainScreen extends BaseScreen {
 							this.player.getRect2().width - 2,
 							this.player.getRect2().height
 									+ Math.abs(this.player.velocity.y * deltaTime));
-					System.out.println("cell is not null and y from tile is " + rect.y
-							+ " height is " + rect.height + "playerRect y is " + playerRect.y
-							+ " and height is " + playerRect.height);
-					if (playerRect.overlaps(rect)) {
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height +
+					 * "playerRect y is " + playerRect.y + " and height is " +
+					 * playerRect.height);
+					 */if (playerRect.overlaps(rect)) {
 						this.player.desiredPosition.y = y * this.TILED_SIZE
 								- this.player.getHeight();
 						this.player.velocity.y = 0;
@@ -727,15 +735,17 @@ public class MainScreen extends BaseScreen {
 							this.boss.getRect2().width - 2,
 							this.boss.getRect2().height
 									+ Math.abs(this.boss.velocity.y * deltaTime));
-					System.out.println("cell is not null and y from tile is " + rect.y
-							+ " height is " + rect.height + "bossRect y is " + bossRect.y
-							+ " and height is " + bossRect.height);
-					if (bossRect.overlaps(rect)) {
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height + "bossRect y is "
+					 * + bossRect.y + " and height is " + bossRect.height);
+					 */if (bossRect.overlaps(rect)) {
 						this.boss.desiredPosition.y = y * this.TILED_SIZE - this.boss.getHeight();
 						this.boss.velocity.y = 0;
 						if (!normalGravityBoss) {
+							// System.out.println("Boss ground1ng");
 							this.boss.grounded = true;
-							this.boss.desiredPosition.y += 1;
+							this.boss.desiredPosition.y += 2;
 						}
 						return;
 					}
@@ -1029,7 +1039,9 @@ public class MainScreen extends BaseScreen {
 	}
 
 	public void jumpBoss() {
+		// System.out.println("Boss TRYING TO JUMP");
 		if (this.boss.grounded) {
+			// System.out.println("Boss GROUNDED AND ABOUT TO JUMP");
 			Assets.playSound("playerJump");
 			if (this.normalGravityBoss)
 				this.boss.velocity.y = this.boss.JUMP_VELOCITY;

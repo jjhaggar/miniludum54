@@ -261,7 +261,7 @@ public class MainScreen extends BaseScreen {
 		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
 		 * this.player.dead && !callGameOver){ callGameOver = true;
 		 * Timer.schedule(new Task() {
-		 * 
+		 *
 		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
 		 * this.player.velocity.x = 0; } if (collisionSpike) {
 		 * this.player.beingHit(); }
@@ -313,7 +313,7 @@ public class MainScreen extends BaseScreen {
 		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
 		 * this.player.dead && !callGameOver){ callGameOver = true;
 		 * Timer.schedule(new Task() {
-		 * 
+		 *
 		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
 		 * this.player.velocity.x = 0; } if (collisionSpike) {
 		 * this.player.beingHit(); }
@@ -797,14 +797,14 @@ public class MainScreen extends BaseScreen {
 			this.UpOffset = 0;
 		} else if (!this.normalGravity && !frame.isFlipY()) {
 			frame.flip(false, true);
-			this.UpOffset = -2;
+			this.UpOffset = +1;
 		}
 
 		// batch.draw(frame, this.player.getX() + frame.offsetX,
 		// this.player.getY() + frame.offsetY + this.UpOffset);
 		batch.draw(frame, (this.player.getX() + this.player.actualFrame.offsetX)
 				- this.player.offSetX, (this.player.getY() + this.player.actualFrame.offsetY)
-				- this.player.offSetY);
+				- this.player.offSetY + this.UpOffset);
 
 		batch.end();
 
@@ -951,8 +951,8 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 * 
-		 * 
+		 *
+		 *
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
@@ -1005,8 +1005,8 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 * 
-		 * 
+		 *
+		 *
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */

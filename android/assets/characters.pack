@@ -372,14 +372,14 @@ boss_walking
   xy: 862, 649
   size: 45, 58
   orig: 128, 128
-  offset: 33, 35
+  offset: 37, 35
   index: 3
 boss_walking
   rotate: false
   xy: 862, 589
   size: 44, 58
   orig: 128, 128
-  offset: 33, 35
+  offset: 37, 35
   index: 6
 enemy_attack
   rotate: false
@@ -463,21 +463,21 @@ boss_walking
   xy: 854, 459
   size: 34, 58
   orig: 128, 128
-  offset: 39, 35
+  offset: 43, 35
   index: 1
 boss_walking
   rotate: false
   xy: 859, 519
   size: 38, 58
   orig: 128, 128
-  offset: 35, 35
+  offset: 39, 35
   index: 2
 boss_walking
   rotate: false
   xy: 899, 516
   size: 38, 58
   orig: 128, 128
-  offset: 35, 35
+  offset: 39, 35
   index: 5
 boss_running
   rotate: false
@@ -491,7 +491,7 @@ boss_walking
   xy: 939, 516
   size: 34, 58
   orig: 128, 128
-  offset: 39, 35
+  offset: 43, 35
   index: 4
 boss_dying
   rotate: false

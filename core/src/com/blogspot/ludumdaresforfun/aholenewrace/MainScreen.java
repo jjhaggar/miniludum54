@@ -381,11 +381,6 @@ public class MainScreen extends BaseScreen {
 			}
 		}
 
-		// clamp the velocity to the maximum, x-axis only
-		if (Math.abs(this.boss.velocity.x) > this.boss.MAX_VELOCITY) {
-			this.boss.velocity.x = Math.signum(this.boss.velocity.x) * this.boss.MAX_VELOCITY;
-		}
-
 		// clamp the velocity to 0 if it's < 1, and set the state to standign
 		if (Math.abs(this.boss.velocity.x) < 1) {
 			this.boss.velocity.x = 0;
@@ -866,6 +861,9 @@ public class MainScreen extends BaseScreen {
 		case BeingHit:
 			frame = (AtlasRegion) Assets.bossGethit.getKeyFrame(this.boss.stateTime);
 			break;
+		case Running:
+			frame = (AtlasRegion) Assets.bossRunning.getKeyFrame(this.boss.stateTime);
+			break;
 		}
 		if (this.boss.invincible && this.toggle) {
 			frame = (AtlasRegion) Assets.bossGethit.getKeyFrame(this.boss.stateTime);
@@ -1038,22 +1036,60 @@ public class MainScreen extends BaseScreen {
 				this.jumpBoss();
 			}
 
+			if (Gdx.input.isKeyJustPressed(Keys.J)) {
+				if ((System.currentTimeMillis() - this.boss.lastTimeLeftBoss) < 200L)
+					this.boss.run = true;
+				else
+					this.boss.run = false;
+
+				this.boss.lastTimeLeftBoss = System.currentTimeMillis();
+			}
+
 			if (Gdx.input.isKeyPressed(Keys.J)) {
-				this.boss.velocity.x = -this.boss.MAX_VELOCITY;
-				if (this.boss.grounded
-						&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-						&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
-					this.boss.state = Boss.State.Walking;
+				if (!this.boss.run){
+					this.boss.velocity.x = -this.boss.MAX_VELOCITY;
+					if (this.boss.grounded
+							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+						this.boss.state = Boss.State.Walking;
+					}
+				}
+				else {
+					this.boss.velocity.x = -this.boss.MAX_VELOCITY * 2f;
+					if (this.boss.grounded
+							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+						this.boss.state = Boss.State.Running;
+					}
 				}
 				this.boss.facesRight = false;
 			}
 
+			if (Gdx.input.isKeyJustPressed(Keys.L)) {
+				if ((System.currentTimeMillis() - this.boss.lastTimeRightBoss) < 200L)
+					this.boss.run = true;
+				else
+					this.boss.run = false;
+
+				this.boss.lastTimeRightBoss = System.currentTimeMillis();
+			}
+
 			if (Gdx.input.isKeyPressed(Keys.L)) {
-				this.boss.velocity.x = this.boss.MAX_VELOCITY;
-				if (this.boss.grounded
-						&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-						&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
-					this.boss.state = Boss.State.Walking;
+				if (!this.boss.run){
+					this.boss.velocity.x = this.boss.MAX_VELOCITY;
+					if (this.boss.grounded
+							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+						this.boss.state = Boss.State.Walking;
+					}
+				}
+				else {
+					this.boss.velocity.x = this.boss.MAX_VELOCITY * 2f;
+					if (this.boss.grounded
+							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+						this.boss.state = Boss.State.Running;
+					}
 				}
 				this.boss.facesRight = true;
 			}

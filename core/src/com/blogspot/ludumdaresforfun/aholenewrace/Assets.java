@@ -136,7 +136,7 @@ public class Assets {
 		bossWalking.setPlayMode(PlayMode.LOOP);
 
 		regions = atlas.findRegions("boss_running");
-		bossRunning = new Animation(0.15f, regions);
+		bossRunning = new Animation(0.25f, regions);
 		bossRunning.setPlayMode(PlayMode.LOOP);
 
 		regions = atlas.findRegions("boss_jump_a");

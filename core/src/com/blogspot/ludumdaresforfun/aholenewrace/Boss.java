@@ -18,7 +18,7 @@ public class Boss extends Image {
 	final int MAX_LIFES = 24;
 
 	enum State {
-		Standing, Walking, Jumping, Falling, Attack, Summon, Hurting, BeingHit, Die
+		Standing, Walking, Jumping, Falling, Attack, Summon, Hurting, BeingHit, Die, Running
 	}
 
 	enum FlowState {
@@ -65,6 +65,9 @@ public class Boss extends Image {
 	// public AtlasRegion actualFrame;
 	public AtlasRegion actualFrame;
 	float superWidth, superHeight;
+	public long lastTimeLeftBoss = -1L;
+	public long lastTimeRightBoss = -1L;
+	public boolean run = false;
 
 	public Boss(Animation animation) {
 		super(animation.getKeyFrame(0));

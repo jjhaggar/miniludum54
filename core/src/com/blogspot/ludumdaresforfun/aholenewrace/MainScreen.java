@@ -105,13 +105,13 @@ public class MainScreen extends BaseScreen {
 		// Assets.dispose(); //TODO: for debugging
 
 		this.camera = new OrthographicCamera();
-		this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
-		this.camera.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT;
+		this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT / 2);
+		this.camera.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT - this.SCREEN_HEIGHT / 2;
 		this.camera.update();
 
 		this.camera2 = new OrthographicCamera();
-		this.camera2.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
-		this.camera2.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT;
+		this.camera2.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT / 2);
+		this.camera2.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT - this.SCREEN_HEIGHT / 2;
 		this.camera2.update();
 
 		this.player = new Player(Assets.playerStand);
@@ -156,14 +156,26 @@ public class MainScreen extends BaseScreen {
 		Gdx.gl.glClearColor(.9f, .9f, .9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-	    Gdx.gl.glScissor(0, 0, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT);
-	    Gdx.gl.glViewport(0, 0, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT);
+		//updateWorld
+		updateWorld(delta);
 
-		delta = Math.min(delta, 0.1f);
+		 //Down Half
+		Gdx.gl.glViewport( 0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight() / 2 );
 
-		// System.out.println("gravirty" + this.GRAVITY); TODO Player vibrarte
-		// when dead in down world
+		updateCameraPlayer();
+		drawFirstWorld(delta);
+
+	    //Upper Half
+	    Gdx.gl.glViewport( 0,Gdx.graphics.getHeight()/2,Gdx.graphics.getWidth(),Gdx.graphics.getHeight()/2 );
+
+		updateCameraBoss();
+		drawSecondWorld(delta);
+
+	}
+
+	private void updateWorld(float delta) {
+		delta = Math.min(delta, 0.05f);
+
 		this.updatePlayer(delta);
 		this.updateBoss(delta);
 		this.player.act(delta);
@@ -171,32 +183,33 @@ public class MainScreen extends BaseScreen {
 
 		// this.activateBoss();
 
-		if (!this.bossActive) {
-			// update x
-			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
-				this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
-			else if ((this.player.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
-				this.camera.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
-			else
-				this.camera.position.x = this.player.getX();
+		/*
+		 * if (this.spawns.size > 0) { Vector2 auxNextSpawn =
+		 * this.spawns.first(); if ((this.camera.position.x +
+		 * this.DISTANCESPAWN) >= auxNextSpawn.x) { Enemy auxShadow = new
+		 * Enemy(Assets.enemyWalk); if (auxNextSpawn.y < 240) { auxNextSpawn.y
+		 * -= 5; // Offset fixed collision }
+		 * auxShadow.setPosition(auxNextSpawn.x, auxNextSpawn.y);
+		 * auxShadow.state = Enemy.State.BeingInvoked; auxShadow.stateTime = 0;
+		 * auxShadow.beingInvoked = true; this.enemies.add(auxShadow);
+		 * this.spawns.removeIndex(0); } }
+		 */
 
-			// update y
-			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera.position.y = this.player.getY();
-			else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-				this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else
-				this.camera.position.y = this.player.getY();
+		// this.collisionLifes(delta);
+		// this.updateEnemies(delta);
 
-			this.camera.update();
-		}
+		/*
+		 * for (Shot shot : this.shotArray){ if (shot != null)
+		 * this.renderShot(shot, delta); }
+		 */
+		/*
+		 * if (this.bossActive && (this.boss != null)) { this.updateBoss(delta);
+		 * if (this.boss != null) this.renderBoss(delta); }
+		 * this.renderHUD(delta);
+		 */
+	}
 
+	private void updateCameraBoss() {
 		if (!this.bossActive) {
 			// update x
 			if ((this.boss.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
@@ -222,21 +235,9 @@ public class MainScreen extends BaseScreen {
 
 			this.camera2.update();
 		}
+	}
 
-		/*
-		 * if (this.spawns.size > 0) { Vector2 auxNextSpawn =
-		 * this.spawns.first(); if ((this.camera.position.x +
-		 * this.DISTANCESPAWN) >= auxNextSpawn.x) { Enemy auxShadow = new
-		 * Enemy(Assets.enemyWalk); if (auxNextSpawn.y < 240) { auxNextSpawn.y
-		 * -= 5; // Offset fixed collision }
-		 * auxShadow.setPosition(auxNextSpawn.x, auxNextSpawn.y);
-		 * auxShadow.state = Enemy.State.BeingInvoked; auxShadow.stateTime = 0;
-		 * auxShadow.beingInvoked = true; this.enemies.add(auxShadow);
-		 * this.spawns.removeIndex(0); } }
-		 */
-
-		// this.collisionLifes(delta);
-		// this.updateEnemies(delta);
+	private void drawFirstWorld(float delta) {
 		this.renderer.setView(this.camera);
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
@@ -244,15 +245,44 @@ public class MainScreen extends BaseScreen {
 		// this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
-		/*
-		 * for (Shot shot : this.shotArray){ if (shot != null)
-		 * this.renderShot(shot, delta); }
-		 */
-		/*
-		 * if (this.bossActive && (this.boss != null)) { this.updateBoss(delta);
-		 * if (this.boss != null) this.renderBoss(delta); }
-		 * this.renderHUD(delta);
-		 */
+	}
+
+	private void drawSecondWorld(float delta) {
+		this.renderer.setView(this.camera2);
+		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
+														// mistery
+
+		// this.renderEnemies(delta);
+		this.renderPlayer(delta);
+		this.renderBoss(delta);
+	}
+
+	private void updateCameraPlayer() {
+		if (!this.bossActive) {
+			// update x
+			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
+				this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
+			else if ((this.player.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
+				this.camera.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
+			else
+				this.camera.position.x = this.player.getX();
+
+			// update y
+			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+					+ TILED_SIZE)
+				this.camera.position.y = this.player.getY() - this.SCREEN_HEIGHT / 2;
+			else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
+				this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE - this.SCREEN_HEIGHT / 2;
+			else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+					+ TILED_SIZE)
+				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE - this.SCREEN_HEIGHT / 2;
+			else
+				this.camera.position.y = this.player.getY() - this.SCREEN_HEIGHT / 2;
+
+			this.camera.update();
+		}
 	}
 
 	private void updatePlayer(float deltaTime) {

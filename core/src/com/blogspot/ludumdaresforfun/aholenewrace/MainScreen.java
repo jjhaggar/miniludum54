@@ -233,6 +233,8 @@ public class MainScreen extends BaseScreen {
 
 		this.checkCollisionWalls(deltaTime);
 
+		//System.out.println(" " + this.player.velocity.x);
+
 		this.player.velocity.scl(deltaTime);
 
 		// retreat if noControl //velocity y is changed in beingHit
@@ -923,66 +925,25 @@ public class MainScreen extends BaseScreen {
 	private void movingShootingJumping(float deltaTime) {
 
 		if (this.player.noControl == false) {
-			if (Gdx.input.isKeyJustPressed(Keys.S)) {
+
+			if (Gdx.input.isKeyJustPressed(Keys.LEFT))
+				activateLeftRunning();
+
+			if (Gdx.input.isKeyPressed(Keys.LEFT) || this.configControllers.leftPressed)
+				moveLeft();
+
+			if (Gdx.input.isKeyJustPressed(Keys.RIGHT))
+				activateRightRunning();
+
+			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed)
+				moveRight();
+
+			if (Gdx.input.isKeyJustPressed(Keys.S))
 				this.jump();
-				// this.player.stateTime = 0;
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.LEFT) || this.configControllers.leftPressed) {
-				if ((System.currentTimeMillis() - this.player.lastTimeLeftPlayer) > 2000L){
-					this.player.velocity.x = -this.player.MAX_VELOCITY;
-					if (this.player.grounded
-							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
-							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
-						this.player.state = Player.State.Walking;
-						// this.player.stateTime = 0;
-					}
-					this.player.facesRight = false;
-				}
-				else {
-					this.player.velocity.x = -this.player.MAX_VELOCITY * 2f;
-					if (this.player.grounded
-							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
-							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
-						this.player.state = Player.State.Running;
-						// this.player.stateTime = 0;
-					}
-					this.player.facesRight = false;
-				}
-				this.player.lastTimeLeftPlayer = System.currentTimeMillis();
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed) {
-				if ((System.currentTimeMillis() - this.player.lastTimeRightPlayer) > 2000L){
-				this.player.velocity.x = this.player.MAX_VELOCITY;
-				if (this.player.grounded
-						&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
-						&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
-					this.player.state = Player.State.Walking;
-					// this.player.stateTime = 0;
-				}
-				this.player.facesRight = true;
-				}
-				else {
-					this.player.velocity.x = this.player.MAX_VELOCITY * 2f;
-					if (this.player.grounded
-							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
-							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
-						this.player.state = Player.State.Running;
-						// this.player.stateTime = 0;
-					}
-					this.player.facesRight = true;
-				}
-				this.player.lastTimeRightPlayer = System.currentTimeMillis();
-			}
 
 			if (Gdx.input.isKeyJustPressed(Keys.D)) {
 				// this.shoot();
 			}
-			// if (Gdx.input.isKeyJustPressed(Keys.Y)){
-			// LD.getInstance().ENDING_SCREEN = new EndingScreen();
-			// LD.getInstance().setScreen(LD.getInstance().ENDING_SCREEN);
-			// }
 		}
 
 		if (Assets.playerAttack.isAnimationFinished(this.player.stateTime))
@@ -998,6 +959,76 @@ public class MainScreen extends BaseScreen {
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
 		// movingShootingJumpingBoss(deltaTime);
+	}
+
+	private void moveRight() {
+		if (!this.player.run){
+			this.player.velocity.x = this.player.MAX_VELOCITY;
+			if (this.player.grounded
+					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+					&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+				this.player.state = Player.State.Walking;
+			}
+		}
+		else {
+			this.player.velocity.x = this.player.MAX_VELOCITY * 2f;
+			if (this.player.grounded
+					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+					&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+				this.player.state = Player.State.Running;
+			}
+		}
+		this.player.facesRight = true;
+	}
+
+	private void moveLeft() {
+		if (!this.player.run){
+			this.player.velocity.x = -this.player.MAX_VELOCITY;
+			if (this.player.grounded
+					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+					&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+				this.player.state = Player.State.Walking;
+			}
+		}
+		else {
+			this.player.velocity.x = -this.player.MAX_VELOCITY * 2f;
+			if (this.player.grounded
+					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+					&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+				this.player.state = Player.State.Running;
+			}
+		}
+		this.player.facesRight = false;
+	}
+
+	private void activateRightRunning() {
+		if ((System.currentTimeMillis() - this.player.lastTimeRightPlayer) < 200L)
+			this.player.run = true;
+		else
+			this.player.run = false;
+
+		this.player.lastTimeRightPlayer = System.currentTimeMillis();
+	}
+
+	private void activateLeftRunning() {
+		if ((System.currentTimeMillis() - this.player.lastTimeLeftPlayer) < 200L)
+			this.player.run = true;
+		else
+			this.player.run = false;
+
+		this.player.lastTimeLeftPlayer = System.currentTimeMillis();
+	}
+
+	public void jump() {
+		if (this.player.grounded) {
+			Assets.playSound("playerJump");
+			if (this.normalGravity)
+				this.player.velocity.y = this.player.JUMP_VELOCITY;
+			else
+				this.player.velocity.y = -this.player.JUMP_VELOCITY;
+			this.player.grounded = false;
+			this.player.state = Player.State.Jumping;
+		}
 	}
 
 	private void movingShootingJumpingBoss(float deltaTime) {
@@ -1051,18 +1082,6 @@ public class MainScreen extends BaseScreen {
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
-	}
-
-	public void jump() {
-		if (this.player.grounded) {
-			Assets.playSound("playerJump");
-			if (this.normalGravity)
-				this.player.velocity.y = this.player.JUMP_VELOCITY;
-			else
-				this.player.velocity.y = -this.player.JUMP_VELOCITY;
-			this.player.grounded = false;
-			this.player.state = Player.State.Jumping;
-		}
 	}
 
 	public void jumpBoss() {

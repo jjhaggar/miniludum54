@@ -41,6 +41,7 @@ public class Player extends Image {
 
 	public long lastTimeRightPlayer = -1;
 	public long lastTimeLeftPlayer = -1;
+	public boolean run = false;
 
     public Player(Animation animation) {
         super(animation.getKeyFrame(0));

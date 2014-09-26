@@ -1032,67 +1032,20 @@ public class MainScreen extends BaseScreen {
 	private void movingShootingJumpingBoss(float deltaTime) {
 
 		if (this.boss.noControl == false) {
-			if (Gdx.input.isKeyJustPressed(Keys.G)) {
+			if (Gdx.input.isKeyJustPressed(Keys.G))
 				this.jumpBoss();
-			}
 
-			if (Gdx.input.isKeyJustPressed(Keys.J)) {
-				if ((System.currentTimeMillis() - this.boss.lastTimeLeftBoss) < 200L)
-					this.boss.run = true;
-				else
-					this.boss.run = false;
+			if (Gdx.input.isKeyJustPressed(Keys.J))
+				activateLeftRunningBoss();
 
-				this.boss.lastTimeLeftBoss = System.currentTimeMillis();
-			}
+			if (Gdx.input.isKeyPressed(Keys.J))
+				moveLeftBoss();
 
-			if (Gdx.input.isKeyPressed(Keys.J)) {
-				if (!this.boss.run){
-					this.boss.velocity.x = -this.boss.MAX_VELOCITY;
-					if (this.boss.grounded
-							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
-						this.boss.state = Boss.State.Walking;
-					}
-				}
-				else {
-					this.boss.velocity.x = -this.boss.MAX_VELOCITY * 2f;
-					if (this.boss.grounded
-							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
-						this.boss.state = Boss.State.Running;
-					}
-				}
-				this.boss.facesRight = false;
-			}
+			if (Gdx.input.isKeyJustPressed(Keys.L))
+				activateRunningRightBoss();
 
-			if (Gdx.input.isKeyJustPressed(Keys.L)) {
-				if ((System.currentTimeMillis() - this.boss.lastTimeRightBoss) < 200L)
-					this.boss.run = true;
-				else
-					this.boss.run = false;
-
-				this.boss.lastTimeRightBoss = System.currentTimeMillis();
-			}
-
-			if (Gdx.input.isKeyPressed(Keys.L)) {
-				if (!this.boss.run){
-					this.boss.velocity.x = this.boss.MAX_VELOCITY;
-					if (this.boss.grounded
-							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
-						this.boss.state = Boss.State.Walking;
-					}
-				}
-				else {
-					this.boss.velocity.x = this.boss.MAX_VELOCITY * 2f;
-					if (this.boss.grounded
-							&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-							&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
-						this.boss.state = Boss.State.Running;
-					}
-				}
-				this.boss.facesRight = true;
-			}
+			if (Gdx.input.isKeyPressed(Keys.L))
+				moveRightBoss();
 
 			if (Gdx.input.isKeyJustPressed(Keys.H)) {
 				// this.shootBoss();
@@ -1111,6 +1064,64 @@ public class MainScreen extends BaseScreen {
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
+	}
+
+	private void moveRightBoss() {
+		if (!this.boss.run){
+			this.boss.velocity.x = this.boss.MAX_VELOCITY;
+			if (this.boss.grounded
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+				this.boss.state = Boss.State.Walking;
+			}
+		}
+		else {
+			this.boss.velocity.x = this.boss.MAX_VELOCITY * 2f;
+			if (this.boss.grounded
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+				this.boss.state = Boss.State.Running;
+			}
+		}
+		this.boss.facesRight = true;
+	}
+
+	private void activateRunningRightBoss() {
+		if ((System.currentTimeMillis() - this.boss.lastTimeRightBoss) < 200L)
+			this.boss.run = true;
+		else
+			this.boss.run = false;
+
+		this.boss.lastTimeRightBoss = System.currentTimeMillis();
+	}
+
+	private void moveLeftBoss() {
+		if (!this.boss.run){
+			this.boss.velocity.x = -this.boss.MAX_VELOCITY;
+			if (this.boss.grounded
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+				this.boss.state = Boss.State.Walking;
+			}
+		}
+		else {
+			this.boss.velocity.x = -this.boss.MAX_VELOCITY * 2f;
+			if (this.boss.grounded
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
+					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+				this.boss.state = Boss.State.Running;
+			}
+		}
+		this.boss.facesRight = false;
+	}
+
+	private void activateLeftRunningBoss() {
+		if ((System.currentTimeMillis() - this.boss.lastTimeLeftBoss) < 200L)
+			this.boss.run = true;
+		else
+			this.boss.run = false;
+
+		this.boss.lastTimeLeftBoss = System.currentTimeMillis();
 	}
 
 	public void jumpBoss() {

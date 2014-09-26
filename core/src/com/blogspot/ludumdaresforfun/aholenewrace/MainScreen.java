@@ -261,7 +261,7 @@ public class MainScreen extends BaseScreen {
 		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
 		 * this.player.dead && !callGameOver){ callGameOver = true;
 		 * Timer.schedule(new Task() {
-		 *
+		 * 
 		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
 		 * this.player.velocity.x = 0; } if (collisionSpike) {
 		 * this.player.beingHit(); }
@@ -313,7 +313,7 @@ public class MainScreen extends BaseScreen {
 		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
 		 * this.player.dead && !callGameOver){ callGameOver = true;
 		 * Timer.schedule(new Task() {
-		 *
+		 * 
 		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
 		 * this.player.velocity.x = 0; } if (collisionSpike) {
 		 * this.player.beingHit(); }
@@ -356,7 +356,7 @@ public class MainScreen extends BaseScreen {
 					&& !this.player.invincible)
 				this.player.state = Player.State.Standing;
 		}
-		//gravityAndClampingBoss(deltaTime);
+		// gravityAndClampingBoss(deltaTime);
 	}
 
 	private void gravityAndClampingBoss(float deltaTime) {
@@ -447,7 +447,7 @@ public class MainScreen extends BaseScreen {
 
 		}
 
-		//checkCollisionWallsBoss(deltaTime);
+		// checkCollisionWallsBoss(deltaTime);
 	}
 
 	private void checkCollisionWallsBoss(float deltaTime) {
@@ -804,7 +804,9 @@ public class MainScreen extends BaseScreen {
 		// this.player.getY() + frame.offsetY + this.UpOffset);
 		batch.draw(frame, (this.player.getX() + this.player.actualFrame.offsetX)
 				- this.player.offSetX, (this.player.getY() + this.player.actualFrame.offsetY)
-				- this.player.offSetY + this.UpOffset);		//upoffset para que se vea que está en su sitio
+				- this.player.offSetY + this.UpOffset); // upoffset para que se
+														// vea que está en su
+														// sitio
 
 		batch.end();
 
@@ -883,6 +885,8 @@ public class MainScreen extends BaseScreen {
 
 		// batch.draw(frame, this.player.getX() + frame.offsetX,
 		// this.player.getY() + frame.offsetY + this.UpOffset);
+		this.boss.actualFrame = frame;
+		// System.out.println("Anchura boss " + this.boss.actualFrame.offsetX);
 		batch.draw(frame, (this.boss.getX() + this.boss.actualFrame.offsetX) - this.boss.offSetX,
 				(this.boss.getY() + this.boss.actualFrame.offsetY) - this.boss.offSetY);
 
@@ -951,12 +955,12 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 *
-		 *
+		 * 
+		 * 
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
-		//movingShootingJumpingBoss(deltaTime);
+		// movingShootingJumpingBoss(deltaTime);
 	}
 
 	private void movingShootingJumpingBoss(float deltaTime) {
@@ -1005,8 +1009,8 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 *
-		 *
+		 * 
+		 * 
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */

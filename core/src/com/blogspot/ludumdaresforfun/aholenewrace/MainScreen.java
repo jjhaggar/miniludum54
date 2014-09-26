@@ -76,6 +76,7 @@ public class MainScreen extends BaseScreen {
 	public boolean bossCheckPoint = false;
 
 	float UpOffset = 0;
+	private OrthographicCamera camera2;
 
 	@Override
 	public void backButtonPressed() {
@@ -107,6 +108,11 @@ public class MainScreen extends BaseScreen {
 		this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
 		this.camera.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT;
 		this.camera.update();
+
+		this.camera2 = new OrthographicCamera();
+		this.camera2.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+		this.camera2.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT;
+		this.camera2.update();
 
 		this.player = new Player(Assets.playerStand);
 		this.boss = new Boss(Assets.bossStanding);
@@ -150,6 +156,10 @@ public class MainScreen extends BaseScreen {
 		Gdx.gl.glClearColor(.9f, .9f, .9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+	    Gdx.gl.glScissor(0, 0, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT);
+	    Gdx.gl.glViewport(0, 0, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT);
+
 		delta = Math.min(delta, 0.1f);
 
 		// System.out.println("gravirty" + this.GRAVITY); TODO Player vibrarte
@@ -185,6 +195,32 @@ public class MainScreen extends BaseScreen {
 				this.camera.position.y = this.player.getY();
 
 			this.camera.update();
+		}
+
+		if (!this.bossActive) {
+			// update x
+			if ((this.boss.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
+				this.camera2.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
+			else if ((this.boss.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
+				this.camera2.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
+			else
+				this.camera2.position.x = this.boss.getX();
+
+			// update y
+			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+					+ TILED_SIZE)
+				this.camera2.position.y = this.boss.getY();
+			else if (this.boss.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
+				this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE;
+			else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+					+ TILED_SIZE)
+				this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE;
+			else
+				this.camera2.position.y = this.boss.getY();
+
+			this.camera2.update();
 		}
 
 		/*
@@ -1002,7 +1038,7 @@ public class MainScreen extends BaseScreen {
 	public void activateRightRunning() {
 		if ((System.currentTimeMillis() - this.player.lastTimeRightPlayer) < 200L)
 			this.player.run = true;
-		else
+		else if (this.player.state != Player.State.Jumping)
 			this.player.run = false;
 
 		this.player.lastTimeRightPlayer = System.currentTimeMillis();
@@ -1011,7 +1047,7 @@ public class MainScreen extends BaseScreen {
 	public void activateLeftRunning() {
 		if ((System.currentTimeMillis() - this.player.lastTimeLeftPlayer) < 200L)
 			this.player.run = true;
-		else
+		else if (this.player.state != Player.State.Jumping)
 			this.player.run = false;
 
 		this.player.lastTimeLeftPlayer = System.currentTimeMillis();
@@ -1089,7 +1125,7 @@ public class MainScreen extends BaseScreen {
 	private void activateRunningRightBoss() {
 		if ((System.currentTimeMillis() - this.boss.lastTimeRightBoss) < 200L)
 			this.boss.run = true;
-		else
+		else if (this.boss.state != Boss.State.Jumping)
 			this.boss.run = false;
 
 		this.boss.lastTimeRightBoss = System.currentTimeMillis();
@@ -1118,7 +1154,7 @@ public class MainScreen extends BaseScreen {
 	private void activateLeftRunningBoss() {
 		if ((System.currentTimeMillis() - this.boss.lastTimeLeftBoss) < 200L)
 			this.boss.run = true;
-		else
+		else if (this.boss.state != Boss.State.Jumping)
 			this.boss.run = false;
 
 		this.boss.lastTimeLeftBoss = System.currentTimeMillis();

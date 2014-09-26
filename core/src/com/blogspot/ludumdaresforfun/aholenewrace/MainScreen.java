@@ -940,7 +940,7 @@ public class MainScreen extends BaseScreen {
 					this.player.facesRight = false;
 				}
 				else {
-					this.player.velocity.x = -this.player.MAX_VELOCITY * 1.5f;
+					this.player.velocity.x = -this.player.MAX_VELOCITY * 2f;
 					if (this.player.grounded
 							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
 							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
@@ -953,6 +953,7 @@ public class MainScreen extends BaseScreen {
 			}
 
 			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed) {
+				if ((System.currentTimeMillis() - this.player.lastTimeRightPlayer) > 2000L){
 				this.player.velocity.x = this.player.MAX_VELOCITY;
 				if (this.player.grounded
 						&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
@@ -961,6 +962,18 @@ public class MainScreen extends BaseScreen {
 					// this.player.stateTime = 0;
 				}
 				this.player.facesRight = true;
+				}
+				else {
+					this.player.velocity.x = this.player.MAX_VELOCITY * 2f;
+					if (this.player.grounded
+							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+						this.player.state = Player.State.Running;
+						// this.player.stateTime = 0;
+					}
+					this.player.facesRight = true;
+				}
+				this.player.lastTimeRightPlayer = System.currentTimeMillis();
 			}
 
 			if (Gdx.input.isKeyJustPressed(Keys.D)) {

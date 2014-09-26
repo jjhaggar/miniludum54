@@ -277,10 +277,10 @@ public class MainScreen extends BaseScreen {
 		this.boss.desiredPosition.x = this.boss.getX();
 		this.boss.desiredPosition.y = this.boss.getY();
 
-		this.movingShootingJumping(deltaTime);
-		this.gravityAndClamping(deltaTime);
+		this.movingShootingJumpingBoss(deltaTime);
+		this.gravityAndClampingBoss(deltaTime);
 
-		this.checkCollisionWalls(deltaTime);
+		this.checkCollisionWallsBoss(deltaTime);
 
 		this.boss.velocity.scl(deltaTime);
 
@@ -356,7 +356,7 @@ public class MainScreen extends BaseScreen {
 					&& !this.player.invincible)
 				this.player.state = Player.State.Standing;
 		}
-		gravityAndClampingBoss(deltaTime);
+		//gravityAndClampingBoss(deltaTime);
 	}
 
 	private void gravityAndClampingBoss(float deltaTime) {
@@ -447,7 +447,7 @@ public class MainScreen extends BaseScreen {
 
 		}
 
-		checkCollisionWallsBoss(deltaTime);
+		//checkCollisionWallsBoss(deltaTime);
 	}
 
 	private void checkCollisionWallsBoss(float deltaTime) {
@@ -804,7 +804,7 @@ public class MainScreen extends BaseScreen {
 		// this.player.getY() + frame.offsetY + this.UpOffset);
 		batch.draw(frame, (this.player.getX() + this.player.actualFrame.offsetX)
 				- this.player.offSetX, (this.player.getY() + this.player.actualFrame.offsetY)
-				- this.player.offSetY + this.UpOffset);
+				- this.player.offSetY + this.UpOffset);		//upoffset para que se vea que está en su sitio
 
 		batch.end();
 
@@ -956,7 +956,7 @@ public class MainScreen extends BaseScreen {
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
-		movingShootingJumpingBoss(deltaTime);
+		//movingShootingJumpingBoss(deltaTime);
 	}
 
 	private void movingShootingJumpingBoss(float deltaTime) {

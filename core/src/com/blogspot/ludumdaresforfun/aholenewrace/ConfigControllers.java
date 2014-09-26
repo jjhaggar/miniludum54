@@ -81,17 +81,19 @@ public class ConfigControllers {
 
                 @Override
                 public boolean buttonDown (Controller controller, int buttonIndex) {
-                	/*
                     if (screen.getClass().equals(MainScreen.class)){
                     if (buttonIndex == 0  && !ConfigControllers.this.jumpPressed){
                         ((MainScreen) ConfigControllers.this.screen).jump();
                         ConfigControllers.this.jumpPressed = true;
                     }
+                    /*
                     if ((buttonIndex == 1 || buttonIndex == 2) && !ConfigControllers.this.shootPressed){
                         ((MainScreen) ConfigControllers.this.screen).shoot();
                         ConfigControllers.this.shootPressed = true;
                     }
+                    */
                 }
+                	/*
                 else if (screen.getClass().equals(MenuScreen.class)){
                     if (buttonIndex == 0){
                         ((MenuScreen) ConfigControllers.this.screen).enterButtonPressed();

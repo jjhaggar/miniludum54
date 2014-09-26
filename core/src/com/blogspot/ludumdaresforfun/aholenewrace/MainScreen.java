@@ -1139,13 +1139,13 @@ public class MainScreen extends BaseScreen {
 			if (Gdx.input.isKeyJustPressed(Keys.J))
 				activateLeftRunningBoss();
 
-			if (Gdx.input.isKeyPressed(Keys.J))
+			if (Gdx.input.isKeyPressed(Keys.J) || this.configControllers.leftPressed2P)
 				moveLeftBoss();
 
 			if (Gdx.input.isKeyJustPressed(Keys.L))
-				activateRunningRightBoss();
+				activateRightRunningBoss();
 
-			if (Gdx.input.isKeyPressed(Keys.L))
+			if (Gdx.input.isKeyPressed(Keys.L) || this.configControllers.rightPressed2P)
 				moveRightBoss();
 
 			if (Gdx.input.isKeyJustPressed(Keys.H)) {
@@ -1187,7 +1187,7 @@ public class MainScreen extends BaseScreen {
 		this.boss.facesRight = true;
 	}
 
-	private void activateRunningRightBoss() {
+	public void activateRightRunningBoss() {
 		if ((System.currentTimeMillis() - this.boss.lastTimeRightBoss) < 200L)
 			this.boss.run = true;
 		else if (this.boss.state != Boss.State.Jumping)
@@ -1216,7 +1216,7 @@ public class MainScreen extends BaseScreen {
 		this.boss.facesRight = false;
 	}
 
-	private void activateLeftRunningBoss() {
+	public void activateLeftRunningBoss() {
 		if ((System.currentTimeMillis() - this.boss.lastTimeLeftBoss) < 200L)
 			this.boss.run = true;
 		else if (this.boss.state != Boss.State.Jumping)

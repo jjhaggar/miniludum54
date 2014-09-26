@@ -14,6 +14,8 @@ public class ConfigControllers {
 	public boolean rightPressed = false;
 	public boolean jumpPressed = false;
 	public boolean shootPressed = false;
+	
+	public boolean leftPressed2P, rightPressed2P, jumpPressed2P, shootPressed2P = false;
 
     public ConfigControllers(MainScreen screen) {
     	this.screen = screen;
@@ -56,9 +58,9 @@ public class ConfigControllers {
 
         // setup the listener that prints events to the console
         controllerListener = new ControllerListener(){
-                //public int indexOf(Controller controller) {
-                //    return Controllers.getControllers().indexOf(controller, true);
-                //}
+                public int indexOf(Controller controller) {
+                    return Controllers.getControllers().indexOf(controller, true);
+                }
 
                 @Override
                 public void connected (Controller controller) {
@@ -82,10 +84,18 @@ public class ConfigControllers {
                 @Override
                 public boolean buttonDown (Controller controller, int buttonIndex) {
                     if (screen.getClass().equals(MainScreen.class)){
-                    if (buttonIndex == 0  && !ConfigControllers.this.jumpPressed){
-                        ((MainScreen) ConfigControllers.this.screen).jump();
-                        ConfigControllers.this.jumpPressed = true;
-                    }
+                    	if (indexOf(controller) == 0){
+		                    if (buttonIndex == 0  && !ConfigControllers.this.jumpPressed){
+		                        ((MainScreen) ConfigControllers.this.screen).jump();
+		                        ConfigControllers.this.jumpPressed = true;
+		                    }
+                    	}
+                    	if (indexOf(controller) == 1){
+		                    if (buttonIndex == 0  && !ConfigControllers.this.jumpPressed2P){
+		                        ((MainScreen) ConfigControllers.this.screen).jumpBoss();
+		                        ConfigControllers.this.jumpPressed2P = true;
+		                    }
+                    	}
                     /*
                     if ((buttonIndex == 1 || buttonIndex == 2) && !ConfigControllers.this.shootPressed){
                         ((MainScreen) ConfigControllers.this.screen).shoot();
@@ -128,12 +138,22 @@ public class ConfigControllers {
                 @Override
                 public boolean buttonUp (Controller controller, int buttonIndex) {
                     // System.out.println("#" + indexOf(controller) + ", button " + buttonIndex + " up");
-                    if (buttonIndex == 0){
-                        ConfigControllers.this.jumpPressed = false;
-                    }
-                    if ((buttonIndex == 1 || buttonIndex == 2)){
-                        ConfigControllers.this.shootPressed = false;
-                    }
+                	if (indexOf(controller) == 0){
+	                    if (buttonIndex == 0){
+	                        ConfigControllers.this.jumpPressed = false;
+	                    }
+	                    if ((buttonIndex == 1 || buttonIndex == 2)){
+	                        ConfigControllers.this.shootPressed = false;
+	                    }
+                	}
+                	if (indexOf(controller) == 1){
+	                    if (buttonIndex == 0){
+	                        ConfigControllers.this.jumpPressed2P = false;
+	                    }
+	                    if ((buttonIndex == 1 || buttonIndex == 2)){
+	                        ConfigControllers.this.shootPressed2P = false;
+	                    }
+                	}
                     return false;
                 }
 
@@ -163,20 +183,45 @@ public class ConfigControllers {
 
                 @Override
                 public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-                    if (value.equals("west") || value == PovDirection.west){
-                        rightPressed = false;
-                        leftPressed = true;
-                        ((MainScreen) ConfigControllers.this.screen).activateLeftRunning();
-                    }
-                    else if (value.equals(PovDirection.east)){
-                        rightPressed = true;
-                        leftPressed = false;
-                        ((MainScreen) ConfigControllers.this.screen).activateRightRunning();
-                    }
-                    else if (value.equals(PovDirection.center)){
-                        rightPressed = false;
-                        leftPressed = false;
-                    }
+
+                	
+                	System.out.println("IndexOf = "+ indexOf(controller));
+                	
+                	
+                	if (indexOf(controller) == 0){
+	                    if (value.equals("west") || value == PovDirection.west){
+	                        rightPressed = false;
+	                        leftPressed = true;
+	                        ((MainScreen) ConfigControllers.this.screen).activateLeftRunning();
+	                    }
+	                    else if (value.equals(PovDirection.east)){
+	                        rightPressed = true;
+	                        leftPressed = false;
+	                        ((MainScreen) ConfigControllers.this.screen).activateRightRunning();
+	                    }
+	                    else if (value.equals(PovDirection.center)){
+	                        rightPressed = false;
+	                        leftPressed = false;
+	                    }
+                	}
+                	if (indexOf(controller) == 1){
+	                    if (value.equals("west") || value == PovDirection.west){
+	                        rightPressed2P = false;
+	                        leftPressed2P = true;
+	                        ((MainScreen) ConfigControllers.this.screen).activateLeftRunningBoss();
+	                    }
+	                    else if (value.equals(PovDirection.east)){
+	                        rightPressed2P = true;
+	                        leftPressed2P = false;
+	                        ((MainScreen) ConfigControllers.this.screen).activateRightRunningBoss();
+	                    }
+	                    else if (value.equals(PovDirection.center)){
+	                        rightPressed2P = false;
+	                        leftPressed2P = false;
+	                    }
+                	}
+                	
+                	
                     // else System.out.println("else!!");
                     return false;
                 }

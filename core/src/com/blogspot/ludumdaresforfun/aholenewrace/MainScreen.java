@@ -77,6 +77,7 @@ public class MainScreen extends BaseScreen {
 
 	float UpOffset = 0;
 	private OrthographicCamera camera2;
+	private int numberOfPlayers = 1;
 
 	@Override
 	public void backButtonPressed() {
@@ -104,15 +105,17 @@ public class MainScreen extends BaseScreen {
 
 		// Assets.dispose(); //TODO: for debugging
 
-		this.camera = new OrthographicCamera();
-		this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT / 2);
-		this.camera.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT - this.SCREEN_HEIGHT / 2;
-		this.camera.update();
+		numberOfPlayers = 2;
 
-		this.camera2 = new OrthographicCamera();
-		this.camera2.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT / 2);
-		this.camera2.position.y = this.POS_UPPER_WORLD - this.MAP_HEIGHT - this.SCREEN_HEIGHT / 2;
-		this.camera2.update();
+		this.camera = new OrthographicCamera();
+		if (this.numberOfPlayers  == 1)
+			this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+		else{
+			this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT / 2 - TILED_SIZE / 2);
+
+			this.camera2 = new OrthographicCamera();
+			this.camera2.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT / 2 - TILED_SIZE / 2);
+		}
 
 		this.player = new Player(Assets.playerStand);
 		this.boss = new Boss(Assets.bossStanding);
@@ -159,17 +162,23 @@ public class MainScreen extends BaseScreen {
 		//updateWorld
 		updateWorld(delta);
 
-		 //Down Half
-		Gdx.gl.glViewport( 0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight() / 2 );
+		if (this.numberOfPlayers == 1){
+			updateCameraForOnePlayer();
+			drawFirstWorld(delta);
+		}
+		else{
+			//Down Half
+			Gdx.gl.glViewport( 0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight() / 2 - TILED_SIZE / 2 );
 
-		updateCameraPlayer();
-		drawFirstWorld(delta);
+			updateCameraForTwoPlayersTemplar();
+			drawFirstWorld(delta);
 
-	    //Upper Half
-	    Gdx.gl.glViewport( 0,Gdx.graphics.getHeight()/2,Gdx.graphics.getWidth(),Gdx.graphics.getHeight()/2 );
+			//Upper Half
+			Gdx.gl.glViewport( 0,Gdx.graphics.getHeight()/2 + TILED_SIZE,Gdx.graphics.getWidth(),Gdx.graphics.getHeight()/2 - TILED_SIZE / 2);
 
-		updateCameraBoss();
-		drawSecondWorld(delta);
+			updateCameraForTwoPlayersBoss();
+			drawSecondWorld(delta);
+		}
 
 	}
 
@@ -209,34 +218,6 @@ public class MainScreen extends BaseScreen {
 		 */
 	}
 
-	private void updateCameraBoss() {
-		if (!this.bossActive) {
-			// update x
-			if ((this.boss.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
-				this.camera2.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
-			else if ((this.boss.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
-				this.camera2.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
-			else
-				this.camera2.position.x = this.boss.getX();
-
-			// update y
-			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera2.position.y = this.boss.getY();
-			else if (this.boss.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-				this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else
-				this.camera2.position.y = this.boss.getY();
-
-			this.camera2.update();
-		}
-	}
-
 	private void drawFirstWorld(float delta) {
 		this.renderer.setView(this.camera);
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
@@ -257,7 +238,61 @@ public class MainScreen extends BaseScreen {
 		this.renderBoss(delta);
 	}
 
-	private void updateCameraPlayer() {
+	private void updateCameraForTwoPlayersTemplar() {
+		if (!this.bossActive) {
+			// update x
+			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
+				this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
+			else if ((this.player.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
+				this.camera.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
+			else
+				this.camera.position.x = this.player.getX();
+
+			// update y
+			if (this.player.getY() >= this.POS_LOWER_WORLD + this.SCREEN_HEIGHT / 4 + TILED_SIZE)
+				this.camera.position.y = this.player.getY();
+			else if (this.player.getY() > this.POS_LOWER_WORLD)
+				this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE - this.SCREEN_HEIGHT / 4;
+			else if (this.player.getY() <= - this.POS_LOWER_WORLD + this.SCREEN_HEIGHT / 4 + TILED_SIZE)
+				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
+						- TILED_SIZE + this.SCREEN_HEIGHT / 4;
+			else
+				this.camera.position.y = this.player.getY();
+
+			this.camera.update();
+		}
+	}
+
+	private void updateCameraForTwoPlayersBoss() {
+		if (!this.bossActive) {
+			// update x
+			if ((this.boss.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
+				this.camera2.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
+			else if ((this.boss.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
+				this.camera2.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
+			else
+				this.camera2.position.x = this.boss.getX();
+
+			// update y
+			if ((this.boss.getY() - (this.SCREEN_HEIGHT / 4)) >= this.POS_LOWER_WORLD
+					+ TILED_SIZE / 2)
+				this.camera2.position.y = this.boss.getY();
+			else if (this.boss.getY() + TILED_SIZE / 2 > this.POS_LOWER_WORLD)
+				this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE - this.SCREEN_HEIGHT / 4;
+			else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+					+ TILED_SIZE)
+				this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
+						+ TILED_SIZE + this.SCREEN_HEIGHT / 4;
+			else
+				this.camera2.position.y = this.boss.getY();
+
+			this.camera2.update();
+		}
+	}
+
+	private void updateCameraForOnePlayer() {
 		if (!this.bossActive) {
 			// update x
 			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
@@ -270,16 +305,16 @@ public class MainScreen extends BaseScreen {
 			// update y
 			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
 					+ TILED_SIZE)
-				this.camera.position.y = this.player.getY() - this.SCREEN_HEIGHT / 2;
+				this.camera.position.y = this.player.getY();
 			else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
 				this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE - this.SCREEN_HEIGHT / 2;
+						+ TILED_SIZE;
 			else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
 					+ TILED_SIZE)
 				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE - this.SCREEN_HEIGHT / 2;
+						+ TILED_SIZE;
 			else
-				this.camera.position.y = this.player.getY() - this.SCREEN_HEIGHT / 2;
+				this.camera.position.y = this.player.getY();
 
 			this.camera.update();
 		}

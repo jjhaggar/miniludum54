@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.sun.jmx.snmp.Timestamp;
 
 public class MainScreen extends BaseScreen {
 
@@ -37,6 +38,8 @@ public class MainScreen extends BaseScreen {
 	private boolean normalGravityBoss = true;
 	private boolean bossActive = false;
 	private float healingTimer = 50f;
+
+	Timestamp time = new Timestamp();
 
 	// private Array<Enemy> enemies = new Array<Enemy>();
 	private Array<Rectangle> tiles = new Array<Rectangle>();
@@ -261,7 +264,7 @@ public class MainScreen extends BaseScreen {
 		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
 		 * this.player.dead && !callGameOver){ callGameOver = true;
 		 * Timer.schedule(new Task() {
-		 * 
+		 *
 		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
 		 * this.player.velocity.x = 0; } if (collisionSpike) {
 		 * this.player.beingHit(); }
@@ -313,7 +316,7 @@ public class MainScreen extends BaseScreen {
 		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
 		 * this.player.dead && !callGameOver){ callGameOver = true;
 		 * Timer.schedule(new Task() {
-		 * 
+		 *
 		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
 		 * this.player.velocity.x = 0; } if (collisionSpike) {
 		 * this.player.beingHit(); }
@@ -340,11 +343,6 @@ public class MainScreen extends BaseScreen {
 				// this.player.velocity.y = this.player.JUMP_VELOCITY / 1.3f;
 				// //3 tiles in both
 			}
-		}
-
-		// clamp the velocity to the maximum, x-axis only
-		if (Math.abs(this.player.velocity.x) > this.player.MAX_VELOCITY) {
-			this.player.velocity.x = Math.signum(this.player.velocity.x) * this.player.MAX_VELOCITY;
 		}
 
 		// clamp the velocity to 0 if it's < 1, and set the state to standign
@@ -397,7 +395,7 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void checkCollisionWalls(float deltaTime) {
-		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido 
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
 
@@ -451,7 +449,7 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void checkCollisionWallsBoss(float deltaTime) {
-		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido 
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
 
@@ -780,6 +778,9 @@ public class MainScreen extends BaseScreen {
 		case BeingHit:
 			frame = (AtlasRegion) Assets.playerBeingHit.getKeyFrame(this.player.stateTime);
 			break;
+		case Running:
+			frame = (AtlasRegion) Assets.playerRun.getKeyFrame(this.player.stateTime);
+			break;
 		}
 		if (this.player.invincible && this.toggle) {
 			frame = (AtlasRegion) Assets.playerEmpty.getKeyFrame(this.player.stateTime);
@@ -928,14 +929,27 @@ public class MainScreen extends BaseScreen {
 			}
 
 			if (Gdx.input.isKeyPressed(Keys.LEFT) || this.configControllers.leftPressed) {
-				this.player.velocity.x = -this.player.MAX_VELOCITY;
-				if (this.player.grounded
-						&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
-						&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
-					this.player.state = Player.State.Walking;
-					// this.player.stateTime = 0;
+				if ((System.currentTimeMillis() - this.player.lastTimeLeftPlayer) > 2000L){
+					this.player.velocity.x = -this.player.MAX_VELOCITY;
+					if (this.player.grounded
+							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+						this.player.state = Player.State.Walking;
+						// this.player.stateTime = 0;
+					}
+					this.player.facesRight = false;
 				}
-				this.player.facesRight = false;
+				else {
+					this.player.velocity.x = -this.player.MAX_VELOCITY * 1.5f;
+					if (this.player.grounded
+							&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
+							&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
+						this.player.state = Player.State.Running;
+						// this.player.stateTime = 0;
+					}
+					this.player.facesRight = false;
+				}
+				this.player.lastTimeLeftPlayer = System.currentTimeMillis();
 			}
 
 			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed) {
@@ -965,8 +979,8 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 * 
-		 * 
+		 *
+		 *
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
@@ -1019,8 +1033,8 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 * 
-		 * 
+		 *
+		 *
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */

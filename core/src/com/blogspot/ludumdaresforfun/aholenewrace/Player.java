@@ -14,7 +14,7 @@ public class Player extends Image {
     final float JUMP_VELOCITY = 320f; // 300f; // 210f;
     final int MAX_LIFES = 5;
     enum State {
-        Standing, Walking, Jumping, StandingShooting, Attacking, Intro, BeingHit, Die
+        Standing, Walking, Jumping, StandingShooting, Attacking, Intro, BeingHit, Die, Running
     }
     Vector2 desiredPosition = new Vector2();
     final Vector2 velocity = new Vector2();
@@ -38,6 +38,9 @@ public class Player extends Image {
     public float rightOffset = 0;
     public AtlasRegion actualFrame;
     float superWidth, superHeight;
+
+	public long lastTimeRightPlayer = -1;
+	public long lastTimeLeftPlayer = -1;
 
     public Player(Animation animation) {
         super(animation.getKeyFrame(0));

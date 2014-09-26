@@ -89,7 +89,7 @@ public class MainScreen extends BaseScreen {
 	public MainScreen() {
 		this.shapeRenderer = new ShapeRenderer();
 
-		this.map = new TmxMapLoader().load("tilemap.tmx");
+		this.map = new TmxMapLoader().load("tilemap_01.tmx");
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
 		this.TILED_SIZE = (Integer) this.map.getProperties().get("tileheight");
@@ -397,7 +397,7 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void checkCollisionWalls(float deltaTime) {
-		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Collisions"));
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido 
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
 
@@ -451,7 +451,7 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void checkCollisionWallsBoss(float deltaTime) {
-		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Collisions"));
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido 
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
 

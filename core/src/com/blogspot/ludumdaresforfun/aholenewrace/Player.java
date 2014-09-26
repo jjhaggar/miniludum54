@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 
 public class Player extends Image {
     final float MAX_VELOCITY = 120f;
-    final float JUMP_VELOCITY = 300f; // 210f;
+    final float JUMP_VELOCITY = 320f; // 300f; // 210f;
     final int MAX_LIFES = 5;
     enum State {
         Standing, Walking, Jumping, StandingShooting, Attacking, Intro, BeingHit, Die

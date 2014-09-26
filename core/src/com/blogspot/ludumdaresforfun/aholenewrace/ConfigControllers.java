@@ -166,10 +166,12 @@ public class ConfigControllers {
                     if (value.equals("west") || value == PovDirection.west){
                         rightPressed = false;
                         leftPressed = true;
+                        ((MainScreen) ConfigControllers.this.screen).activateLeftRunning();
                     }
                     else if (value.equals(PovDirection.east)){
                         rightPressed = true;
                         leftPressed = false;
+                        ((MainScreen) ConfigControllers.this.screen).activateRightRunning();
                     }
                     else if (value.equals(PovDirection.center)){
                         rightPressed = false;

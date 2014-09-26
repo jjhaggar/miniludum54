@@ -1001,7 +1001,7 @@ public class MainScreen extends BaseScreen {
 		this.player.facesRight = false;
 	}
 
-	private void activateRightRunning() {
+	public void activateRightRunning() {
 		if ((System.currentTimeMillis() - this.player.lastTimeRightPlayer) < 200L)
 			this.player.run = true;
 		else
@@ -1010,7 +1010,7 @@ public class MainScreen extends BaseScreen {
 		this.player.lastTimeRightPlayer = System.currentTimeMillis();
 	}
 
-	private void activateLeftRunning() {
+	public void activateLeftRunning() {
 		if ((System.currentTimeMillis() - this.player.lastTimeLeftPlayer) < 200L)
 			this.player.run = true;
 		else
@@ -1036,7 +1036,6 @@ public class MainScreen extends BaseScreen {
 		if (this.boss.noControl == false) {
 			if (Gdx.input.isKeyJustPressed(Keys.G)) {
 				this.jumpBoss();
-				// this.player.stateTime = 0;
 			}
 
 			if (Gdx.input.isKeyPressed(Keys.J)) {
@@ -1045,7 +1044,6 @@ public class MainScreen extends BaseScreen {
 						&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
 						&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
 					this.boss.state = Boss.State.Walking;
-					// this.player.stateTime = 0;
 				}
 				this.boss.facesRight = false;
 			}
@@ -1056,7 +1054,6 @@ public class MainScreen extends BaseScreen {
 						&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
 						&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
 					this.boss.state = Boss.State.Walking;
-					// this.player.stateTime = 0;
 				}
 				this.boss.facesRight = true;
 			}
@@ -1064,10 +1061,6 @@ public class MainScreen extends BaseScreen {
 			if (Gdx.input.isKeyJustPressed(Keys.H)) {
 				// this.shootBoss();
 			}
-			// if (Gdx.input.isKeyJustPressed(Keys.Y)){
-			// LD.getInstance().ENDING_SCREEN = new EndingScreen();
-			// LD.getInstance().setScreen(LD.getInstance().ENDING_SCREEN);
-			// }
 		}
 
 		if (Assets.bossAttack.isAnimationFinished(this.boss.stateTime))

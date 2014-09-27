@@ -14,6 +14,12 @@ public class Enemy extends Image{
     enum State {
         Walking, Running, Hurting, BeingInvoked
     }
+    enum Type {
+        Bat, Spider
+    }
+
+    public Type enemyType;
+
     Vector2 desiredPosition = new Vector2();
     final Vector2 velocity = new Vector2();
     State state = State.Walking;

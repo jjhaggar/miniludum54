@@ -1,5 +1,8 @@
 package com.blogspot.ludumdaresforfun.aholenewrace;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
@@ -44,7 +47,8 @@ public class MainScreen extends BaseScreen {
 	private Array<Rectangle> tiles = new Array<Rectangle>();
 	private Array<Rectangle> spikes = new Array<Rectangle>();
 	public Array<Shot> shotArray = new Array<Shot>();
-	private Array<Vector2> spawns = new Array<Vector2>();
+	Map<Vector2, Enemy.Type> spawns = new HashMap<Vector2, Enemy.Type>();
+	private Array<Vector2> spawnsPositions = new Array<Vector2>();
 	private Array<Vector2> lifes = new Array<Vector2>();
 	private boolean callGameOver = false;
 	// private Boss boss;
@@ -136,8 +140,12 @@ public class MainScreen extends BaseScreen {
 					String type = (String) cell.getTile().getProperties().get("type");
 					if (type != null) {
 						if (type.equals("spider")) {
-							this.spawns.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
-						} else if (type.equals("pollo")) {
+							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Enemy.Type.Spider);
+							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
+						}else if (type.equals("bat")) {
+							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Enemy.Type.Bat);
+							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
+						}else if (type.equals("pollo")) {
 							this.lifes.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
 						} else if (type.equals("player")) {
 							this.player.setPosition(x * this.TILED_SIZE, y * this.TILED_SIZE);
@@ -194,20 +202,47 @@ public class MainScreen extends BaseScreen {
 		// this.collisionLifes(delta);
 		this.updateEnemies(delta);
 
-		/*
-		 * for (Shot shot : this.shotArray){ if (shot != null)
-		 * this.renderShot(shot, delta); }
-		 */
-		/*
-		 * this.renderHUD(delta);
-		 */
+		  //this.renderHUD(delta);
+
+	}
+
+	private void renderShot(Shot shot, float deltaTime){
+		AtlasRegion frame = null;
+		if (shot.state == Shot.State.Normal)
+			frame = (AtlasRegion) Assets.playerShot.getKeyFrame(shot.stateTime);
+		else if (shot.state == Shot.State.Exploding)
+			frame = (AtlasRegion) Assets.playerShotHit.getKeyFrame(shot.stateTime);
+
+		if (!this.normalGravity) {
+		    if (!frame.isFlipY())
+                frame.flip(false, true);
+		}
+		else {
+		    if (frame.isFlipY())
+                frame.flip(false, true);
+		}
+
+		Batch batch = this.renderer.getSpriteBatch();
+		batch.begin();
+		if (shot.shotGoesRight) {
+			if (frame.isFlipX())
+				frame.flip(true, false);
+			batch.draw(frame, shot.getX(), shot.getY());
+		} else {
+			if (!frame.isFlipX())
+				frame.flip(true, false);
+			batch.draw(frame, shot.getX(), shot.getY());
+		}
+
+		batch.end();
 	}
 
 	private void spawnEnemies() {
-		if (this.spawns.size > 0) {
-			Vector2 auxNextSpawn = this.spawns.first();
+		if (this.spawns.size() > 0) {
+			Vector2 auxNextSpawn = this.spawnsPositions.first();
 			if ((this.camera.position.x + this.DISTANCESPAWN) >= auxNextSpawn.x) {
 				Enemy auxShadow = new Enemy(Assets.enemyWalk);
+				auxShadow.enemyType = spawns.get(auxNextSpawn);
 				if (auxNextSpawn.y < 240) {
 					auxNextSpawn.y -= 5;
 				}// Offset fixed collision
@@ -217,7 +252,8 @@ public class MainScreen extends BaseScreen {
 				auxShadow.stateTime = 0;
 				auxShadow.beingInvoked = true;
 				this.enemies.add(auxShadow);
-				this.spawns.removeIndex(0);
+				this.spawnsPositions.removeIndex(0);
+				this.spawns.remove(auxNextSpawn);
 				}
 			}
 	}
@@ -230,6 +266,14 @@ public class MainScreen extends BaseScreen {
 		this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
+		renderShots(delta);
+	}
+
+	private void renderShots(float delta) {
+		for (Shot shot : this.shotArray){
+			if (shot != null)
+				this.renderShot(shot, delta);
+			}
 	}
 
 	private void drawSecondWorld(float delta) {
@@ -240,6 +284,7 @@ public class MainScreen extends BaseScreen {
 		this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
+		renderShots(delta);
 	}
 
 	private void updateCameraForTwoPlayersTemplar() {
@@ -348,10 +393,7 @@ public class MainScreen extends BaseScreen {
 
 		this.movingShootingJumping(deltaTime);
 		this.gravityAndClamping(deltaTime);
-
 		this.checkCollisionWalls(deltaTime);
-
-		//System.out.println(" " + this.player.velocity.x);
 
 		this.player.velocity.scl(deltaTime);
 
@@ -475,6 +517,164 @@ public class MainScreen extends BaseScreen {
 				this.player.state = Player.State.Standing;
 		}
 		// gravityAndClampingBoss(deltaTime);
+	}
+
+    public boolean updateShot(Shot shot, float deltaTime){
+    	boolean killMe = false;
+        shot.desiredPosition.y = shot.getY();
+
+        shot.stateTime += deltaTime;
+
+		if (this.normalGravity && !shot.state.equals(Shot.State.Exploding))
+			shot.velocity.add(0, this.GRAVITY * deltaTime);
+		else
+			shot.velocity.add(0, -this.GRAVITY * deltaTime);
+
+		shot.velocity.scl(deltaTime);
+
+		//collision (destroy if necessary)
+		boolean collided = this.collisionShotEnemy(shot);
+
+		if (!collided)
+			collided = this.collisionShot(shot);
+
+		// unscale the velocity by the inverse delta time and set
+		// the latest position
+		if (shot != null){
+			shot.desiredPosition.add(shot.velocity);
+			shot.velocity.scl(1 / deltaTime);
+
+			shot.setPosition(shot.desiredPosition.x, shot.desiredPosition.y);
+			if (shot.normalGravity && (shot.getY() < this.POS_LOWER_WORLD))
+				collided = true;	//dont traspass to the other world
+			else if (!shot.normalGravity && (shot.getY() >= this.POS_LOWER_WORLD))
+				collided = true;
+			else if ((shot.getY() > (this.MAP_HEIGHT * this.TILED_SIZE)) || (shot.getY() < 0))
+				collided = true;
+		}
+
+		if (collided && !shot.state.equals(Shot.State.Exploding)){
+            Assets.playSound("holyWaterBroken");
+            shot.state = Shot.State.Exploding;
+            shot.stateTime = 0;
+            shot.velocity.x = 0f;
+            shot.velocity.y = 0f;
+		}
+
+		if (Assets.playerShotHit.isAnimationFinished(shot.stateTime) && shot.state.equals(Shot.State.Exploding))
+			killMe = true;
+
+		return killMe;
+    }
+
+
+	private boolean collisionShotEnemy(Shot shot) {
+		boolean collided = false;
+
+		this.playerRect = this.rectPool.obtain();
+
+		shot.desiredPosition.y = Math.round(shot.getY());
+		shot.desiredPosition.x = Math.round(shot.getX());
+
+		this.playerRect = shot.getRect();
+
+		for (Enemy enemy : this.enemies){
+			if (this.playerRect.overlaps(enemy.getRect())) {
+				if (!enemy.dying){
+					enemy.die();
+					collided = true;
+					break;
+				}
+			}
+		}
+
+		if ((this.boss != null) && this.playerRect.overlaps(this.boss.getRect())) {
+
+			if (!this.boss.invincible)
+				this.boss.beingHit();
+
+		    if (!this.boss.setToDie){
+		    	this.boss.invincible = true;		//activates also the flickering
+		    }
+		    else if (this.boss.state != Boss.State.Die){
+		    	this.boss.state = Boss.State.Die;
+		    }
+		    collided = true;
+		}
+
+
+		return collided;
+	}
+
+
+	private boolean collisionShot(Shot shot) {
+		this.playerRect = this.rectPool.obtain();
+
+		shot.desiredPosition.y = Math.round(shot.getY());
+		shot.desiredPosition.x = Math.round(shot.getX());
+
+		this.playerRect = shot.getRect();
+
+		int startX, startY, endX, endY;
+
+		if (shot.velocity.x > 0) {	//this.raya.velocity.x > 0
+			startX = endX = (int)((shot.desiredPosition.x + shot.velocity.x + shot.actualFrame.packedWidth) / 16);
+		}
+		else {
+			startX = endX = (int)((shot.desiredPosition.x + shot.velocity.x) / 16);
+		}
+
+		startY = (int)((shot.desiredPosition.y) / 16);
+		endY = (int)((shot.desiredPosition.y + shot.actualFrame.packedHeight) / 16);
+
+		this.getTiles(startX, startY, endX, endY, this.tiles);
+
+		this.playerRect.x += shot.velocity.x;
+
+		for (Rectangle tile : this.tiles){
+			if (this.playerRect.overlaps(tile)) {
+				shot = null;
+				return true;
+				}
+		}
+
+		this.playerRect.x = shot.desiredPosition.x;
+
+		if (this.normalGravity){
+			if (shot.velocity.y > 0) {
+				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y + shot.actualFrame.packedHeight) / 16f);
+			}
+			else {
+				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y) / 16f);
+			}
+		}
+		else{
+			if (shot.velocity.y < 0) {
+
+				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y) / 16f);
+			}
+			else {
+				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y + shot.actualFrame.packedHeight ) / 16f);
+			}
+		}
+
+		startX = (int)((shot.desiredPosition.x + shot.offSetX) / 16);					//16 tile size
+		endX = (int)((shot.desiredPosition.x + shot.actualFrame.packedWidth) / 16);
+
+
+		// System.out.println(startX + " " + startY + " " + endX + " " + endY);
+
+		this.getTiles(startX, startY, endX, endY, this.tiles);
+
+		shot.desiredPosition.y += (int)(shot.velocity.y);
+
+		for (Rectangle tile : this.tiles) {
+			if (this.playerRect.overlaps(tile)) {
+				shot = null;
+				return true;
+				}
+			}
+		return false;
 	}
 
 	private void updateEnemies(float deltaTime) {
@@ -1175,20 +1375,38 @@ public class MainScreen extends BaseScreen {
 	private void renderEnemies(float deltaTime) {
 	    for (Enemy enemy : this.enemies) {
 	    		enemy.actualFrame = null;
-            switch (enemy.state) {
-            case Walking:
-            	enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
-                break;
-            case Running:
-            	enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_attack.getKeyFrame(enemy.stateTime);
-                break;
-            case Hurting:
-            	enemy.actualFrame = (AtlasRegion)Assets.enemyHurt.getKeyFrame(enemy.stateTime);
-                break;
-            case BeingInvoked:
-            	enemy.actualFrame = (AtlasRegion)Assets.enemyAppearing.getKeyFrame(enemy.stateTime);
-                break;
-            }
+	    		if (enemy.enemyType == Enemy.Type.Spider){
+	    			switch (enemy.state) {
+	    			case Walking:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			case Running:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_attack.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			case Hurting:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			case BeingInvoked:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			}
+	    		}
+	    		else if (enemy.enemyType == Enemy.Type.Bat){
+	    			switch (enemy.state) {
+	    			case Walking:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			case Running:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			case Hurting:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			case BeingInvoked:
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
+	    				break;
+	    			}
+	    		}
 
             Batch batch = this.renderer.getSpriteBatch();
             batch.begin();

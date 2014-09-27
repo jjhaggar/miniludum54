@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.Array;
 
 public class Assets {
 	static AssetManager assetManager;
+	static Animation enemy_bat_fly, enemy_spider_attack, enemy_spider_walk;
+	static Animation race_start, race_finish, race_finish_left, race_finish_right;
     static Animation playerAttack, playerEmpty, playerIntro, playerStand, playerWalk, playerRun, playerJump, playerBeingHit, playerDie;
     static Animation playerShot, playerShotHit;
     static Animation enemyWalk, enemyRun, enemyHurt, enemyAppearing;
@@ -67,6 +69,24 @@ public class Assets {
 		SequenceEnding = new Animation(0.55f, regions);
 		SequenceEnding.setPlayMode(PlayMode.NORMAL);
 
+		
+        // Race Start & Race End
+        regions = atlas.findRegions("race_start");
+        race_start = new Animation(0.55f, regions);
+        race_start.setPlayMode(PlayMode.NORMAL);
+
+        regions = atlas.findRegions("race_finish"); // Esta no es la que deberíamos usar, pero al ser de una pieza es más sencilla, la subo por si acaso 
+        race_finish = new Animation(0.55f, regions);
+        race_finish.setPlayMode(PlayMode.NORMAL);
+
+        regions = atlas.findRegions("race_finish_left");
+        race_finish_left = new Animation(0.55f, regions);
+        race_finish_left.setPlayMode(PlayMode.NORMAL);
+
+        regions = atlas.findRegions("race_finish_right");
+        race_finish_right = new Animation(0.55f, regions);
+        race_finish_right.setPlayMode(PlayMode.NORMAL);
+
 
 		// Player
 		regions = atlas.findRegions("char_attack");
@@ -106,7 +126,7 @@ public class Assets {
 		regions = atlas.findRegions("char_attack_holy_water_hit");
 		playerShotHit = new Animation(0.15f, regions);
 
-		// Enemy
+		// Enemies
 		regions = atlas.findRegions("enemy_walking");//"enemy_walk"); // change
 		enemyWalk = new Animation(0.15f, regions);
 		enemyWalk.setPlayMode(Animation.PlayMode.LOOP);
@@ -119,6 +139,18 @@ public class Assets {
 
 		regions = atlas.findRegions("enemy_appearing");//"enemy_hurt"); // change
 		enemyAppearing = new Animation(0.20f, regions);
+
+		regions = atlas.findRegions("enemy_bat_fly");
+		enemy_bat_fly = new Animation(0.15f, regions);
+		enemy_bat_fly.setPlayMode(Animation.PlayMode.LOOP);
+
+		regions = atlas.findRegions("enemy_spider_walk");
+		enemy_spider_walk = new Animation(0.15f, regions);
+		enemy_spider_walk.setPlayMode(Animation.PlayMode.LOOP);
+
+		regions = atlas.findRegions("enemy_spider_attack");
+		enemy_spider_attack = new Animation(0.20f, regions);
+
 
 		// Boss
 		//regions = atlas.findRegions("boss_gethit");

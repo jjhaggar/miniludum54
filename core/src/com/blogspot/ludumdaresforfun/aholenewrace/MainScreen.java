@@ -36,12 +36,11 @@ public class MainScreen extends BaseScreen {
 	private TiledMap map;
 	private boolean normalGravity = true;
 	private boolean normalGravityBoss = true;
-	private boolean bossActive = false;
 	private float healingTimer = 50f;
 
 	Timestamp time = new Timestamp();
 
-	// private Array<Enemy> enemies = new Array<Enemy>();
+	private Array<Enemy> enemies = new Array<Enemy>();
 	private Array<Rectangle> tiles = new Array<Rectangle>();
 	private Array<Rectangle> spikes = new Array<Rectangle>();
 	public Array<Shot> shotArray = new Array<Shot>();
@@ -136,7 +135,7 @@ public class MainScreen extends BaseScreen {
 				if (cell != null) {
 					String type = (String) cell.getTile().getProperties().get("type");
 					if (type != null) {
-						if (type.equals("enemy")) {
+						if (type.equals("spider")) {
 							this.spawns.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
 						} else if (type.equals("pollo")) {
 							this.lifes.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
@@ -190,32 +189,37 @@ public class MainScreen extends BaseScreen {
 		this.player.act(delta);
 		this.boss.act(delta);
 
-		// this.activateBoss();
-
-		/*
-		 * if (this.spawns.size > 0) { Vector2 auxNextSpawn =
-		 * this.spawns.first(); if ((this.camera.position.x +
-		 * this.DISTANCESPAWN) >= auxNextSpawn.x) { Enemy auxShadow = new
-		 * Enemy(Assets.enemyWalk); if (auxNextSpawn.y < 240) { auxNextSpawn.y
-		 * -= 5; // Offset fixed collision }
-		 * auxShadow.setPosition(auxNextSpawn.x, auxNextSpawn.y);
-		 * auxShadow.state = Enemy.State.BeingInvoked; auxShadow.stateTime = 0;
-		 * auxShadow.beingInvoked = true; this.enemies.add(auxShadow);
-		 * this.spawns.removeIndex(0); } }
-		 */
+		spawnEnemies();
 
 		// this.collisionLifes(delta);
-		// this.updateEnemies(delta);
+		this.updateEnemies(delta);
 
 		/*
 		 * for (Shot shot : this.shotArray){ if (shot != null)
 		 * this.renderShot(shot, delta); }
 		 */
 		/*
-		 * if (this.bossActive && (this.boss != null)) { this.updateBoss(delta);
-		 * if (this.boss != null) this.renderBoss(delta); }
 		 * this.renderHUD(delta);
 		 */
+	}
+
+	private void spawnEnemies() {
+		if (this.spawns.size > 0) {
+			Vector2 auxNextSpawn = this.spawns.first();
+			if ((this.camera.position.x + this.DISTANCESPAWN) >= auxNextSpawn.x) {
+				Enemy auxShadow = new Enemy(Assets.enemyWalk);
+				if (auxNextSpawn.y < 240) {
+					auxNextSpawn.y -= 5;
+				}// Offset fixed collision
+
+				auxShadow.setPosition(auxNextSpawn.x, auxNextSpawn.y);
+				auxShadow.state = Enemy.State.BeingInvoked;
+				auxShadow.stateTime = 0;
+				auxShadow.beingInvoked = true;
+				this.enemies.add(auxShadow);
+				this.spawns.removeIndex(0);
+				}
+			}
 	}
 
 	private void drawFirstWorld(float delta) {
@@ -223,7 +227,7 @@ public class MainScreen extends BaseScreen {
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
 
-		// this.renderEnemies(delta);
+		this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
 	}
@@ -233,69 +237,81 @@ public class MainScreen extends BaseScreen {
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
 
-		// this.renderEnemies(delta);
+		this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
 	}
 
 	private void updateCameraForTwoPlayersTemplar() {
-		if (!this.bossActive) {
-			// update x
-			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
-				this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
-			else if ((this.player.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
-				this.camera.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
-			else
-				this.camera.position.x = this.player.getX() + (this.SCREEN_WIDTH / 8);
 
-			// update y
-			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera.position.y = this.player.getY();
-			else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-				this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else
-				this.camera.position.y = this.player.getY();
+		// update x
+//		if (camera.position.x - this.SCREEN_WIDTH / 8 > this.player.getX() ){
+//				camera.position.x = player.getX() - SCREEN_WIDTH / 8;
+//		}
+//		else if (camera.position.x + this.SCREEN_WIDTH / 8 < this.player.getX()){
+//				camera.position.x = player.getX() + SCREEN_WIDTH / 8;
+//		}
+//		else{
+		if (player.facesRight && camera.position.x + 10 < player.getX() + SCREEN_WIDTH / 8)
+			camera.position.x += 5;
+		else if (player.facesRight && camera.position.x < player.getX() + SCREEN_WIDTH / 8)
+			camera.position.x = player.getX() + SCREEN_WIDTH / 8;
+		else if (!player.facesRight && camera.position.x - 10 > player.getX() - SCREEN_WIDTH / 8)
+			camera.position.x -= 5;
+		else if (!player.facesRight && camera.position.x > player.getX() - SCREEN_WIDTH / 8)
+			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
+		//}
 
-			this.camera.update();
-		}
+
+		// update y
+		if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+				+ TILED_SIZE)
+			this.camera.position.y = this.player.getY();
+		else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
+			this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
+			+ TILED_SIZE;
+		else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+				+ TILED_SIZE)
+			this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
+			+ TILED_SIZE;
+		else
+			this.camera.position.y = this.player.getY();
+
+		this.camera.update();
+
 	}
 
 	private void updateCameraForTwoPlayersBoss() {
-		if (!this.bossActive) {
-			// update x
-			if ((this.boss.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
-				this.camera2.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
-			else if ((this.boss.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
-				this.camera2.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
-			else
-				this.camera2.position.x = this.boss.getX() + (this.SCREEN_WIDTH / 8);
 
-			// update y
-			if ((this.boss.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera2.position.y = this.boss.getY();
-			else if (this.boss.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-				this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else
-				this.camera2.position.y = this.boss.getY();
+		// update x
+		if (boss.facesRight && camera2.position.x + 10 < boss.getX() + SCREEN_WIDTH / 8)
+			camera2.position.x += 5;
+		else if (boss.facesRight && camera2.position.x < boss.getX() + SCREEN_WIDTH / 8)
+			camera2.position.x = boss.getX() + SCREEN_WIDTH / 8;
+		else if (!boss.facesRight && camera2.position.x - 10 > boss.getX() - SCREEN_WIDTH / 8)
+			camera2.position.x -= 5;
+		else if (!boss.facesRight && camera2.position.x > boss.getX() - SCREEN_WIDTH / 8)
+			camera2.position.x = boss.getX() - SCREEN_WIDTH / 8;
 
-			this.camera2.update();
-		}
+		// update y
+		if ((this.boss.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+				+ TILED_SIZE)
+			this.camera2.position.y = this.boss.getY();
+		else if (this.boss.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
+			this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
+			+ TILED_SIZE;
+		else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+				+ TILED_SIZE)
+			this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
+			+ TILED_SIZE;
+		else
+			this.camera2.position.y = this.boss.getY();
+
+		this.camera2.update();
+
 	}
 
 	private void updateCameraForOnePlayer() {
-		if (!this.bossActive) {
 			// update x
 			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
 				this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
@@ -319,7 +335,6 @@ public class MainScreen extends BaseScreen {
 				this.camera.position.y = this.player.getY();
 
 			this.camera.update();
-		}
 	}
 
 	private void updatePlayer(float deltaTime) {
@@ -462,6 +477,143 @@ public class MainScreen extends BaseScreen {
 		// gravityAndClampingBoss(deltaTime);
 	}
 
+	private void updateEnemies(float deltaTime) {
+	    for (Enemy enemy : this.enemies) {
+
+	    	this.isEnemyInScreen(enemy);
+	    	this.isEnemyFinishedInvoking(enemy);
+
+	        // Collision between player vs enemy
+	    	if (!enemy.dying){
+	    		if (this.player.getX() > enemy.getX()){
+	    			if (this.player.getRect().overlaps(enemy.getRect())) {
+	    				this.player.beingHit();
+	    			}
+	    		}
+	    		else{
+	    			if (this.player.getRect().overlaps(enemy.getRect())) {
+	    				this.player.beingHit();
+	    			}
+	    		}
+	    	}
+
+	        enemy.stateTime += deltaTime;
+	        // Check if player is invincible and check distance to player for attack him.
+	        if (!enemy.running && !enemy.dying && !enemy.beingInvoked && enemy.canMove){
+	            // Attack
+	        	if (!this.player.invincible &&
+                        (Math.abs(enemy.getCenterX() - this.player.getCenterX()) <= enemy.ATTACK_DISTANCE) &&
+	        	        (Math.abs(((enemy.getCenterY() - this.player.getCenterY()))) <= this.player.getHeight())) {
+	        		if (enemy.getCenterX() < this.player.getCenterX()) {
+	        				enemy.dir = Enemy.Direction.Right;
+	        				enemy.run();
+	        				enemy.attackHereX = this.player.getX();
+	        				enemy.attackRight = true;
+	        		}
+	        		else {
+	        				enemy.dir = Enemy.Direction.Left;
+	        				enemy.run();
+	        				enemy.attackHereX = this.player.getX();
+	        				enemy.attackRight = false;
+	        		}
+	        	}
+	        	else if (enemy.dir == Enemy.Direction.Left) {
+	        		if (-enemy.RANGE >= enemy.diffInitialPos) {
+	        			enemy.dir = Enemy.Direction.Right;
+	        		}
+	        		enemy.walk();
+	        	}
+	        	else if (enemy.dir == Enemy.Direction.Right) {
+	        		if (enemy.diffInitialPos >= enemy.RANGE) {
+	        			enemy.dir = Enemy.Direction.Left;
+	        		}
+	        		enemy.walk();
+	        	}
+	        }
+	        else if ((enemy.getX() > enemy.attackHereX) && enemy.attackRight)
+	        	enemy.running = false;
+	        else if ((enemy.getX() < enemy.attackHereX) && !enemy.attackRight)
+	        	enemy.running = false;
+
+            enemy.velocity.scl(deltaTime);
+
+            // Enviroment collision
+            enemy.desiredPosition.y = Math.round(enemy.getY());
+            enemy.desiredPosition.x = Math.round(enemy.getX());
+            int startX, startY, endX, endY;
+            if (enemy.velocity.x > 0) {
+                startX = endX = (int)((enemy.desiredPosition.x + enemy.velocity.x + enemy.getWidth()) / this.TILED_SIZE);
+            }
+            else {
+                startX = endX = (int)((enemy.desiredPosition.x + enemy.velocity.x) / this.TILED_SIZE);
+            }
+            startY = (int) enemy.getY() / this.TILED_SIZE;
+            endY =  (int) (enemy.getY() + enemy.getHeight()) / this.TILED_SIZE;
+
+            this.getTiles(startX, startY, endX, endY, this.tiles);
+
+            enemy.getRect();
+            enemy.rect.x += enemy.velocity.x;
+
+            for (Rectangle tile : this.tiles) {
+                if (enemy.rect.overlaps(tile)) {
+                    enemy.velocity.x = 0;
+                    enemy.running = false;
+                    break;
+                }
+            }
+
+            enemy.rect.x = enemy.desiredPosition.x;
+
+            enemy.desiredPosition.add(enemy.velocity);
+            enemy.velocity.scl(1 / deltaTime);
+
+            enemy.setPosition(enemy.desiredPosition.x, enemy.desiredPosition.y);
+
+            if (Assets.playerDie.isAnimationFinished(enemy.stateTime) && enemy.dying){
+    			enemy.setToDie = true;
+    		}
+
+        }
+
+	    int i = 0;
+		boolean[] toBeDeleted = new boolean[this.enemies.size];
+		for (Enemy enemy : this.enemies){
+			if (enemy != null){
+				if(enemy.setToDie == true) //&& animation finished
+					toBeDeleted[i] = true;
+			}
+			i++;
+		}
+
+		for(int j = 0; j < toBeDeleted.length; j++){
+			if (toBeDeleted[j] && (this.enemies.size >= (j + 1)))
+				this.enemies.removeIndex(j);
+		}
+	}
+
+	private void isEnemyFinishedInvoking(Enemy enemy) {
+
+		if (Assets.enemyAppearing.isAnimationFinished(enemy.stateTime) && enemy.state.equals(Enemy.State.BeingInvoked)){
+			enemy.beingInvoked = false;
+		}
+
+	}
+
+	private void isEnemyInScreen(Enemy enemy) {
+	    if (enemy.canMove)
+	        return;
+	    Rectangle cameraRect = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+	    cameraRect.setCenter(this.camera.position.x, this.camera.position.y);
+	    if (enemy.rect.overlaps(cameraRect)) {
+		    if ((this.player.getX() - enemy.getX()) < 0)
+		        enemy.dir = Enemy.Direction.Left;
+		    else
+		        enemy.dir = Enemy.Direction.Right;
+			enemy.canMove = true;
+		}
+	}
+
 	private void gravityAndClampingBoss(float deltaTime) {
 		if (this.normalGravityBoss)
 			this.boss.velocity.add(0, this.GRAVITY * deltaTime);
@@ -555,20 +707,15 @@ public class MainScreen extends BaseScreen {
 
 		// stop him in X
 		if (boss.velocity.x > 0) {
-			int startX = (int) Math.ceil((boss.getX() + boss.getWidth()) / 16f); // lo
-																					// que
-																					// viene
-			int finalX = (int) Math.floor((boss.getX() + boss.getWidth() + boss.velocity.x
-					* deltaTime) / 16f); // donde esté
+			int startX = (int) Math.ceil((boss.getX() + boss.getWidth()) / 16f);
+			int finalX = (int) Math.floor((boss.getX() + boss.getWidth() + boss.velocity.x	* deltaTime) / 16f); // donde esté
 			int startY = (int) Math.floor(boss.getY() / 16f);
 			int finalY = (int) Math.floor((boss.getY() + boss.getHeight()) / 16f);
 
 			checkThisTilesBoss(layerTiles, startX, finalX, startY, finalY, deltaTime);
 
 		} else if (boss.velocity.x < 0) {
-			int startX = (int) Math.floor((boss.getX() + boss.velocity.x * deltaTime) / 16f); // lo
-																								// que
-																								// viene
+			int startX = (int) Math.floor((boss.getX() + boss.velocity.x * deltaTime) / 16f);
 			int finalX = (int) Math.floor((boss.getX()) / 16f); // donde esté
 			int startY = (int) Math.floor(boss.getY() / 16f);
 			int finalY = (int) Math.floor((boss.getY() + boss.getHeight()) / 16f);
@@ -620,37 +767,9 @@ public class MainScreen extends BaseScreen {
 					 * "playerRect y is " + playerRect.y + " and height is " +
 					 * playerRect.height);
 					 */if (playerRect.overlaps(rect)) {
-						System.out.println(x);
+						//System.out.println(x);
 						this.player.setX(x * this.TILED_SIZE - this.TILED_SIZE);
 						this.player.velocity.x = 0;
-						return;
-					}
-				}
-			}
-		}
-	}
-
-	private void checkThisTilesBoss(TiledMapTileLayer layerTiles, int startX, int finalX,
-			int startY, int finalY, float deltaTime) {
-		for (int x = startX; x <= finalX; x++) {
-			for (int y = startY; y <= finalY; y++) {
-				Cell cell = layerTiles.getCell(x, y);
-				if (cell != null) {
-					Rectangle rect = this.rectPool.obtain();
-					Rectangle bossRect = this.rectPool.obtain();
-					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
-							this.TILED_SIZE);
-					bossRect.set(this.boss.getRect2().x, this.boss.getRect2().y,
-							this.boss.getRect2().width + this.boss.velocity.x * deltaTime,
-							this.boss.getRect2().height);
-					/*
-					 * System.out.println("cell is not null and y from tile is "
-					 * + rect.y + " height is " + rect.height + "bossRect y is "
-					 * + bossRect.y + " and height is " + bossRect.height);
-					 */if (bossRect.overlaps(rect)) {
-						System.out.println(x);
-						this.boss.setX(x * this.TILED_SIZE - this.TILED_SIZE);
-						this.boss.velocity.x = 0;
 						return;
 					}
 				}
@@ -680,39 +799,9 @@ public class MainScreen extends BaseScreen {
 					 * "playerRect y is " + playerRect.y + " and height is " +
 					 * playerRect.height);
 					 */if (playerRect.overlaps(rect)) {
-						System.out.println(x);
+						//System.out.println(x);
 						this.player.setX(x * this.TILED_SIZE + this.TILED_SIZE);
 						this.player.velocity.x = 0;
-						return;
-					}
-				}
-			}
-		}
-	}
-
-	private void checkThisTiles2Boss(TiledMapTileLayer layerTiles, int startX, int finalX,
-			int startY, int finalY, float deltaTime) {
-		for (int x = startX; x <= finalX; x++) {
-			for (int y = startY; y <= finalY; y++) {
-				Cell cell = layerTiles.getCell(x, y);
-				if (cell != null) {
-					Rectangle rect = this.rectPool.obtain();
-					Rectangle bossRect = this.rectPool.obtain();
-					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
-							this.TILED_SIZE);
-					bossRect.set(
-							this.boss.getRect2().x + this.boss.velocity.x * deltaTime,
-							this.boss.getRect2().y,
-							this.boss.getRect2().width + Math.abs(this.boss.velocity.x * deltaTime),
-							this.boss.getRect2().height);
-					/*
-					 * System.out.println("cell is not null and y from tile is "
-					 * + rect.y + " height is " + rect.height + "bossRect y is "
-					 * + bossRect.y + " and height is " + bossRect.height);
-					 */if (bossRect.overlaps(rect)) {
-						System.out.println(x);
-						this.boss.setX(x * this.TILED_SIZE + this.TILED_SIZE);
-						this.boss.velocity.x = 0;
 						return;
 					}
 				}
@@ -748,36 +837,6 @@ public class MainScreen extends BaseScreen {
 			}
 		}
 		this.player.grounded = false; // Im falling
-	}
-
-	private void checkThisTiles3Boss(TiledMapTileLayer layerTiles, int startX, int finalX,
-			int startY, int finalY, float deltaTime) {
-		for (int x = startX; x <= finalX; x++) {
-			for (int y = startY; y <= finalY; y++) {
-				Cell cell = layerTiles.getCell(x, y);
-				if (cell != null) {
-					Rectangle rect = this.rectPool.obtain();
-					Rectangle bossRect = this.rectPool.obtain();
-					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
-							this.TILED_SIZE);
-					bossRect.set(
-							this.boss.getRect2().x,
-							this.boss.getRect2().y + this.boss.velocity.y * deltaTime,
-							this.boss.getRect2().width - 2,
-							this.boss.getRect2().height
-									+ Math.abs(this.boss.velocity.y * deltaTime));
-
-					if (bossRect.overlaps(rect)) {
-						this.boss.desiredPosition.y = y * this.TILED_SIZE + this.TILED_SIZE;
-						this.boss.velocity.y = 0;
-						if (normalGravityBoss)
-							this.boss.grounded = true;
-						return;
-					}
-				}
-			}
-		}
-		this.boss.grounded = false; // Im falling
 	}
 
 	private void checkThisTiles4(TiledMapTileLayer layerTiles, int startX, int finalX, int startY,
@@ -817,6 +876,95 @@ public class MainScreen extends BaseScreen {
 		this.player.grounded = false; // Im falling
 	}
 
+	private void checkThisTilesBoss(TiledMapTileLayer layerTiles, int startX, int finalX,
+			int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+			for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle bossRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
+							this.TILED_SIZE);
+					bossRect.set(this.boss.getRect2().x, this.boss.getRect2().y,
+							this.boss.getRect2().width + this.boss.velocity.x * deltaTime,
+							this.boss.getRect2().height);
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height + "bossRect y is "
+					 * + bossRect.y + " and height is " + bossRect.height);
+					 */if (bossRect.overlaps(rect)) {
+						//System.out.println(x);
+						this.boss.desiredPosition.x = (x * this.TILED_SIZE - this.boss.getRect2().width);
+						this.boss.velocity.x = 0;
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	private void checkThisTiles2Boss(TiledMapTileLayer layerTiles, int startX, int finalX,
+			int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+			for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle bossRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
+							this.TILED_SIZE);
+					bossRect.set(
+							this.boss.getRect2().x + this.boss.velocity.x * deltaTime,
+							this.boss.getRect2().y,
+							this.boss.getRect2().width + Math.abs(this.boss.velocity.x * deltaTime),
+							this.boss.getRect2().height);
+					/*
+					 * System.out.println("cell is not null and y from tile is "
+					 * + rect.y + " height is " + rect.height + "bossRect y is "
+					 * + bossRect.y + " and height is " + bossRect.height);
+					 */if (bossRect.overlaps(rect)) {
+						//System.out.println(x);
+						 this.boss.desiredPosition.x = (x * this.TILED_SIZE + this.TILED_SIZE);
+						this.boss.velocity.x = 0;
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	private void checkThisTiles3Boss(TiledMapTileLayer layerTiles, int startX, int finalX,
+			int startY, int finalY, float deltaTime) {
+		for (int x = startX; x <= finalX; x++) {
+			for (int y = startY; y <= finalY; y++) {
+				Cell cell = layerTiles.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					Rectangle bossRect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
+							this.TILED_SIZE);
+					bossRect.set(
+							this.boss.getRect2().x,
+							this.boss.getRect2().y + this.boss.velocity.y * deltaTime,
+							this.boss.getRect2().width - 2,
+							this.boss.getRect2().height
+									+ Math.abs(this.boss.velocity.y * deltaTime));
+
+					if (bossRect.overlaps(rect)) {
+						this.boss.desiredPosition.y = y * this.TILED_SIZE + this.TILED_SIZE;
+						//System.out.println(" " + this.boss.desiredPosition.y);
+						this.boss.velocity.y = 0;
+						if (normalGravityBoss)
+							this.boss.grounded = true;
+						return;
+					}
+				}
+			}
+		}
+		this.boss.grounded = false; // Im falling
+	}
+
 	private void checkThisTiles4Boss(TiledMapTileLayer layerTiles, int startX, int finalX,
 			int startY, int finalY, float deltaTime) {
 		for (int x = startX; x <= finalX; x++) {
@@ -832,13 +980,14 @@ public class MainScreen extends BaseScreen {
 							this.boss.getRect2().y,
 							this.boss.getRect2().width - 2,
 							this.boss.getRect2().height
-									+ Math.abs(this.boss.velocity.y * deltaTime));
-					/*
-					 * System.out.println("cell is not null and y from tile is "
-					 * + rect.y + " height is " + rect.height + "bossRect y is "
-					 * + bossRect.y + " and height is " + bossRect.height);
-					 */if (bossRect.overlaps(rect)) {
+							+ Math.abs(this.boss.velocity.y * deltaTime));
+
+					System.out.println("cell is not null and x from tile is "
+							+ rect.x + " width is " + rect.width + "bossRect x is "
+							+ bossRect.x + " and width is " + bossRect.width);
+					if (bossRect.overlaps(rect)) {
 						this.boss.desiredPosition.y = y * this.TILED_SIZE - this.boss.getHeight();
+						System.out.println(" " + this.boss.desiredPosition.y);
 						this.boss.velocity.y = 0;
 						if (!normalGravityBoss) {
 							// System.out.println("Boss ground1ng");
@@ -1021,6 +1170,39 @@ public class MainScreen extends BaseScreen {
 		// playerRect.width * 2, playerRect.height * 2);
 
 		this.shapeRenderer.end();
+	}
+
+	private void renderEnemies(float deltaTime) {
+	    for (Enemy enemy : this.enemies) {
+	    		enemy.actualFrame = null;
+            switch (enemy.state) {
+            case Walking:
+            	enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
+                break;
+            case Running:
+            	enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_attack.getKeyFrame(enemy.stateTime);
+                break;
+            case Hurting:
+            	enemy.actualFrame = (AtlasRegion)Assets.enemyHurt.getKeyFrame(enemy.stateTime);
+                break;
+            case BeingInvoked:
+            	enemy.actualFrame = (AtlasRegion)Assets.enemyAppearing.getKeyFrame(enemy.stateTime);
+                break;
+            }
+
+            Batch batch = this.renderer.getSpriteBatch();
+            batch.begin();
+            if (enemy.dir == Enemy.Direction.Right) {
+                if (enemy.actualFrame.isFlipX())
+                	enemy.actualFrame.flip(true, false);
+                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY());
+            } else {
+                if (!enemy.actualFrame.isFlipX())
+                	enemy.actualFrame.flip(true, false);
+                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY());
+            }
+            batch.end();
+	    }
 	}
 
 	private void movingShootingJumping(float deltaTime) {
@@ -1240,5 +1422,39 @@ public class MainScreen extends BaseScreen {
 			this.boss.state = Boss.State.Jumping;
 		}
 	}
+
+	private void getTiles(int startX, int startY, int endX, int endY, Array<Rectangle> tiles) {
+	    this.getTiles(startX, startY, endX, endY, tiles, null);
+    }
+
+	private void getTiles(int startX, int startY, int endX, int endY, Array<Rectangle> tiles, Array<Rectangle> spikes) {
+		TiledMapTileLayer layer = (TiledMapTileLayer)(this.map.getLayers().get("Platfs"));
+		TiledMapTileLayer layer2 = (TiledMapTileLayer)(this.map.getLayers().get("Platfs"));
+		this.rectPool.freeAll(tiles);
+		tiles.clear();
+        if (spikes != null) {
+            this.rectPool.freeAll(spikes);
+            spikes.clear();
+        }
+		for (int y = startY; y <= endY; y++) {
+			for (int x = startX; x <= endX; x++) {
+				Cell cell = layer.getCell(x, y);
+				if (cell != null) {
+					Rectangle rect = this.rectPool.obtain();
+					rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+					tiles.add(rect);
+                }
+				if (spikes != null) {
+                    Cell cell2 = layer2.getCell(x, y);
+                    if (cell2 != null) {
+                        Rectangle rect = this.rectPool.obtain();
+                        rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+                        spikes.add(rect);
+                        tiles.add(rect);
+                    }
+				}
+            }
+        }
+    }
 
 }

@@ -36,7 +36,7 @@ public class Assets {
     public static HashMap<String, Sound> sounds = new HashMap<String, Sound>();
 
 	static void loadAnimation() {
-		
+
 		final String TEXTURE_ATLAS_OBJECTS_CUTSCENES = "cutscenes.pack";
 		assetManagerCutScenes = new AssetManager();
 		assetManagerCutScenes.load(TEXTURE_ATLAS_OBJECTS_CUTSCENES, TextureAtlas.class);
@@ -44,14 +44,14 @@ public class Assets {
 
         TextureAtlas atlasCutScenes = assetManagerCutScenes.get(TEXTURE_ATLAS_OBJECTS_CUTSCENES);
 		Array<AtlasRegion> regionsCutScenes;
-		
+
 		// INTRO
-		
+
 		// Intro Logo
 		intro_screen_logo_base = atlasCutScenes.findRegion("intro_screen_logo_base");
 
 		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
-		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { 
+		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
 				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(2), regionsCutScenes.get(3)});
 
 		intro_screen_logo = new AnimationNinja(0.25f, regionsCutScenes);
@@ -65,10 +65,10 @@ public class Assets {
 		// Complete Intro (BADLY DONE) :(
 		regionsCutScenes = atlasCutScenes.findRegions("intro_BADLY_DONE");
 		/*
-		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { 
-				regionsCutScenes.get(0), 
-				regionsCutScenes.get(1), 
-				regionsCutScenes.get(2), 
+		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
+				regionsCutScenes.get(0),
+				regionsCutScenes.get(1),
+				regionsCutScenes.get(2),
 				regionsCutScenes.get(3)
 			});
 		float [] frameDurations2 =  {0.5f, 0.5f, 0.5f, 1.0f};
@@ -116,13 +116,13 @@ public class Assets {
 		SequenceEnding = new Animation(0.55f, regions);
 		SequenceEnding.setPlayMode(PlayMode.NORMAL);
 
-		
+
         // Race Start & Race End
         regions = atlas.findRegions("race_start");
         race_start = new Animation(0.55f, regions);
         race_start.setPlayMode(PlayMode.NORMAL);
 
-        regions = atlas.findRegions("race_finish"); // Esta no es la que deberíamos usar, pero al ser de una pieza es más sencilla, la subo por si acaso 
+        regions = atlas.findRegions("race_finish"); // Esta no es la que deberíamos usar, pero al ser de una pieza es más sencilla, la subo por si acaso
         race_finish = new Animation(0.55f, regions);
         race_finish.setPlayMode(PlayMode.NORMAL);
 
@@ -246,6 +246,11 @@ public class Assets {
 		regions = atlas.findRegions("hud_position_player");
 		hudPositionPlayer = new Animation(0, regions);
 		offsetPositionPlayer = regions.first().offsetX;
+
+		//which region is this one?
+		//regions = atlas.findRegions("hud_");
+		//hudBossHead = new Animation(0, regions);
+		//offsetBoosHead = regions.first().offsetX;
 
 		regions = atlas.findRegions("hud_life_counter_boss");
 		hudLifeBoss = new Animation(0, regions);

@@ -13,7 +13,7 @@ public class Boss extends Image {
 	final float VELOCITY = 50f;
 	final float ATTACK_VELOCITY = 120f;
 	final float MAX_VELOCITY = 120f;
-	final float JUMP_VELOCITY = 450f;
+	final float JUMP_VELOCITY = 400f;
 	final int ACTIVATE_DISTANCE = 250;
 	final int MAX_LIFES = 24;
 

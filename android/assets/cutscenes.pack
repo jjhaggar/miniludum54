@@ -1,0 +1,263 @@
+
+cutscenes.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+ending_1p_win
+  rotate: false
+  xy: 1, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: -1
+ending_2p_win
+  rotate: false
+  xy: 1, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: -1
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 1
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 2
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 3
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 4
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 5
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 6
+
+cutscenes2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 7
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 8
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 9
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 10
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 11
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 12
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 13
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 14
+
+cutscenes3.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 15
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 16
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 17
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 18
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 19
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 20
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 21
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 22
+
+cutscenes4.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 23
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 24
+intro_BADLY_DONE
+  rotate: false
+  xy: 435, 727
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 25
+intro_BADLY_DONE
+  rotate: false
+  xy: 1, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 26
+intro_screen_logo
+  rotate: false
+  xy: 435, 485
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 1
+intro_screen_logo
+  rotate: false
+  xy: 1, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 2
+intro_screen_logo
+  rotate: false
+  xy: 435, 243
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 3
+intro_screen_logo
+  rotate: false
+  xy: 435, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 4
+
+cutscenes5.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+intro_screen_logo
+  rotate: false
+  xy: 1, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: 5
+intro_screen_logo_base
+  rotate: false
+  xy: 435, 1
+  size: 432, 240
+  orig: 432, 240
+  offset: 0, 0
+  index: -1

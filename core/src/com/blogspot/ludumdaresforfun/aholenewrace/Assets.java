@@ -13,8 +13,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+
 public class Assets {
-	static AssetManager assetManager;
+	static AssetManager assetManager, assetManagerCutScenes;
 	static Animation enemy_bat_fly, enemy_spider_attack, enemy_spider_walk;
 	static Animation race_start, race_finish, race_finish_left, race_finish_right;
     static Animation playerAttack, playerEmpty, playerIntro, playerStand, playerWalk, playerRun, playerJump, playerBeingHit, playerDie;
@@ -22,9 +23,12 @@ public class Assets {
     static Animation enemyWalk, enemyRun, enemyHurt, enemyAppearing;
     static Animation bossGethit, bossStanding,  bossWalking, bossRunning, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
     static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding;
-    static Animation hudBase, hudBossHead, hudLifeBoss, hudLifePlayer;
+    static Animation hudBase, hudPositionBoss, hudPositionPlayer, hudLifeBoss, hudLifePlayer;
+    static AtlasRegion intro_screen_logo_base;
+    static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
+    static AnimationNinja intro_BADLY_DONE;
     static AtlasRegion item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
-	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetBoosHead;
+	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetPositionBoss, offsetPositionPlayer;
 	static Vector2 offsetLifeBoss, offsetLifePlayer;
 
 	// Music and Sounds
@@ -32,6 +36,47 @@ public class Assets {
     public static HashMap<String, Sound> sounds = new HashMap<String, Sound>();
 
 	static void loadAnimation() {
+		
+		final String TEXTURE_ATLAS_OBJECTS_CUTSCENES = "cutscenes.pack";
+		assetManagerCutScenes = new AssetManager();
+		assetManagerCutScenes.load(TEXTURE_ATLAS_OBJECTS_CUTSCENES, TextureAtlas.class);
+		assetManagerCutScenes.finishLoading();
+
+        TextureAtlas atlasCutScenes = assetManagerCutScenes.get(TEXTURE_ATLAS_OBJECTS_CUTSCENES);
+		Array<AtlasRegion> regionsCutScenes;
+		
+		// INTRO
+		
+		// Intro Logo
+		intro_screen_logo_base = atlasCutScenes.findRegion("intro_screen_logo_base");
+
+		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
+		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { 
+				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(2), regionsCutScenes.get(3)});
+
+		intro_screen_logo = new AnimationNinja(0.25f, regionsCutScenes);
+		float [] frameDurations =  {0.5f, 0.5f, 0.5f, 1.0f};
+		intro_screen_logo = new AnimationNinja(frameDurations, regionsCutScenes, AnimationNinja.NORMAL);
+
+		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
+		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { regionsCutScenes.get(3), regionsCutScenes.get(4)});
+		intro_screen_logo_loop =  new AnimationNinja(0.25f, regionsCutScenes);
+
+		// Complete Intro (BADLY DONE) :(
+		regionsCutScenes = atlasCutScenes.findRegions("intro_BADLY_DONE");
+		/*
+		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { 
+				regionsCutScenes.get(0), 
+				regionsCutScenes.get(1), 
+				regionsCutScenes.get(2), 
+				regionsCutScenes.get(3)
+			});
+		float [] frameDurations2 =  {0.5f, 0.5f, 0.5f, 1.0f};
+		*/
+		intro_BADLY_DONE =  new AnimationNinja(0.25f, regionsCutScenes);
+
+
+
         final String TEXTURE_ATLAS_OBJECTS = "characters.pack";
 		assetManager = new AssetManager();
 		assetManager.load(TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
@@ -47,6 +92,8 @@ public class Assets {
 		item_invulnerability = atlas.findRegion("item_invulnerability");
 		item_jump = atlas.findRegion("item_jump");
 		item_speed = atlas.findRegion("item_speed");
+
+
 
 		//BG
 		regions = atlas.findRegions("intro");
@@ -192,9 +239,13 @@ public class Assets {
 		regions = atlas.findRegions("hud_base");
 		hudBase = new Animation(0, regions);
 
-		regions = atlas.findRegions("hud_boss_head");
-		hudBossHead = new Animation(0, regions);
-		offsetBoosHead = regions.first().offsetX;
+		regions = atlas.findRegions("hud_position_boss");
+		hudPositionBoss = new Animation(0, regions);
+		offsetPositionBoss = regions.first().offsetX;
+
+		regions = atlas.findRegions("hud_position_player");
+		hudPositionPlayer = new Animation(0, regions);
+		offsetPositionPlayer = regions.first().offsetX;
 
 		regions = atlas.findRegions("hud_life_counter_boss");
 		hudLifeBoss = new Animation(0, regions);

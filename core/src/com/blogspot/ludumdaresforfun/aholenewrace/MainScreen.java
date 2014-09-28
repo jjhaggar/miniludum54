@@ -88,6 +88,7 @@ public class MainScreen extends BaseScreen {
 	private OrthographicCamera camera3;
 	private boolean startRace = false;
 	private boolean raceFinish = false;
+	public int stageNumber;
 
 	@Override
 	public void backButtonPressed() {
@@ -102,14 +103,15 @@ public class MainScreen extends BaseScreen {
 	}
 
 	public MainScreen(int stageNumber) {
+		this.stageNumber = stageNumber;
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
 			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 		else if (stageNumber == 2)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+			this.map = new TmxMapLoader().load("tilemap_01.tmx");
 		else if (stageNumber == 3)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+			this.map = new TmxMapLoader().load("tilemap_02.tmx");
 
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
@@ -267,8 +269,19 @@ public class MainScreen extends BaseScreen {
                     MainScreen.this.player.noControl = true;
                     MainScreen.this.boss.noControl = true;
 
-                    AHoleNewRace.getInstance().INTRO_SCREEN = new IntroScreen();
-                    AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().INTRO_SCREEN);
+                    if (MainScreen.this.stageNumber == 1){
+                    	AHoleNewRace.getInstance().CUT_SCENE1 = new CutScene1();
+                    	AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENE1);
+                    }
+                    else if (MainScreen.this.stageNumber == 2){
+                    	AHoleNewRace.getInstance().CUT_SCENE2 = new CutScene2();
+                    	AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENE2);
+                    }
+                    else if (MainScreen.this.stageNumber == 3){
+                    	AHoleNewRace.getInstance().ENDING_SCREEN = new EndingScreen();
+                    	AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().ENDING_SCREEN);
+                    }
+
                 }
             }, 1.0f);
 		}

@@ -22,7 +22,7 @@ public class Assets {
     static Animation playerShot, playerShotHit;
     static Animation enemyWalk, enemyRun, enemyHurt, enemyAppearing;
     static Animation bossGethit, bossStanding,  bossWalking, bossRunning, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
-    static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding;
+    static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding, CutScene1, CutScene2, Ending1P, Ending2P;
     static Animation hudBase, hudPositionBoss, hudPositionPlayer, hudLifeBoss, hudLifePlayer;
     static AtlasRegion intro_screen_logo_base;
     static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
@@ -130,6 +130,23 @@ public class Assets {
 		regions = atlas.findRegions("sequence_ending");
 		SequenceEnding = new Animation(0.55f, regions);
 		SequenceEnding.setPlayMode(PlayMode.NORMAL);
+
+		regions = atlas.findRegions("ending_2p_win");
+		Ending2P = new Animation(0.55f, regions);
+		Ending2P.setPlayMode(PlayMode.NORMAL);
+
+		regions = atlas.findRegions("ending_1p_win");
+		Ending1P = new Animation(0.55f, regions);
+		Ending1P.setPlayMode(PlayMode.NORMAL);
+
+//		regions = atlas.findRegions("cut_scene_1");
+//		CutScene1 = new Animation(0.55f, regions);
+//		CutScene1.setPlayMode(PlayMode.NORMAL);
+//
+//		regions = atlas.findRegions("cut_scene_2");
+//		CutScene2 = new Animation(0.55f, regions);
+//		CutScene2.setPlayMode(PlayMode.NORMAL);
+
 
 
         // Race Start & Race End

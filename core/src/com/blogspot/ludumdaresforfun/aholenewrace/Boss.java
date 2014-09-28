@@ -152,7 +152,7 @@ public class Boss extends Image {
     }
 
 	public void powerUpJump() {
-		this.JUMP_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		this.JUMP_VELOCITY = 400f * 1.5f;		//the boss jumps 1.25f more but we put 1.5
 		Timer.schedule(new Task() {
             @Override
             public void run() {
@@ -163,7 +163,7 @@ public class Boss extends Image {
 	}
 
 	public void powerUpVelocity() {
-		this.MAX_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		this.MAX_VELOCITY = 120f * 1.5f;		//the boss jumps 1.25f more but we put 1.5
 		Timer.schedule(new Task() {
             @Override
             public void run() {

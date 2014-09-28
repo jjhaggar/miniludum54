@@ -11,9 +11,10 @@ public class AHoleNewRace extends Game {
 	SpriteBatch batch;
 	Texture img;
     static AHoleNewRace instance;
-    //public MenuScreen MENU_SCREEN;
+    public CutScene1 CUT_SCENE1;
+    public CutScene2 CUT_SCENE2;
     public IntroScreen INTRO_SCREEN;
-    //public EndingScreen ENDING_SCREEN;
+    public EndingScreen ENDING_SCREEN;
     //public GameOverScreen GAMEOVER_SCREEN;
 
     public MainScreen MAIN_SCREEN;

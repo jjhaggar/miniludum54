@@ -1484,8 +1484,9 @@ public class MainScreen extends BaseScreen {
 				this.configControllers.activateJump = false;
 			}
 
-			if (Gdx.input.isKeyJustPressed(Keys.D)) {
+			if (Gdx.input.isKeyJustPressed(Keys.D)|| this.configControllers.activateShoot) {
 				this.shoot();
+				this.configControllers.activateShoot = false;
 			}
 		}
 

@@ -16,6 +16,7 @@ public class ConfigControllers {
 	public boolean shootPressed = false;
 
 	public boolean activateJump = false;
+	public boolean activateShoot = false;
 
 	public boolean leftPressed2P, rightPressed2P, jumpPressed2P, shootPressed2P = false;
 
@@ -98,12 +99,12 @@ public class ConfigControllers {
 		                        ConfigControllers.this.jumpPressed2P = true;
 		                    }
                     	}
-                    /*
+
                     if ((buttonIndex == 1 || buttonIndex == 2) && !ConfigControllers.this.shootPressed){
-                        ((MainScreen) ConfigControllers.this.screen).shoot();
+                    	activateShoot = true;
                         ConfigControllers.this.shootPressed = true;
                     }
-                    */
+
                 }
                 	/*
                 else if (screen.getClass().equals(MenuScreen.class)){

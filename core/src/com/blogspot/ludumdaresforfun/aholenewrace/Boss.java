@@ -141,4 +141,35 @@ public class Boss extends Image {
 		super.act(delta);
 	}
 
+    public void powerUpInvincible(){
+    	this.invincible = true;
+    	Timer.schedule(new Task() {
+            @Override
+            public void run() {
+                Boss.this.invincible = false;
+            }
+        }, 7f);
+    }
+
+	public void powerUpJump() {
+		this.JUMP_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		Timer.schedule(new Task() {
+            @Override
+            public void run() {
+            	Boss.this.JUMP_VELOCITY = 400f;
+            }
+        }, 10f);
+
+	}
+
+	public void powerUpVelocity() {
+		this.MAX_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		Timer.schedule(new Task() {
+            @Override
+            public void run() {
+            	Boss.this.MAX_VELOCITY = 120f;
+            }
+        }, 10f);
+
+	}
 }

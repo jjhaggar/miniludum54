@@ -238,43 +238,78 @@ public class MainScreen extends BaseScreen {
 	private void updateObjects(float deltaTime) {
 		Array<Object> obtainLifes = new Array<Object>();
 		for (Object object : this.objects) {
-			if (this.normalGravity) {
-				if (object.getRect().overlaps(this.player.getRect2())) {
-					switch (object.objectType) {
-					case item_apple:
-						if (this.player.getLifes() < this.player.MAX_LIFES)
-							this.player.counter.gainLife(1);
-						obtainLifes.add(object);
-						Assets.playSound("gainLifePlayer");
-						break;
-					case item_banana:
-						if (this.player.getLifes() < this.player.MAX_LIFES)
-							this.player.counter.gainLife(2);
-						obtainLifes.add(object);
-						Assets.playSound("gainLifePlayer");
-						break;
-					case item_chicken:
-						if (this.player.getLifes() < this.player.MAX_LIFES)
-							this.player.counter.gainLife(4);
-						obtainLifes.add(object);
-						Assets.playSound("gainLifePlayer");
-						break;
-					case item_invulnerability:
-						this.player.powerUpInvincible();
-						obtainLifes.add(object);
-						Assets.playSound("gainLifePlayer");
-						break;
-					case item_jump:
-						this.player.powerUpJump();
-						obtainLifes.add(object);
-						Assets.playSound("gainLifePlayer");
-						break;
-					case item_speed:
-						this.player.powerUpVelocity();
-						obtainLifes.add(object);
-						Assets.playSound("gainLifePlayer");
-						break;
-					}
+			if (object.getRect().overlaps(this.player.getRect2())) {
+				switch (object.objectType) {
+				case item_apple:
+					if (this.player.getLifes() < this.player.MAX_LIFES)
+						this.player.counter.gainLife(1);
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_banana:
+					if (this.player.getLifes() < this.player.MAX_LIFES)
+						this.player.counter.gainLife(2);
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_chicken:
+					if (this.player.getLifes() < this.player.MAX_LIFES)
+						this.player.counter.gainLife(4);
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_invulnerability:
+					this.player.powerUpInvincible();
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_jump:
+					this.player.powerUpJump();
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_speed:
+					this.player.powerUpVelocity();
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				}
+			}
+			if (object.getRect().overlaps(this.boss.getRect2())) {
+				switch (object.objectType) {
+				case item_apple:
+					if (this.boss.getLifes() < this.player.MAX_LIFES)
+						this.boss.counter.gainLife(1);
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_banana:
+					if (this.boss.getLifes() < this.player.MAX_LIFES)
+						this.boss.counter.gainLife(2);
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_chicken:
+					if (this.boss.getLifes() < this.player.MAX_LIFES)
+						this.boss.counter.gainLife(4);
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_invulnerability:
+					this.boss.powerUpInvincible();
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_jump:
+					this.boss.powerUpJump();
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
+				case item_speed:
+					this.boss.powerUpVelocity();
+					obtainLifes.add(object);
+					Assets.playSound("gainLifePlayer");
+					break;
 				}
 			}
 		}
@@ -468,12 +503,20 @@ public class MainScreen extends BaseScreen {
 //				camera.position.x = player.getX() + SCREEN_WIDTH / 8;
 //		}
 //		else{
-		if (player.facesRight && camera.position.x + 10 < player.getX() + SCREEN_WIDTH / 8)
-			camera.position.x += 5;
+		if (player.facesRight && camera.position.x + 10 < player.getX() + SCREEN_WIDTH / 8){
+			if (this.player.MAX_VELOCITY > 120f)
+				camera.position.x += 7;
+			else
+				camera.position.x += 5;
+		}
 		else if (player.facesRight && camera.position.x < player.getX() + SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() + SCREEN_WIDTH / 8;
-		else if (!player.facesRight && camera.position.x - 10 > player.getX() - SCREEN_WIDTH / 8)
-			camera.position.x -= 5;
+		else if (!player.facesRight && camera.position.x - 10 > player.getX() - SCREEN_WIDTH / 8){
+			if (this.player.MAX_VELOCITY > 120f)
+				camera.position.x -= 7;
+			else
+				camera.position.x -= 5;
+		}
 		else if (!player.facesRight && camera.position.x > player.getX() - SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
 		else if (player.facesRight && player.noControl)
@@ -505,12 +548,20 @@ public class MainScreen extends BaseScreen {
 	private void updateCameraForTwoPlayersBoss() {
 
 		// update x
-		if (boss.facesRight && camera2.position.x + 10 < boss.getX() + SCREEN_WIDTH / 8)
-			camera2.position.x += 5;
+		if (boss.facesRight && camera2.position.x + 10 < boss.getX() + SCREEN_WIDTH / 8){
+			if (this.boss.MAX_VELOCITY > 120f)
+				camera2.position.x += 7;
+			else
+				camera2.position.x += 5;
+		}
 		else if (boss.facesRight && camera2.position.x < boss.getX() + SCREEN_WIDTH / 8)
 			camera2.position.x = boss.getX() + SCREEN_WIDTH / 8;
-		else if (!boss.facesRight && camera2.position.x - 10 > boss.getX() - SCREEN_WIDTH / 8)
-			camera2.position.x -= 5;
+		else if (!boss.facesRight && camera2.position.x - 10 > boss.getX() - SCREEN_WIDTH / 8){
+			if (this.boss.MAX_VELOCITY > 120f)
+				camera2.position.x -= 7;
+			else
+				camera2.position.x -= 5;
+		}
 		else if (!boss.facesRight && camera2.position.x > boss.getX() - SCREEN_WIDTH / 8)
 			camera2.position.x = boss.getX() - SCREEN_WIDTH / 8;
 

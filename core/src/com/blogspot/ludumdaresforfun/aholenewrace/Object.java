@@ -29,10 +29,12 @@ public class Object extends Image{
 	float offsetY;
 	public AtlasRegion actualFrame;
 
-    public Object(Animation animation) {
+    public Object(Vector2 position, Animation animation, Type type) {
         super(animation.getKeyFrame(0));
         this.animation = animation;
         this.actualFrame = ((AtlasRegion)animation.getKeyFrame(0));
+        this.setPosition(position.x, position.y);
+        this.objectType = type;
     }
 
     public Rectangle getRect() {

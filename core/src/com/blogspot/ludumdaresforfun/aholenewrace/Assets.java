@@ -27,7 +27,7 @@ public class Assets {
     static AtlasRegion intro_screen_logo_base;
     static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
     static AnimationNinja intro_BADLY_DONE;
-    static AtlasRegion item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
+    static Animation item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
 	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetPositionBoss, offsetPositionPlayer;
 	static Vector2 offsetLifeBoss, offsetLifePlayer;
 
@@ -86,12 +86,29 @@ public class Assets {
 		Array<AtlasRegion> regions;
 
         // ITEMS (non animated)
-		item_apple  = atlas.findRegion("item_apple");
-		item_banana = atlas.findRegion("item_banana");
-		item_chicken = atlas.findRegion("item_chicken");
-		item_invulnerability = atlas.findRegion("item_invulnerability");
-		item_jump = atlas.findRegion("item_jump");
-		item_speed = atlas.findRegion("item_speed");
+		regions  = atlas.findRegions("item_apple");
+		item_apple = new Animation(0.15f, regions);
+		item_apple.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_banana");
+		item_banana = new Animation(0.15f, regions);
+		item_banana.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_chicken");
+		item_chicken = new Animation(0.15f, regions);
+		item_chicken.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_invulnerability");
+		item_invulnerability = new Animation(0.15f, regions);
+		item_invulnerability.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_jump");
+		item_jump = new Animation(0.15f, regions);
+		item_jump.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_speed");
+		item_speed = new Animation(0.15f, regions);
+		item_speed.setPlayMode(PlayMode.LOOP);
 
 		//BG
 		regions = atlas.findRegions("intro");

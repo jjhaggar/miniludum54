@@ -37,7 +37,7 @@
   </tile>
   <tile id="21">
    <properties>
-    <property name="tpe" value="item_bananas"/>
+    <property name="type" value="item_bananas"/>
    </properties>
   </tile>
   <tile id="32">

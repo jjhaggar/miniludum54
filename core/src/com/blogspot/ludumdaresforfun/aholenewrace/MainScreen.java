@@ -52,7 +52,7 @@ public class MainScreen extends BaseScreen {
 	Map<Vector2, Enemy.Type> spawns = new HashMap<Vector2, Enemy.Type>();
 	private Array<Vector2> spawnsPositions = new Array<Vector2>();
 	private Array<Vector2> lifes = new Array<Vector2>();
-	Map<Vector2, Enemy.Type> objects = new HashMap<Vector2, Enemy.Type>();
+	public Array<Object> objects = new Array<Object>();
 	private boolean callGameOver = false;
 	// private Boss boss;
 	private Vector2 door;
@@ -153,7 +153,23 @@ public class MainScreen extends BaseScreen {
 							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Enemy.Type.Bat);
 							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
 						}else if (type.equals("item_bananas")) {
-							this.lifes.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.item_banana, Object.Type.item_banana));
+						}else if (type.equals("item_chicken")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.item_chicken, Object.Type.item_chicken));
+						}else if (type.equals("powerup_invencibility")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.item_invulnerability, Object.Type.item_invulnerability));
+						}else if (type.equals("powerup_jump")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.item_jump, Object.Type.item_jump));
+						}else if (type.equals("powerup_speed")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.item_speed, Object.Type.item_speed));
+						}else if (type.equals("item_apple")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.item_apple, Object.Type.item_apple));
 						} else if (type.equals("player")) {
 							this.player.setPosition(x * this.TILED_SIZE, y * this.TILED_SIZE);
 						} else if (type.equals("boss")) {
@@ -213,39 +229,56 @@ public class MainScreen extends BaseScreen {
 		this.player.act(delta);
 		this.boss.act(delta);
 
-		spawnEnemies();
+		this.spawnEnemies();
 		this.updateEnemies(delta);
 
-		this.collisionLifes(delta);
+		this.updateObjects(delta);
 	}
 
-	private void collisionLifes(float deltaTime) {
-        Array<Vector2> obtainLifes = new Array<Vector2>();
-	    for (Vector2 life : this.lifes) {
-	        if (this.normalGravity) {
-                if ((life.dst(this.player.getX(), this.player.getCenterY()) < this.player.getWidth())) {
-                	if (this.player.getLifes() < this.player.MAX_LIFES)
-                		this.player.counter.gainLife(1);
-                    obtainLifes.add(life);
-                    Assets.playSound("gainLifePlayer");
-                    // Remove life in map
-                    TiledMapTileLayer layerPlantfs = (TiledMapTileLayer)(this.map.getLayers().get("Spawn"));
-                    layerPlantfs.setCell((int)life.x / this.TILED_SIZE, (int)life.y / this.TILED_SIZE, null);
-                }
-	        }
-	        else {
-                if ((life.dst(this.player.getX(), this.player.getY()) < this.player.getWidth())) {
-                    if (this.player.getLifes() < this.player.MAX_LIFES)
-                    	this.player.counter.gainLife(1);
-                    obtainLifes.add(life);
-                    Assets.playSound("gainLifePlayer");
-                    // Remove life in map
-                    TiledMapTileLayer layerPlantfs = (TiledMapTileLayer)(this.map.getLayers().get("Spawn"));
-                    layerPlantfs.setCell((int)life.x / this.TILED_SIZE, (int)life.y / this.TILED_SIZE, null);
-                }
-	        }
-	    }
-	    this.lifes.removeAll(obtainLifes, false);
+	private void updateObjects(float deltaTime) {
+		Array<Object> obtainLifes = new Array<Object>();
+		for (Object object : this.objects) {
+			if (this.normalGravity) {
+				if (object.getRect().overlaps(this.player.getRect2())) {
+					switch (object.objectType) {
+					case item_apple:
+						if (this.player.getLifes() < this.player.MAX_LIFES)
+							this.player.counter.gainLife(1);
+						obtainLifes.add(object);
+						Assets.playSound("gainLifePlayer");
+						break;
+					case item_banana:
+						if (this.player.getLifes() < this.player.MAX_LIFES)
+							this.player.counter.gainLife(2);
+						obtainLifes.add(object);
+						Assets.playSound("gainLifePlayer");
+						break;
+					case item_chicken:
+						if (this.player.getLifes() < this.player.MAX_LIFES)
+							this.player.counter.gainLife(4);
+						obtainLifes.add(object);
+						Assets.playSound("gainLifePlayer");
+						break;
+					case item_invulnerability:
+						this.player.powerUpInvincible();
+						obtainLifes.add(object);
+						Assets.playSound("gainLifePlayer");
+						break;
+					case item_jump:
+						this.player.powerUpJump();
+						obtainLifes.add(object);
+						Assets.playSound("gainLifePlayer");
+						break;
+					case item_speed:
+						this.player.powerUpVelocity();
+						obtainLifes.add(object);
+						Assets.playSound("gainLifePlayer");
+						break;
+					}
+				}
+			}
+		}
+		this.objects.removeAll(obtainLifes, false);
 	}
 
 	private void updateAttackBoss(float delta) {
@@ -384,27 +417,26 @@ public class MainScreen extends BaseScreen {
 
 	private void renderObjects(float delta) {
 		AtlasRegion frame = null;
-//		if (shot.state == Shot.State.Normal)
-//			frame = (AtlasRegion) Assets.playerShot.getKeyFrame(shot.stateTime);
-//		else if (shot.state == Shot.State.Exploding)
-//			frame = (AtlasRegion) Assets.playerShotHit.getKeyFrame(shot.stateTime);
+		for (Object object : this.objects){
 
-		if (!this.normalGravity) {
-		    if (!frame.isFlipY())
-                frame.flip(false, true);
+			frame = (AtlasRegion)object.animation.getKeyFrame(object.stateTime);
+
+			if (!this.normalGravity) {
+			    if (!frame.isFlipY())
+	                frame.flip(false, true);
+			}
+			else {
+			    if (frame.isFlipY())
+	                frame.flip(false, true);
+			}
+
+			Batch batch = this.renderer.getSpriteBatch();
+			batch.begin();
+
+			batch.draw(frame, object.getX(), object.getY());
+
+			batch.end();
 		}
-		else {
-		    if (frame.isFlipY())
-                frame.flip(false, true);
-		}
-
-		Batch batch = this.renderer.getSpriteBatch();
-		batch.begin();
-
-			//batch.draw(frame, shot.getX(), shot.getY());
-
-		batch.end();
-
 	}
 
 	private void renderShots(float delta) {
@@ -1393,9 +1425,6 @@ public class MainScreen extends BaseScreen {
 			this.player.toggle = 1;
 		}
 
-		// draw the koala, depending on the current velocity
-		// on the x-axis, draw the koala facing either right
-		// or left
 		Batch batch = this.renderer.getSpriteBatch();
 		batch.begin();
 		if (this.player.facesRight && frame.isFlipX()) {
@@ -1427,8 +1456,8 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer.begin(ShapeType.Line);
 
 		this.shapeRenderer.setColor(Color.BLACK);
-		shapeRenderer.rect(this.player.getRect2().x, this.player.getRect2().y - this.SCREEN_HEIGHT
-				+ TILED_SIZE, this.player.getRect2().width, this.player.getRect2().height);
+		//shapeRenderer.rect(this.player.getRect2().x, this.player.getRect2().y - this.SCREEN_HEIGHT
+			//	+ TILED_SIZE, this.player.getRect2().width, this.player.getRect2().height);
 		// this.getTiles(0, 0, 25, 15, this.tiles);
 		// for (Rectangle tile : this.tiles) {
 		// shapeRenderer.rect(tile.x * 1.6f, tile.y * 2, tile.width * 2,
@@ -1477,9 +1506,6 @@ public class MainScreen extends BaseScreen {
 			this.boss.toggle = 1;
 		}
 
-		// draw the koala, depending on the current velocity
-		// on the x-axis, draw the koala facing either right
-		// or left
 		Batch batch = this.renderer.getSpriteBatch();
 		batch.begin();
 		if (this.boss.facesRight && frame.isFlipX()) {

@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class Player extends Image {
-    final float MAX_VELOCITY = 120f;
-    final float JUMP_VELOCITY = 320f; // 300f; // 210f;
+    float MAX_VELOCITY = 120f;
+    float JUMP_VELOCITY = 320f; // 300f; // 210f;
     final int MAX_LIFES = 5;
     enum State {
         Standing, Walking, Jumping, StandingShooting, Attacking, Intro, BeingHit, Die, Running
@@ -61,6 +61,7 @@ public class Player extends Image {
 
     public Rectangle getRect2() {
     	this.rect.set(this.getX(), this.getY(), superWidth, superHeight - 2);
+    	//in the future center - halfwidth, center - halfheight, width, height
         return this.rect;
     }
 
@@ -124,4 +125,37 @@ public class Player extends Image {
 			Assets.playSound("gainLifePlayer");
 		}
 	}
+
+    public void powerUpInvincible(){
+    	this.invincible = true;
+    	Timer.schedule(new Task() {
+            @Override
+            public void run() {
+                Player.this.invincible = false;
+            }
+        }, 7f);
+    }
+
+	public void powerUpJump() {
+		this.JUMP_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		Timer.schedule(new Task() {
+            @Override
+            public void run() {
+            	Player.this.JUMP_VELOCITY = 320f;
+            }
+        }, 10f);
+
+	}
+
+	public void powerUpVelocity() {
+		this.MAX_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		Timer.schedule(new Task() {
+            @Override
+            public void run() {
+            	Player.this.MAX_VELOCITY = 120f;
+            }
+        }, 10f);
+
+	}
+
 }

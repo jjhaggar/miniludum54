@@ -27,7 +27,7 @@ public class Assets {
     static AtlasRegion intro_screen_logo_base;
     static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
     static AnimationNinja intro_BADLY_DONE;
-    static AtlasRegion item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
+    static Animation item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
 	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetPositionBoss, offsetPositionPlayer;
 	static Vector2 offsetLifeBoss, offsetLifePlayer;
 
@@ -86,14 +86,29 @@ public class Assets {
 		Array<AtlasRegion> regions;
 
         // ITEMS (non animated)
-		item_apple  = atlas.findRegion("item_apple");
-		item_banana = atlas.findRegion("item_banana");
-		item_chicken = atlas.findRegion("item_chicken");
-		item_invulnerability = atlas.findRegion("item_invulnerability");
-		item_jump = atlas.findRegion("item_jump");
-		item_speed = atlas.findRegion("item_speed");
+		regions  = atlas.findRegions("item_apple");
+		item_apple = new Animation(0.15f, regions);
+		item_apple.setPlayMode(PlayMode.LOOP);
 
+		regions  = atlas.findRegions("item_banana");
+		item_banana = new Animation(0.15f, regions);
+		item_banana.setPlayMode(PlayMode.LOOP);
 
+		regions  = atlas.findRegions("item_chicken");
+		item_chicken = new Animation(0.15f, regions);
+		item_chicken.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_invulnerability");
+		item_invulnerability = new Animation(0.15f, regions);
+		item_invulnerability.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_jump");
+		item_jump = new Animation(0.15f, regions);
+		item_jump.setPlayMode(PlayMode.LOOP);
+
+		regions  = atlas.findRegions("item_speed");
+		item_speed = new Animation(0.15f, regions);
+		item_speed.setPlayMode(PlayMode.LOOP);
 
 		//BG
 		regions = atlas.findRegions("intro");
@@ -163,7 +178,7 @@ public class Assets {
 		playerBeingHit = new Animation(0.8f, regions);
 
 		regions = atlas.findRegions("char_dying");  //change to jumping
-		playerDie = new Animation(0.25f, regions);
+		playerDie = new Animation(0.5f, regions);
 
 		// Shot
 		regions = atlas.findRegions("char_attack_holy_water");
@@ -208,8 +223,8 @@ public class Assets {
 
 
 		// Boss
-		regions = atlas.findRegions("boss_gethit");
-		//regions = atlas.findRegions("boss_empty");	//where is boss empty?s
+		//regions = atlas.findRegions("boss_gethit");
+		regions = atlas.findRegions("boss_empty");	//where is boss empty?s
 		bossGethit = new Animation(0.15f, regions);
 		bossGethit.setPlayMode(PlayMode.LOOP);
 
@@ -240,7 +255,7 @@ public class Assets {
 		bossSummon = new Animation(0.15f, regions);
 
 		regions = atlas.findRegions("boss_dying");
-		bossDie = new Animation(0.30f, regions);
+		bossDie = new Animation(0.15f, regions);
 
 		// HUD
 		regions = atlas.findRegions("hud_base");
@@ -253,11 +268,6 @@ public class Assets {
 		regions = atlas.findRegions("hud_position_player");
 		hudPositionPlayer = new Animation(0, regions);
 		offsetPositionPlayer = regions.first().offsetX;
-
-		//which region is this one?
-		//regions = atlas.findRegions("hud_");
-		//hudBossHead = new Animation(0, regions);
-		//offsetBoosHead = regions.first().offsetX;
 
 		regions = atlas.findRegions("hud_life_counter_boss");
 		hudLifeBoss = new Animation(0, regions);

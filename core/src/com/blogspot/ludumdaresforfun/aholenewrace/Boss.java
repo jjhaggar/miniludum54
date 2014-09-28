@@ -12,10 +12,10 @@ import com.badlogic.gdx.utils.Timer.Task;
 public class Boss extends Image {
 	final float VELOCITY = 50f;
 	final float ATTACK_VELOCITY = 120f;
-	final float MAX_VELOCITY = 120f;
-	final float JUMP_VELOCITY = 400f;
+	float MAX_VELOCITY = 120f;
+	float JUMP_VELOCITY = 400f;
 	final int ACTIVATE_DISTANCE = 250;
-	final int MAX_LIFES = 24;
+	final int MAX_LIFES = 5;
 
 	enum State {
 		Standing, Walking, Jumping, Falling, Attack, Summon, Hurting, BeingHit, Die, Running
@@ -59,7 +59,7 @@ public class Boss extends Image {
 	public boolean noControl = false;
 	public boolean dead = false;
 	public boolean shooting = false;
-	public boolean toggle = false;
+	public int toggle = 0;
 	public float offSetY;
 	public float rightOffset = 0;
 	// public AtlasRegion actualFrame;
@@ -95,10 +95,8 @@ public class Boss extends Image {
 		if (!this.invincible) {
 			Assets.playSound("bossHurt");
 			this.invincible = true;
-			this.state = Boss.State.BeingHit;
 			this.stateTime = 0;
-			//this.velocity.y = 150;
-			//this.noControl = true;
+
 			int lifes = this.counter.lostLife();
 			if (lifes <= 0) {
 				this.die();
@@ -109,19 +107,27 @@ public class Boss extends Image {
 					Boss.this.invincible = false;
 					Boss.this.state = Boss.State.Standing;
 				}
-			}, 1);
+			}, 1.8f);
 		}
 	}
 
 	public void die() {
 		// animate, sound and set to die
-		Assets.playSound("bossDead");
 		this.setToDie = true;
-		System.out.println("YOU KILL THE BOSS");
 		this.state = Boss.State.Die;
 		this.stateTime = 0;
 		this.noControl = true;
 		this.dead = true;
+	}
+
+	public void revive() {
+		if (this.dead){
+			this.noControl = false;
+			this.dead = false;
+			this.state = Boss.State.Standing;
+			this.counter.gainLife(1);
+			Assets.playSound("gainLifePlayer");
+		}
 	}
 
 	public int getLifes() {
@@ -135,4 +141,35 @@ public class Boss extends Image {
 		super.act(delta);
 	}
 
+    public void powerUpInvincible(){
+    	this.invincible = true;
+    	Timer.schedule(new Task() {
+            @Override
+            public void run() {
+                Boss.this.invincible = false;
+            }
+        }, 7f);
+    }
+
+	public void powerUpJump() {
+		this.JUMP_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		Timer.schedule(new Task() {
+            @Override
+            public void run() {
+            	Boss.this.JUMP_VELOCITY = 400f;
+            }
+        }, 10f);
+
+	}
+
+	public void powerUpVelocity() {
+		this.MAX_VELOCITY *= 1.5f;		//the boss jumps 1.25f more but we put 1.5
+		Timer.schedule(new Task() {
+            @Override
+            public void run() {
+            	Boss.this.MAX_VELOCITY = 120f;
+            }
+        }, 10f);
+
+	}
 }

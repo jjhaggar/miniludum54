@@ -52,6 +52,7 @@ public class MainScreen extends BaseScreen {
 	Map<Vector2, Enemy.Type> spawns = new HashMap<Vector2, Enemy.Type>();
 	private Array<Vector2> spawnsPositions = new Array<Vector2>();
 	private Array<Vector2> lifes = new Array<Vector2>();
+	Map<Vector2, Enemy.Type> objects = new HashMap<Vector2, Enemy.Type>();
 	private boolean callGameOver = false;
 	// private Boss boss;
 	private Vector2 door;
@@ -382,7 +383,27 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void renderObjects(float delta) {
-		// TODO Auto-generated method stub
+		AtlasRegion frame = null;
+//		if (shot.state == Shot.State.Normal)
+//			frame = (AtlasRegion) Assets.playerShot.getKeyFrame(shot.stateTime);
+//		else if (shot.state == Shot.State.Exploding)
+//			frame = (AtlasRegion) Assets.playerShotHit.getKeyFrame(shot.stateTime);
+
+		if (!this.normalGravity) {
+		    if (!frame.isFlipY())
+                frame.flip(false, true);
+		}
+		else {
+		    if (frame.isFlipY())
+                frame.flip(false, true);
+		}
+
+		Batch batch = this.renderer.getSpriteBatch();
+		batch.begin();
+
+			//batch.draw(frame, shot.getX(), shot.getY());
+
+		batch.end();
 
 	}
 

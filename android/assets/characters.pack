@@ -743,7 +743,7 @@ enemy_spider_attack
   xy: 108, 239
   size: 20, 11
   orig: 32, 32
-  offset: 5, 4
+  offset: 5, 10
   index: 1
 enemy_bat_fly
   rotate: false
@@ -946,7 +946,7 @@ enemy_spider_walk
   xy: 617, 388
   size: 21, 12
   orig: 32, 32
-  offset: 5, 4
+  offset: 5, 10
   index: 2
 enemy_appearing
   rotate: false
@@ -960,14 +960,14 @@ enemy_spider_dying
   xy: 152, 240
   size: 20, 12
   orig: 32, 32
-  offset: 7, 4
+  offset: 5, 10
   index: 1
 enemy_spider_walk
   rotate: false
   xy: 831, 670
   size: 20, 12
   orig: 32, 32
-  offset: 5, 4
+  offset: 5, 10
   index: 1
 hud_position_player
   rotate: false
@@ -997,13 +997,6 @@ item_jump
   orig: 16, 16
   offset: 0, 0
   index: -1
-enemy_spider_attack
-  rotate: false
-  xy: 443, 237
-  size: 12, 18
-  orig: 32, 32
-  offset: 11, 6
-  index: 3
 item_speed
   rotate: false
   xy: 129, 185
@@ -1030,18 +1023,18 @@ enemy_spider_attack
   xy: 539, 329
   size: 18, 13
   orig: 32, 32
-  offset: 6, 5
+  offset: 6, 10
   index: 2
 hud_position_boss
   rotate: false
-  xy: 854, 700
+  xy: 443, 239
   size: 12, 16
   orig: 400, 16
   offset: 98, 0
   index: -1
 item_apple
   rotate: false
-  xy: 853, 682
+  xy: 457, 241
   size: 14, 16
   orig: 16, 16
   offset: 1, 0
@@ -1062,21 +1055,21 @@ enemy_dying
   index: 6
 char_attack_holy_water_hit
   rotate: false
-  xy: 868, 700
+  xy: 854, 705
   size: 12, 11
   orig: 30, 35
   offset: 15, 13
   index: 1
 enemy_dying
   rotate: false
-  xy: 882, 704
+  xy: 129, 158
   size: 17, 7
   orig: 46, 51
   offset: 12, 1
   index: 7
 enemy_dying
   rotate: false
-  xy: 853, 666
+  xy: 919, 909
   size: 9, 14
   orig: 46, 51
   offset: 15, 1

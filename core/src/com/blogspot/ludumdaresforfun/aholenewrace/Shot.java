@@ -38,13 +38,13 @@ public class Shot extends Image {
 
     }
 
-    public void Initialize(float x, float y, boolean facesRight, boolean normalGravity) {
+    public void Initialize(float x, float y, boolean facesRight, boolean normalGravity, float playerVelocityX) {
         this.setPosition(x, y);
         this.shotGoesRight = facesRight;
         if (facesRight)
-        	this.velocity.x = this.SHOT_VELOCITY_X;
+        	this.velocity.x = this.SHOT_VELOCITY_X + playerVelocityX;
         else
-        	this.velocity.x = -this.SHOT_VELOCITY_X;
+        	this.velocity.x = -this.SHOT_VELOCITY_X + playerVelocityX;
 
         if (normalGravity)
         	this.velocity.y = this.SHOT_VELOCITY_Y;

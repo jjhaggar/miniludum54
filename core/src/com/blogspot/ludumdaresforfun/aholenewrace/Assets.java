@@ -200,11 +200,10 @@ public class Assets {
 
 
 		// Boss
-		//regions = atlas.findRegions("boss_gethit");
-		regions = atlas.findRegions("boss_empty");
+		regions = atlas.findRegions("boss_gethit");
+		//regions = atlas.findRegions("boss_empty");	//where is boss empty?s
 		bossGethit = new Animation(0.15f, regions);
 		bossGethit.setPlayMode(PlayMode.LOOP);
-
 
 		regions = atlas.findRegions("boss_standing");
 		bossStanding = new Animation(0.15f, regions);

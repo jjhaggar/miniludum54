@@ -193,6 +193,7 @@ public class MainScreen extends BaseScreen {
 		delta = Math.min(delta, 0.05f);
 
 		this.updatePlayer(delta);
+		this.updateShots(delta);
 		this.updateBoss(delta);
 		this.player.act(delta);
 		this.boss.act(delta);
@@ -1443,23 +1444,49 @@ public class MainScreen extends BaseScreen {
 				this.jump();
 
 			if (Gdx.input.isKeyJustPressed(Keys.D)) {
-				// this.shoot();
+				this.shoot();
 			}
 		}
 
 		if (Assets.playerAttack.isAnimationFinished(this.player.stateTime))
 			this.player.shooting = false;
+	}
 
-		/*
-		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
-		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
-		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 *
-		 *
-		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
-		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
-		 */
-		// movingShootingJumpingBoss(deltaTime);
+	private void updateShots(float deltaTime) {
+		int i = 0;
+		 boolean[] toBeDeleted = new boolean[3];
+		 for (Shot shot : this.shotArray){
+			 if (shot != null){
+				 if(this.updateShot(shot, deltaTime) == true){
+					 toBeDeleted[i] = true; //pool of shots?
+					 }
+				 i++;
+				 }
+		 }
+
+		 for(int j = 0; j < toBeDeleted.length; j++){
+			 if (toBeDeleted[j] && (this.shotArray.size >= (j + 1)))
+				 this.shotArray.removeIndex(j);
+			 }
+	}
+
+	public void shoot() {
+		if  (this.shotArray.size < 3){
+			Assets.playSound("playerAttack");
+			Shot shot = new Shot(Assets.playerShot);
+			if (this.player.facesRight){
+				//-1 necessary to be exactly the same as the other facing
+				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.velocity.x);
+			}
+			else {
+				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.velocity.x);
+			}
+			this.shotArray.add(shot);
+
+			this.player.state = Player.State.Attacking;
+			this.player.stateTime = 0;
+			this.player.shooting = true;
+		}
 	}
 
 	private void moveRight() {

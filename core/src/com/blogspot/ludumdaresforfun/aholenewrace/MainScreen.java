@@ -1479,8 +1479,10 @@ public class MainScreen extends BaseScreen {
 			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed)
 				moveRight();
 
-			if (Gdx.input.isKeyJustPressed(Keys.S) || this.configControllers.controllerListener.buttonDown(Controllers.getControllers().get(0), 0))
+			if (Gdx.input.isKeyJustPressed(Keys.S) || this.configControllers.activateJump){
 				this.jump();
+				this.configControllers.activateJump = false;
+			}
 
 			if (Gdx.input.isKeyJustPressed(Keys.D)) {
 				this.shoot();

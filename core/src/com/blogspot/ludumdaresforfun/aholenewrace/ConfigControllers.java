@@ -15,6 +15,8 @@ public class ConfigControllers {
 	public boolean jumpPressed = false;
 	public boolean shootPressed = false;
 
+	public boolean activateJump = false;
+
 	public boolean leftPressed2P, rightPressed2P, jumpPressed2P, shootPressed2P = false;
 
     public ConfigControllers(MainScreen screen) {
@@ -86,8 +88,8 @@ public class ConfigControllers {
                     if (screen.getClass().equals(MainScreen.class)){
                     	if (indexOf(controller) == 0){
 		                    if (buttonIndex == 0  && !ConfigControllers.this.jumpPressed){
-		                        ConfigControllers.this.jumpPressed = true;
-		                        return true;
+		                    	activateJump = true;
+		                    	ConfigControllers.this.jumpPressed = true;
 		                    }
                     	}
                     	if (indexOf(controller) == 1){

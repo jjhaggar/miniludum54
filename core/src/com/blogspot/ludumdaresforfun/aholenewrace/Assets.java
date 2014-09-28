@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Assets {
 	static AssetManager assetManager, assetManagerCutScenes;
-	static Animation enemy_bat_fly, enemy_spider_attack, enemy_spider_walk;
+	static Animation enemy_bat_fly, enemy_bat_dying, enemy_spider_attack, enemy_spider_walk, enemy_spider_dying;
 	static Animation race_start, race_finish, race_finish_left, race_finish_right;
     static Animation playerAttack, playerEmpty, playerIntro, playerStand, playerWalk, playerRun, playerJump, playerBeingHit, playerDie;
     static Animation playerShot, playerShotHit;
@@ -191,9 +191,17 @@ public class Assets {
 		enemy_bat_fly = new Animation(0.15f, regions);
 		enemy_bat_fly.setPlayMode(Animation.PlayMode.LOOP);
 
+		regions = atlas.findRegions("enemy_bat_dying");
+		enemy_bat_dying = new Animation(0.15f, regions);
+		enemy_bat_dying.setPlayMode(Animation.PlayMode.LOOP);
+
 		regions = atlas.findRegions("enemy_spider_walk");
 		enemy_spider_walk = new Animation(0.15f, regions);
 		enemy_spider_walk.setPlayMode(Animation.PlayMode.LOOP);
+
+		regions = atlas.findRegions("enemy_spider_dying");
+		enemy_spider_dying = new Animation(0.15f, regions);
+		enemy_spider_dying.setPlayMode(Animation.PlayMode.LOOP);
 
 		regions = atlas.findRegions("enemy_spider_attack");
 		enemy_spider_attack = new Animation(0.20f, regions);

@@ -1413,7 +1413,7 @@ public class MainScreen extends BaseScreen {
 	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_attack.getKeyFrame(enemy.stateTime);
 	    				break;
 	    			case Hurting:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_dying.getKeyFrame(enemy.stateTime);
 	    				break;
 	    			case BeingInvoked:
 	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
@@ -1429,7 +1429,7 @@ public class MainScreen extends BaseScreen {
 	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
 	    				break;
 	    			case Hurting:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
+	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_dying.getKeyFrame(enemy.stateTime);
 	    				break;
 	    			case BeingInvoked:
 	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
@@ -1439,14 +1439,22 @@ public class MainScreen extends BaseScreen {
 
             Batch batch = this.renderer.getSpriteBatch();
             batch.begin();
+    		if (enemy.getY() < POS_LOWER_WORLD && !enemy.actualFrame.isFlipY()) {
+    			enemy.actualFrame.flip(false, true);
+    			enemy.offsetY = 4;
+    		} else if (enemy.getY() >= POS_LOWER_WORLD && enemy.actualFrame.isFlipY()) {
+    			enemy.actualFrame.flip(false, true);
+    			enemy.offsetY = 0;
+    		}
+
             if (enemy.dir == Enemy.Direction.Right) {
                 if (enemy.actualFrame.isFlipX())
                 	enemy.actualFrame.flip(true, false);
-                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY());
+                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY() + enemy.offsetY);
             } else {
                 if (!enemy.actualFrame.isFlipX())
                 	enemy.actualFrame.flip(true, false);
-                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY());
+                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY() + enemy.offsetY);
             }
             batch.end();
 	    }
@@ -1504,10 +1512,10 @@ public class MainScreen extends BaseScreen {
 			Shot shot = new Shot(Assets.playerShot);
 			if (this.player.facesRight){
 				//-1 necessary to be exactly the same as the other facing
-				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.velocity.x);
+				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.getVelocityX());
 			}
 			else {
-				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.velocity.x);
+				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.getVelocityX());
 			}
 			this.shotArray.add(shot);
 

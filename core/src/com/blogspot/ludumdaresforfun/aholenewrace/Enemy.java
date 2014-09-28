@@ -45,6 +45,7 @@ public class Enemy extends Image{
     protected Animation animation = null;
     float stateTime = 0;
 	float offSetX;
+	float offsetY;
 	public boolean dying = false;
 	public boolean canMove = false;
 	public AtlasRegion actualFrame;

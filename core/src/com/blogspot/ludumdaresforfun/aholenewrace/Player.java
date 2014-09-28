@@ -113,6 +113,10 @@ public class Player extends Image {
         return this.counter.currentLifes;
     }
 
+    public float getVelocityX() {
+    	return this.velocity.x;
+    }
+
     @Override
     public void act(float delta) {
         ((TextureRegionDrawable)this.getDrawable()).setRegion(this.animation.getKeyFrame(this.stateTime+=delta, true));

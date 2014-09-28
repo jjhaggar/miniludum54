@@ -97,8 +97,8 @@ public class Boss extends Image {
 			this.invincible = true;
 			this.state = Boss.State.BeingHit;
 			this.stateTime = 0;
-			this.velocity.y = 150;
-			this.noControl = true;
+			//this.velocity.y = 150;
+			//this.noControl = true;
 			int lifes = this.counter.lostLife();
 			if (lifes <= 0) {
 				this.die();

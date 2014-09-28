@@ -56,7 +56,6 @@ public class Boss extends Image {
 	float flowTime = 0;
 	public float offSetX;
 	public boolean invincible = false;
-	public boolean noControl = false;
 	public boolean dead = false;
 	public boolean shooting = false;
 	public int toggle = 0;
@@ -68,6 +67,7 @@ public class Boss extends Image {
 	public long lastTimeLeftBoss = -1L;
 	public long lastTimeRightBoss = -1L;
 	public boolean run = false;
+	public boolean noControl = true;
 
 	public Boss(Animation animation) {
 		super(animation.getKeyFrame(0));

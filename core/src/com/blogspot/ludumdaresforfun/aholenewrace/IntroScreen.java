@@ -15,6 +15,20 @@ public class IntroScreen extends BaseScreen{
     	this.bg = new BGAnimated(Assets.intro_BADLY_DONE);
     	this.stage.addActor(this.bg);
 
+    	this.stage.addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
+                IntroScreen.this.bg.act(delta);
+
+                if (Assets.intro_BADLY_DONE.getKeyFrameIndex(IntroScreen.this.bg.stateTime) == Assets.intro_BADLY_DONE.keyFrames.length - 1) {
+                	 AHoleNewRace.getInstance().MAIN_SCREEN = new MainScreen(1);
+                     AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().MAIN_SCREEN);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         //this.configControllers = new ConfigControllers(this);
         //this.configControllers.init();
     }

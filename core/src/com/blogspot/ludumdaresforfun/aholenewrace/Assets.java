@@ -138,8 +138,8 @@ public class Assets {
         race_start.setPlayMode(PlayMode.NORMAL);
 
         regions = atlas.findRegions("race_finish"); // Esta no es la que deberíamos usar, pero al ser de una pieza es más sencilla, la subo por si acaso
-        race_finish = new Animation(0.55f, regions);
-        race_finish.setPlayMode(PlayMode.NORMAL);
+        race_finish = new Animation(0.3f, regions);
+        race_finish.setPlayMode(PlayMode.REVERSED);
 
         regions = atlas.findRegions("race_finish_left");
         race_finish_left = new Animation(0.55f, regions);

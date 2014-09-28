@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class Object extends Image{
 
     enum Type {
-    	item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
+    	item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed, race_start, race_finish;
     }
 
     enum State {

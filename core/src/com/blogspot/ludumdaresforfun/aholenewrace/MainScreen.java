@@ -10,6 +10,7 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -85,6 +86,8 @@ public class MainScreen extends BaseScreen {
 	private OrthographicCamera camera2;
 	private int numberOfPlayers = 1;
 	private OrthographicCamera camera3;
+	private boolean startRace = false;
+	private boolean raceFinish = false;
 
 	@Override
 	public void backButtonPressed() {
@@ -98,11 +101,15 @@ public class MainScreen extends BaseScreen {
 
 	}
 
-	public MainScreen() {
+	public MainScreen(int stageNumber) {
 		this.shapeRenderer = new ShapeRenderer();
 
-
-		this.map = new TmxMapLoader().load("tilemap_02.tmx");
+		if (stageNumber == 1)
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+		else if (stageNumber == 2)
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+		else if (stageNumber == 3)
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
@@ -172,6 +179,12 @@ public class MainScreen extends BaseScreen {
 						}else if (type.equals("item_apple")) {
 							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
 									Assets.item_apple, Object.Type.item_apple));
+						}else if (type.equals("race_start")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.race_start, Object.Type.race_start));
+						}else if (type.equals("race_finish")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Assets.race_finish, Object.Type.race_finish));
 						} else if (type.equals("player")) {
 							this.player.setPosition(x * this.TILED_SIZE, y * this.TILED_SIZE);
 						} else if (type.equals("boss")) {
@@ -235,11 +248,40 @@ public class MainScreen extends BaseScreen {
 		this.updateEnemies(delta);
 
 		this.updateObjects(delta);
+
+		this.updateFlowOfRace(delta);
+	}
+
+	private void updateFlowOfRace(float delta) {
+		for (Object object : this.objects){
+			if (object.objectType == Object.Type.race_start && object.animation.getKeyFrameIndex(object.stateTime) == 7){
+				this.boss.noControl = false;
+				this.player.noControl = false;
+				this.startRace  = true;
+			}
+		}
+		if (raceFinish){
+            Timer.schedule(new Task() {
+                @Override
+                public void run() {
+                    MainScreen.this.player.noControl = true;
+                    MainScreen.this.boss.noControl = true;
+
+                    AHoleNewRace.getInstance().INTRO_SCREEN = new IntroScreen();
+                    AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().INTRO_SCREEN);
+                }
+            }, 1.0f);
+		}
+
+
 	}
 
 	private void updateObjects(float deltaTime) {
 		Array<Object> obtainLifes = new Array<Object>();
 		for (Object object : this.objects) {
+
+			object.stateTime += deltaTime;
+
 			if (object.getRect().overlaps(this.player.getRect2())) {
 				switch (object.objectType) {
 				case item_apple:
@@ -274,6 +316,14 @@ public class MainScreen extends BaseScreen {
 					this.player.powerUpVelocity();
 					obtainLifes.add(object);
 					Assets.playSound("gainLifePlayer");
+					break;
+				case race_finish:
+					if (!this.raceFinish){
+						this.raceFinish  = true;
+						Assets.playSound("gainLifePlayer");
+						object.animation.setPlayMode(PlayMode.NORMAL);
+						object.stateTime = 0;
+					}
 					break;
 				}
 			}
@@ -311,6 +361,14 @@ public class MainScreen extends BaseScreen {
 					this.boss.powerUpVelocity();
 					obtainLifes.add(object);
 					Assets.playSound("gainLifePlayer");
+					break;
+				case race_finish:
+					if (!this.raceFinish){
+						this.raceFinish  = true;
+						Assets.playSound("gainLifePlayer");
+						object.animation.setPlayMode(PlayMode.NORMAL);
+						object.stateTime = 0;
+					}
 					break;
 				}
 			}
@@ -445,11 +503,15 @@ public class MainScreen extends BaseScreen {
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
 		this.renderEnemies(delta);
-		this.renderPlayer(delta);
-		this.renderBoss(delta);
-		renderShots(delta);
 
 		renderObjects(delta);
+
+		this.renderBoss(delta);
+		this.renderPlayer(delta);
+
+		renderShots(delta);
+
+
 	}
 
 	private void renderObjects(float delta) {
@@ -458,14 +520,14 @@ public class MainScreen extends BaseScreen {
 
 			frame = (AtlasRegion)object.animation.getKeyFrame(object.stateTime);
 
-			if (!this.normalGravity) {
-			    if (!frame.isFlipY())
-	                frame.flip(false, true);
-			}
-			else {
-			    if (frame.isFlipY())
-	                frame.flip(false, true);
-			}
+//			if (!this.normalGravity) {
+//			    if (!frame.isFlipY())
+//	                frame.flip(false, true);
+//			}
+//			else {
+//			    if (frame.isFlipY())
+//	                frame.flip(false, true);
+//			}
 
 			Batch batch = this.renderer.getSpriteBatch();
 			batch.begin();
@@ -488,11 +550,15 @@ public class MainScreen extends BaseScreen {
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
 		this.renderEnemies(delta);
-		this.renderPlayer(delta);
-		this.renderBoss(delta);
-		renderShots(delta);
 
 		renderObjects(delta);
+
+		this.renderPlayer(delta);
+		this.renderBoss(delta);
+
+		renderShots(delta);
+
+
 	}
 
 	private void updateCameraForTwoPlayersTemplar() {
@@ -627,7 +693,7 @@ public class MainScreen extends BaseScreen {
 		this.player.velocity.scl(deltaTime);
 
 		// retreat if noControl //velocity y is changed in beingHit
-		if (this.player.noControl
+		if (this.player.pushedBack
 				&& !(this.player.state.equals(Player.State.Die) && Assets.playerDie
 						.isAnimationFinished(this.player.stateTime))) {
 			if (this.player.facesRight)
@@ -643,8 +709,10 @@ public class MainScreen extends BaseScreen {
 		this.player.desiredPosition.add(this.player.velocity);
 		this.player.velocity.scl(1 / deltaTime);
 
-		if (Assets.playerBeingHit.isAnimationFinished(this.player.stateTime) && !this.player.dead)
+		if (Assets.playerBeingHit.isAnimationFinished(this.player.stateTime) && !this.player.dead && this.startRace){
 			this.player.noControl = false;
+			this.player.pushedBack = false;
+		}
 
 		if (this.player.noControl == false)
 			this.player.velocity.x *= 0; // 0 is totally stopped if not pressed
@@ -695,7 +763,7 @@ public class MainScreen extends BaseScreen {
 		this.boss.desiredPosition.add(this.boss.velocity);
 		this.boss.velocity.scl(1 / deltaTime);
 
-		if (Assets.bossGethit.isAnimationFinished(this.boss.stateTime) && !this.boss.dead)
+		if (Assets.bossGethit.isAnimationFinished(this.boss.stateTime) && !this.boss.dead && this.startRace)
 			this.boss.noControl = false;
 
 		if (this.boss.noControl == false)

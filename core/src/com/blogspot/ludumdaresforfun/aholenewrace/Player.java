@@ -24,7 +24,7 @@ public class Player extends Image {
     public boolean updateVelocity;
     public boolean shooting = false;
     public boolean invincible = false;
-    public boolean noControl = false;
+    public boolean noControl = true;
     public boolean dead = false;
     public int toggle = 0;
 
@@ -43,6 +43,7 @@ public class Player extends Image {
 	public long lastTimeRightPlayer = -1;
 	public long lastTimeLeftPlayer = -1;
 	public boolean run = false;
+	public boolean pushedBack = false;
 
     public Player(Animation animation) {
         super(animation.getKeyFrame(0));
@@ -79,6 +80,7 @@ public class Player extends Image {
             this.stateTime = 0;
             this.velocity.y = 150;
             this.noControl = true;
+            this.pushedBack  = true;
 
             int lifes = this.counter.lostLife();
             if (lifes <= 0) {
@@ -110,7 +112,7 @@ public class Player extends Image {
     	return this.velocity.x;
     }
 
-    @Override
+    @Override		//is not doing anything in this case
     public void act(float delta) {
         ((TextureRegionDrawable)this.getDrawable()).setRegion(this.animation.getKeyFrame(this.stateTime+=delta, true));
         super.act(delta);

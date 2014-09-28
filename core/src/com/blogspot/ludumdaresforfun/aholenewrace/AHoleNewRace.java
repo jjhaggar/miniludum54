@@ -12,19 +12,19 @@ public class AHoleNewRace extends Game {
 	Texture img;
     static AHoleNewRace instance;
     //public MenuScreen MENU_SCREEN;
-    //public IntroScreen INTRO_SCREEN;
+    public IntroScreen INTRO_SCREEN;
     //public EndingScreen ENDING_SCREEN;
     //public GameOverScreen GAMEOVER_SCREEN;
 
-    //public MainScreen MAIN_SCREEN;
+    public MainScreen MAIN_SCREEN;
 
     @Override
     public void create() {
         instance = this;
 	    Assets.loadMusicAndSound();
 	    Assets.loadAnimation();
-        this.setScreen(new MainScreen());			//(new MenuScreen());
-        //this.setScreen(new IntroScreen());
+        this.setScreen(new IntroScreen());			//(new MenuScreen());
+
     }
 
     @Override

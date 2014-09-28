@@ -26,6 +26,7 @@ public class Player extends Image {
     public boolean invincible = false;
     public boolean noControl = false;
     public boolean dead = false;
+    public int toggle = 0;
 
     public Counter counter = new Counter(this.MAX_LIFES);
 
@@ -94,15 +95,6 @@ public class Player extends Image {
     }
 
     public void die() {
-    	if (Assets.musicBoss.isLooping())
-    	{
-    		Assets.musicBoss.stop();
-    	}
-    	else if (Assets.musicStage.isLooping())
-    	{
-    		Assets.musicStage.stop();
-    	}
-        Assets.playSound("playerDead");
         this.state = Player.State.Die;
         this.stateTime = 0;
         this.noControl = true;
@@ -122,4 +114,14 @@ public class Player extends Image {
         ((TextureRegionDrawable)this.getDrawable()).setRegion(this.animation.getKeyFrame(this.stateTime+=delta, true));
         super.act(delta);
     }
+
+	public void revive() {
+		if (this.dead){
+			this.noControl = false;
+			this.dead = false;
+			this.state = Player.State.Standing;
+			this.counter.gainLife(1);
+			Assets.playSound("gainLifePlayer");
+		}
+	}
 }

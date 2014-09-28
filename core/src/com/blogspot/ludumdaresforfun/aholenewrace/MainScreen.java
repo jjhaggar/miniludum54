@@ -62,7 +62,7 @@ public class MainScreen extends BaseScreen {
 			return new Rectangle();
 		}
 	};
-	// HUD hud;
+	 HUD hud;
 
 	private final float GRAVITY = -600f; // -10 * 60
 	final int SCREEN_HEIGHT = 240;
@@ -83,6 +83,7 @@ public class MainScreen extends BaseScreen {
 	float UpOffset = 0;
 	private OrthographicCamera camera2;
 	private int numberOfPlayers = 1;
+	private OrthographicCamera camera3;
 
 	@Override
 	public void backButtonPressed() {
@@ -99,7 +100,7 @@ public class MainScreen extends BaseScreen {
 	public MainScreen() {
 		this.shapeRenderer = new ShapeRenderer();
 
-		this.map = new TmxMapLoader().load("tilemap_01.tmx");
+		this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
 		this.TILED_SIZE = (Integer) this.map.getProperties().get("tileheight");
@@ -113,8 +114,11 @@ public class MainScreen extends BaseScreen {
 		numberOfPlayers = 2;
 
 		this.camera = new OrthographicCamera();
-		if (this.numberOfPlayers  == 1)
+		this.camera3 = new OrthographicCamera();
+		this.camera3.setToOrtho(false, this.SCREEN_WIDTH, TILED_SIZE);
+		if (this.numberOfPlayers  == 1){
 			this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+		}
 		else{
 			this.camera.setToOrtho(false, this.SCREEN_WIDTH / 2, this.SCREEN_HEIGHT);
 
@@ -147,7 +151,7 @@ public class MainScreen extends BaseScreen {
 						}else if (type.equals("bat")) {
 							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Enemy.Type.Bat);
 							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
-						}else if (type.equals("pollo")) {
+						}else if (type.equals("item_bananas")) {
 							this.lifes.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
 						} else if (type.equals("player")) {
 							this.player.setPosition(x * this.TILED_SIZE, y * this.TILED_SIZE);
@@ -163,6 +167,7 @@ public class MainScreen extends BaseScreen {
 		this.camera.position.x = this.player.getX()+ SCREEN_WIDTH/8; //
 	 	this.camera2.position.x = this.boss.getX()+ SCREEN_WIDTH/8; //
 
+	 	this.hud = new HUD(Assets.hudBase);
 	}
 
 	@Override
@@ -179,17 +184,19 @@ public class MainScreen extends BaseScreen {
 		}
 		else{
 			//Down Half
-			Gdx.gl.glViewport( 0,0,(Gdx.graphics.getWidth() / 2) - 1,Gdx.graphics.getHeight());
+			Gdx.gl.glViewport( 0,0,(Gdx.graphics.getWidth() / 2) - 1,Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15);
 
 			updateCameraForTwoPlayersTemplar();
 			drawFirstWorld(delta);
 
 			//Upper Half
-			Gdx.gl.glViewport( ((Gdx.graphics.getWidth() / 2) + 1),0,(Gdx.graphics.getWidth() / 2 - 1),Gdx.graphics.getHeight());
+			Gdx.gl.glViewport( ((Gdx.graphics.getWidth() / 2) + 1),0,(Gdx.graphics.getWidth() / 2 - 1),Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15);
 
 			updateCameraForTwoPlayersBoss();
 			drawSecondWorld(delta);
 		}
+		Gdx.gl.glViewport( 0,Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15,Gdx.graphics.getWidth(),Gdx.graphics.getHeight() / 15);
+		renderHUD(delta);
 
 	}
 
@@ -198,28 +205,63 @@ public class MainScreen extends BaseScreen {
 
 		this.updatePlayer(delta);
 		this.updateShots(delta);
+
 		this.updateBoss(delta);
 		this.updateAttackBoss(delta);
+
 		this.player.act(delta);
 		this.boss.act(delta);
 
 		spawnEnemies();
-
-		// this.collisionLifes(delta);
 		this.updateEnemies(delta);
 
-		  //this.renderHUD(delta);
+		this.collisionLifes(delta);
+	}
 
+	private void collisionLifes(float deltaTime) {
+        Array<Vector2> obtainLifes = new Array<Vector2>();
+	    for (Vector2 life : this.lifes) {
+	        if (this.normalGravity) {
+                if ((life.dst(this.player.getX(), this.player.getCenterY()) < this.player.getWidth())) {
+                	if (this.player.getLifes() < this.player.MAX_LIFES)
+                		this.player.counter.gainLife(1);
+                    obtainLifes.add(life);
+                    Assets.playSound("gainLifePlayer");
+                    // Remove life in map
+                    TiledMapTileLayer layerPlantfs = (TiledMapTileLayer)(this.map.getLayers().get("Spawn"));
+                    layerPlantfs.setCell((int)life.x / this.TILED_SIZE, (int)life.y / this.TILED_SIZE, null);
+                }
+	        }
+	        else {
+                if ((life.dst(this.player.getX(), this.player.getY()) < this.player.getWidth())) {
+                    if (this.player.getLifes() < this.player.MAX_LIFES)
+                    	this.player.counter.gainLife(1);
+                    obtainLifes.add(life);
+                    Assets.playSound("gainLifePlayer");
+                    // Remove life in map
+                    TiledMapTileLayer layerPlantfs = (TiledMapTileLayer)(this.map.getLayers().get("Spawn"));
+                    layerPlantfs.setCell((int)life.x / this.TILED_SIZE, (int)life.y / this.TILED_SIZE, null);
+                }
+	        }
+	    }
+	    this.lifes.removeAll(obtainLifes, false);
 	}
 
 	private void updateAttackBoss(float delta) {
 		this.playerRect = this.rectPool.obtain();
 		if (this.boss.shooting){
-			this.playerRect = new Rectangle(this.boss.getRect().x + this.boss.getRect2().width,		//
-					this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
-
+			if (this.boss.facesRight){
+				this.playerRect = new Rectangle(this.boss.getRect().x + this.boss.getRect2().width,		//
+						this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
+			}
+			else{
+				this.playerRect = new Rectangle(this.boss.getRect().x,		//
+						this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
+			}
+			System.out.println("playerRect" + this.playerRect.x + " width" + this.playerRect.width);
 
 			for (Enemy enemy : this.enemies){	//attack kill
+				System.out.println("enemy x" + enemy.getX());
 				if (this.playerRect.overlaps(enemy.getRect())) {
 					if (!enemy.dying)
 						enemy.die();
@@ -277,6 +319,35 @@ public class MainScreen extends BaseScreen {
 		batch.end();
 	}
 
+	private void renderHUD(float deltaTime) {
+
+		this.renderer.setView(this.camera3);
+		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
+        AtlasRegion frame = (AtlasRegion)Assets.hudBase.getKeyFrame(this.hud.stateTime);
+        AtlasRegion playerLife = (AtlasRegion)Assets.hudLifePlayer.getKeyFrame(this.hud.stateTime);
+        AtlasRegion bossLife = (AtlasRegion)Assets.hudLifeBoss.getKeyFrame(this.hud.stateTime);
+        AtlasRegion positionBoss = (AtlasRegion)Assets.hudPositionBoss.getKeyFrame(this.hud.stateTime);
+        AtlasRegion positionPlayer = (AtlasRegion)Assets.hudPositionPlayer.getKeyFrame(this.hud.stateTime);
+
+        Batch batch = this.renderer.getSpriteBatch();
+        batch.begin();
+        batch.draw(frame, 0, 0, frame.packedWidth, frame.packedHeight);
+        for (int pl=0; pl < this.player.getLifes(); pl++) {
+        	batch.draw(playerLife, Assets.offsetLifePlayer.x + (pl * 9), Assets.offsetLifePlayer.y);	//JJ dice que es mas facil 9
+        }
+        for (int bl=0; bl < this.boss.getLifes(); bl++) {
+        	batch.draw(bossLife, Assets.offsetLifeBoss.x + (bl * 9), Assets.offsetLifeBoss.y);	//JJ dice que es mas facil 9
+        }
+
+        batch.end();
+
+        this.shapeRenderer.begin(ShapeType.Filled);
+        this.shapeRenderer.setColor(Color.BLACK);
+        this.getTiles(0, 0, 25, 15, this.tiles);
+        this.shapeRenderer.setColor(Color.RED);
+        this.shapeRenderer.end();
+	}
+
 	private void spawnEnemies() {
 		if (this.spawns.size() > 0) {
 			Vector2 auxNextSpawn = this.spawnsPositions.first();
@@ -306,6 +377,13 @@ public class MainScreen extends BaseScreen {
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
 		renderShots(delta);
+
+		renderObjects(delta);
+	}
+
+	private void renderObjects(float delta) {
+		// TODO Auto-generated method stub
+
 	}
 
 	private void renderShots(float delta) {
@@ -323,6 +401,8 @@ public class MainScreen extends BaseScreen {
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
 		renderShots(delta);
+
+		renderObjects(delta);
 	}
 
 	private void updateCameraForTwoPlayersTemplar() {
@@ -343,6 +423,11 @@ public class MainScreen extends BaseScreen {
 			camera.position.x -= 5;
 		else if (!player.facesRight && camera.position.x > player.getX() - SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
+		else if (player.facesRight && player.noControl)
+			camera.position.x = player.getX() + SCREEN_WIDTH / 8;
+		else if (!player.facesRight && player.noControl)
+			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
+
 		//}
 
 
@@ -460,15 +545,15 @@ public class MainScreen extends BaseScreen {
 
 		this.player.setPosition(this.player.desiredPosition.x, this.player.desiredPosition.y);
 
-		/*
-		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
-		 * this.player.dead && !callGameOver){ callGameOver = true;
-		 * Timer.schedule(new Task() {
-		 *
-		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
-		 * this.player.velocity.x = 0; } if (collisionSpike) {
-		 * this.player.beingHit(); }
-		 */
+
+		if (Assets.playerDie.isAnimationFinished(this.player.stateTime) && this.player.dead){
+			Timer.schedule(new Task() {
+				@Override public void run() { MainScreen.this.player.revive();
+				}
+				}, 0f);
+			this.player.velocity.x = 0;
+		}
+
 	}
 
 	private void updateBoss(float deltaTime) {
@@ -512,15 +597,13 @@ public class MainScreen extends BaseScreen {
 
 		this.boss.setPosition(this.boss.desiredPosition.x, this.boss.desiredPosition.y);
 
-		/*
-		 * if (Assets.playerDie.isAnimationFinished(this.player.stateTime) &&
-		 * this.player.dead && !callGameOver){ callGameOver = true;
-		 * Timer.schedule(new Task() {
-		 *
-		 * @Override public void run() { MainScreen.this.gameOver(); } }, 1f);
-		 * this.player.velocity.x = 0; } if (collisionSpike) {
-		 * this.player.beingHit(); }
-		 */
+		if (Assets.bossDie.isAnimationFinished(this.boss.stateTime) && this.boss.dead){
+			Timer.schedule(new Task() {
+				@Override public void run() { MainScreen.this.boss.revive();
+				}
+				}, 0f);
+			this.boss.velocity.x = 0;
+		}
 	}
 
 	private void gravityAndClamping(float deltaTime) {
@@ -734,19 +817,35 @@ public class MainScreen extends BaseScreen {
 	        if (!enemy.running && !enemy.dying && !enemy.beingInvoked && enemy.canMove){
 	            // Attack
 	        	if (!this.player.invincible &&
-                        (Math.abs(enemy.getCenterX() - this.player.getCenterX()) <= enemy.ATTACK_DISTANCE) &&
-	        	        (Math.abs(((enemy.getCenterY() - this.player.getCenterY()))) <= this.player.getHeight())) {
+	        			(Math.abs(enemy.getCenterX() - this.player.getCenterX()) <= enemy.ATTACK_DISTANCE) &&
+	        			(Math.abs(((enemy.getCenterY() - this.player.getCenterY()))) <= this.player.getHeight())) {
 	        		if (enemy.getCenterX() < this.player.getCenterX()) {
-	        				enemy.dir = Enemy.Direction.Right;
-	        				enemy.run();
-	        				enemy.attackHereX = this.player.getX();
-	        				enemy.attackRight = true;
+	        			enemy.dir = Enemy.Direction.Right;
+	        			enemy.run();
+	        			enemy.attackHereX = this.player.getX();
+	        			enemy.attackRight = true;
 	        		}
 	        		else {
-	        				enemy.dir = Enemy.Direction.Left;
-	        				enemy.run();
-	        				enemy.attackHereX = this.player.getX();
-	        				enemy.attackRight = false;
+	        			enemy.dir = Enemy.Direction.Left;
+	        			enemy.run();
+	        			enemy.attackHereX = this.player.getX();
+	        			enemy.attackRight = false;
+	        		}
+	        	}
+	        	else if (!this.boss.invincible &&
+	        			(Math.abs(enemy.getCenterX() - this.boss.getCenterX()) <= enemy.ATTACK_DISTANCE) &&
+	        			(Math.abs(((enemy.getCenterY() - this.boss.getCenterY()))) <= this.boss.getHeight())) {
+	        		if (enemy.getCenterX() < this.boss.getCenterX()) {
+	        			enemy.dir = Enemy.Direction.Right;
+	        			enemy.run();
+	        			enemy.attackHereX = this.boss.getX();
+	        			enemy.attackRight = true;
+	        		}
+	        		else {
+	        			enemy.dir = Enemy.Direction.Left;
+	        			enemy.run();
+	        			enemy.attackHereX = this.boss.getX();
+	        			enemy.attackRight = false;
 	        		}
 	        	}
 	        	else if (enemy.dir == Enemy.Direction.Left) {
@@ -837,8 +936,10 @@ public class MainScreen extends BaseScreen {
 	        return;
 	    Rectangle cameraRect = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
 	    cameraRect.setCenter(this.camera.position.x, this.camera.position.y);
-	    if (enemy.rect.overlaps(cameraRect)) {
-		    if ((this.player.getX() - enemy.getX()) < 0)
+	    Rectangle cameraRect2 = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+	    cameraRect2.setCenter(this.camera2.position.x, this.camera2.position.y);
+	    if (enemy.rect.overlaps(cameraRect) || enemy.rect.overlaps(cameraRect2)) {
+		    if ((this.player.getX() - enemy.getX()) < 0 || this.boss.getX() - enemy.getX() < 0)
 		        enemy.dir = Enemy.Direction.Left;
 		    else
 		        enemy.dir = Enemy.Direction.Right;
@@ -1253,7 +1354,6 @@ public class MainScreen extends BaseScreen {
 			frame = (AtlasRegion) Assets.playerAttack.getKeyFrame(this.player.stateTime);
 			break;
 		case Die:
-			this.configControllers.terminate();
 			frame = (AtlasRegion) Assets.playerDie.getKeyFrame(this.player.stateTime);
 			break;
 		case BeingHit:
@@ -1263,14 +1363,15 @@ public class MainScreen extends BaseScreen {
 			frame = (AtlasRegion) Assets.playerRun.getKeyFrame(this.player.stateTime);
 			break;
 		}
-		if (this.player.invincible && this.toggle) {
+		if (this.player.invincible && this.player.toggle <= 0) {
 			frame = (AtlasRegion) Assets.playerEmpty.getKeyFrame(this.player.stateTime);
-			this.toggle = !this.toggle;
-		} else if (this.player.invincible && !this.toggle) {
-			this.toggle = !this.toggle;
+			this.player.toggle = 2;
+		} else if (this.player.invincible && this.player.toggle != 0) {
+			this.player.toggle--;
 		} else if (!this.player.invincible) {
-			this.toggle = false;
+			this.player.toggle = 1;
 		}
+
 		// draw the koala, depending on the current velocity
 		// on the x-axis, draw the koala facing either right
 		// or left
@@ -1342,21 +1443,19 @@ public class MainScreen extends BaseScreen {
 			this.configControllers.terminate();
 			frame = (AtlasRegion) Assets.bossDie.getKeyFrame(this.boss.stateTime);
 			break;
-		case BeingHit:
-			frame = (AtlasRegion) Assets.bossGethit.getKeyFrame(this.boss.stateTime);
-			break;
 		case Running:
 			frame = (AtlasRegion) Assets.bossRunning.getKeyFrame(this.boss.stateTime);
 			break;
 		}
-		if (this.boss.invincible && this.toggle) {
+		if (this.boss.invincible && this.boss.toggle <= 0) {
 			frame = (AtlasRegion) Assets.bossGethit.getKeyFrame(this.boss.stateTime);
-			this.toggle = !this.toggle;
-		} else if (this.boss.invincible && !this.toggle) {
-			this.toggle = !this.toggle;
+			this.boss.toggle = 2;
+		} else if (this.boss.invincible && this.boss.toggle != 0) {
+			this.boss.toggle--;
 		} else if (!this.boss.invincible) {
-			this.toggle = false;
+			this.boss.toggle = 1;
 		}
+
 		// draw the koala, depending on the current velocity
 		// on the x-axis, draw the koala facing either right
 		// or left
@@ -1650,16 +1749,14 @@ public class MainScreen extends BaseScreen {
 		if (!this.boss.run){
 			this.boss.velocity.x = this.boss.MAX_VELOCITY;
 			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Walking;
 			}
 		}
 		else {
 			this.boss.velocity.x = this.boss.MAX_VELOCITY * 2f;
 			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Running;
 			}
 		}
@@ -1679,16 +1776,14 @@ public class MainScreen extends BaseScreen {
 		if (!this.boss.run){
 			this.boss.velocity.x = -this.boss.MAX_VELOCITY;
 			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Walking;
 			}
 		}
 		else {
 			this.boss.velocity.x = -this.boss.MAX_VELOCITY * 2f;
 			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)
-					&& Assets.bossGethit.isAnimationFinished(this.boss.stateTime)) {
+					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Running;
 			}
 		}

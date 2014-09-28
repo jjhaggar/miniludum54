@@ -93,8 +93,6 @@ public class Assets {
 		item_jump = atlas.findRegion("item_jump");
 		item_speed = atlas.findRegion("item_speed");
 
-
-
 		//BG
 		regions = atlas.findRegions("intro");
 		Intro = new Animation(0.25f, regions);
@@ -163,7 +161,7 @@ public class Assets {
 		playerBeingHit = new Animation(0.8f, regions);
 
 		regions = atlas.findRegions("char_dying");  //change to jumping
-		playerDie = new Animation(0.25f, regions);
+		playerDie = new Animation(0.5f, regions);
 
 		// Shot
 		regions = atlas.findRegions("char_attack_holy_water");
@@ -208,8 +206,8 @@ public class Assets {
 
 
 		// Boss
-		regions = atlas.findRegions("boss_gethit");
-		//regions = atlas.findRegions("boss_empty");	//where is boss empty?s
+		//regions = atlas.findRegions("boss_gethit");
+		regions = atlas.findRegions("boss_empty");	//where is boss empty?s
 		bossGethit = new Animation(0.15f, regions);
 		bossGethit.setPlayMode(PlayMode.LOOP);
 
@@ -240,7 +238,7 @@ public class Assets {
 		bossSummon = new Animation(0.15f, regions);
 
 		regions = atlas.findRegions("boss_dying");
-		bossDie = new Animation(0.30f, regions);
+		bossDie = new Animation(0.15f, regions);
 
 		// HUD
 		regions = atlas.findRegions("hud_base");
@@ -253,11 +251,6 @@ public class Assets {
 		regions = atlas.findRegions("hud_position_player");
 		hudPositionPlayer = new Animation(0, regions);
 		offsetPositionPlayer = regions.first().offsetX;
-
-		//which region is this one?
-		//regions = atlas.findRegions("hud_");
-		//hudBossHead = new Animation(0, regions);
-		//offsetBoosHead = regions.first().offsetX;
 
 		regions = atlas.findRegions("hud_life_counter_boss");
 		hudLifeBoss = new Animation(0, regions);

@@ -9,12 +9,12 @@ import com.badlogic.gdx.math.Vector3;
 public class ConfigControllers {
 	// Botones del mando / Gamepad Buttons
 	private BaseScreen screen;
-	private ControllerListener controllerListener;
+	public ControllerListener controllerListener;
 	public boolean leftPressed = false;
 	public boolean rightPressed = false;
 	public boolean jumpPressed = false;
 	public boolean shootPressed = false;
-	
+
 	public boolean leftPressed2P, rightPressed2P, jumpPressed2P, shootPressed2P = false;
 
     public ConfigControllers(MainScreen screen) {
@@ -86,8 +86,8 @@ public class ConfigControllers {
                     if (screen.getClass().equals(MainScreen.class)){
                     	if (indexOf(controller) == 0){
 		                    if (buttonIndex == 0  && !ConfigControllers.this.jumpPressed){
-		                        ((MainScreen) ConfigControllers.this.screen).jump();
 		                        ConfigControllers.this.jumpPressed = true;
+		                        return true;
 		                    }
                     	}
                     	if (indexOf(controller) == 1){
@@ -184,10 +184,10 @@ public class ConfigControllers {
                 @Override
                 public boolean povMoved(Controller controller, int povCode, PovDirection value) {
 
-                	
+
                 	System.out.println("IndexOf = "+ indexOf(controller));
-                	
-                	
+
+
                 	if (indexOf(controller) == 0){
 	                    if (value.equals("west") || value == PovDirection.west){
 	                        rightPressed = false;
@@ -220,8 +220,8 @@ public class ConfigControllers {
 	                        leftPressed2P = false;
 	                    }
                 	}
-                	
-                	
+
+
                     // else System.out.println("else!!");
                     return false;
                 }

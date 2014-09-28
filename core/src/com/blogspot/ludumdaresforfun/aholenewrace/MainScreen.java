@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -215,6 +217,7 @@ public class MainScreen extends BaseScreen {
 		if (this.boss.shooting){
 			this.playerRect = new Rectangle(this.boss.getRect().x + this.boss.getRect2().width,		//
 					this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
+
 
 			for (Enemy enemy : this.enemies){	//attack kill
 				if (this.playerRect.overlaps(enemy.getRect())) {
@@ -1476,7 +1479,7 @@ public class MainScreen extends BaseScreen {
 			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed)
 				moveRight();
 
-			if (Gdx.input.isKeyJustPressed(Keys.S))
+			if (Gdx.input.isKeyJustPressed(Keys.S) || this.configControllers.controllerListener.buttonDown(Controllers.getControllers().get(0), 0))
 				this.jump();
 
 			if (Gdx.input.isKeyJustPressed(Keys.D)) {

@@ -158,6 +158,8 @@ public class MainScreen extends BaseScreen {
 				}
 			}
 		}
+		this.camera.position.x = this.player.getX()+ SCREEN_WIDTH/8; //
+	 	this.camera2.position.x = this.boss.getX()+ SCREEN_WIDTH/8; //
 
 	}
 
@@ -195,6 +197,7 @@ public class MainScreen extends BaseScreen {
 		this.updatePlayer(delta);
 		this.updateShots(delta);
 		this.updateBoss(delta);
+		this.updateAttackBoss(delta);
 		this.player.act(delta);
 		this.boss.act(delta);
 
@@ -205,6 +208,39 @@ public class MainScreen extends BaseScreen {
 
 		  //this.renderHUD(delta);
 
+	}
+
+	private void updateAttackBoss(float delta) {
+		this.playerRect = this.rectPool.obtain();
+		if (this.boss.shooting){
+			this.playerRect = new Rectangle(this.boss.getRect().x + this.boss.getRect2().width,		//
+					this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
+
+			for (Enemy enemy : this.enemies){	//attack kill
+				if (this.playerRect.overlaps(enemy.getRect())) {
+					if (!enemy.dying)
+						enemy.die();
+				}
+				if (this.boss.getRect2().overlaps(enemy.getRect())){	//touch kill
+					if (!enemy.dying && !this.boss.invincible){
+						enemy.die();
+						this.boss.beingHit();
+					}
+				}
+			}
+
+		}
+		else{
+			for (Enemy enemy : this.enemies){
+				if (this.boss.getRect2().overlaps(enemy.getRect())) {	//touch kill
+					if (!enemy.dying && !this.boss.invincible){
+						enemy.die();
+						this.boss.beingHit();
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	private void renderShot(Shot shot, float deltaTime){
@@ -263,7 +299,6 @@ public class MainScreen extends BaseScreen {
 		this.renderer.setView(this.camera);
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
-
 		this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
@@ -281,7 +316,6 @@ public class MainScreen extends BaseScreen {
 		this.renderer.setView(this.camera2);
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
 														// mistery
-
 		this.renderEnemies(delta);
 		this.renderPlayer(delta);
 		this.renderBoss(delta);
@@ -451,14 +485,14 @@ public class MainScreen extends BaseScreen {
 		this.boss.velocity.scl(deltaTime);
 
 		// retreat if noControl //velocity y is changed in beingHit
-		if (this.boss.noControl
-				&& !(this.boss.state.equals(Boss.State.Die) && Assets.bossDie
-						.isAnimationFinished(this.boss.stateTime))) {
-			if (this.boss.facesRight)
-				this.boss.velocity.x = -120f * deltaTime;
-			else
-				this.boss.velocity.x = 120 * deltaTime;
-		}
+//		if (this.boss.noControl
+//				&& !(this.boss.state.equals(Boss.State.Die) && Assets.bossDie
+//						.isAnimationFinished(this.boss.stateTime))) {
+//			if (this.boss.facesRight)
+//				this.boss.velocity.x = -120f * deltaTime;
+//			else
+//				this.boss.velocity.x = 120 * deltaTime;
+//		}
 
 		// boolean collisionSpike = this.collisionWallsAndSpike();
 
@@ -686,17 +720,11 @@ public class MainScreen extends BaseScreen {
 
 	        // Collision between player vs enemy
 	    	if (!enemy.dying){
-	    		if (this.player.getX() > enemy.getX()){
-	    			if (this.player.getRect().overlaps(enemy.getRect())) {
-	    				this.player.beingHit();
-	    			}
-	    		}
-	    		else{
-	    			if (this.player.getRect().overlaps(enemy.getRect())) {
-	    				this.player.beingHit();
-	    			}
+	    		if (this.player.getRect2().overlaps(enemy.getRect())) {
+	    			this.player.beingHit();
 	    		}
 	    	}
+
 
 	        enemy.stateTime += deltaTime;
 	        // Check if player is invincible and check distance to player for attack him.
@@ -825,14 +853,14 @@ public class MainScreen extends BaseScreen {
 			// this.camera.position.y = this.POS_LOWER_WORLD;
 			if (this.normalGravityBoss == true) {
 				this.normalGravityBoss = false;
-				// this.player.velocity.y = -this.player.JUMP_VELOCITY * 1.01f;
+				this.boss.velocity.y = this.boss.velocity.y * 1.33333333333f;
 				// //3 tiles in both
 			}
 		} else {
 			// this.camera.position.y = 0;//this.yPosUpperWorld;
 			if (this.normalGravityBoss == false) {
 				this.normalGravityBoss = true;
-				// this.player.velocity.y = this.player.JUMP_VELOCITY / 1.3f;
+				this.boss.velocity.y = this.boss.velocity.y * 0.75f;
 				// //3 tiles in both
 			}
 		}
@@ -1578,7 +1606,7 @@ public class MainScreen extends BaseScreen {
 				moveRightBoss();
 
 			if (Gdx.input.isKeyJustPressed(Keys.H)) {
-				// this.shootBoss();
+				this.shootBoss();
 			}
 		}
 
@@ -1594,6 +1622,14 @@ public class MainScreen extends BaseScreen {
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
+	}
+
+	private void shootBoss(){
+		if (!this.boss.shooting){
+			this.boss.state = Boss.State.Attack;
+			this.boss.stateTime = 0;
+			this.boss.shooting = true;
+		}
 	}
 
 	private void moveRightBoss() {

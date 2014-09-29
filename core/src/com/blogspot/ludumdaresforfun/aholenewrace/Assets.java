@@ -23,7 +23,8 @@ public class Assets {
     static Animation enemyWalk, enemyRun, enemyHurt, enemyAppearing;
     static Animation bossGethit, bossStanding,  bossWalking, bossRunning, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
     static Animation Ending, GameOver, Intro, CutScene1, CutScene2; // Borrable ?
-    static Animation CutSceneBase, CutScenePoints1P, CutScenePoints2P, Ending1P, Ending2P, EndingDraw;
+    static Animation CutSceneBase, CutScenePoints1P, CutScenePoints2P;
+	static AnimationNinja Ending2P, Ending1P, EndingDraw;
     static Animation hudBase, hudPositionBoss, hudPositionPlayer, hudLifeBoss, hudLifePlayer;
     static AtlasRegion intro_screen_logo_base;
     // static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
@@ -111,16 +112,13 @@ public class Assets {
 		assetManager.finishLoading();
 
 		regionsCutScenes = atlasCutScenes.findRegions("ending_2p_win");
-		Ending2P = new Animation(0.55f, regionsCutScenes);
-		Ending2P.setPlayMode(PlayMode.NORMAL);
+		Ending2P = new AnimationNinja(0.55f, regionsCutScenes);
 
 		regionsCutScenes = atlasCutScenes.findRegions("ending_1p_win");
-		Ending1P = new Animation(0.55f, regionsCutScenes);
-		Ending1P.setPlayMode(PlayMode.NORMAL);
+		Ending1P = new AnimationNinja(0.55f, regionsCutScenes);
 
 		regionsCutScenes = atlasCutScenes.findRegions("ending_draw");
-		EndingDraw = new Animation(0.55f, regionsCutScenes);
-		EndingDraw.setPlayMode(PlayMode.NORMAL);
+		EndingDraw = new AnimationNinja(0.55f, regionsCutScenes);
 
         TextureAtlas atlas = assetManager.get(TEXTURE_ATLAS_OBJECTS);
 		Array<AtlasRegion> regions;

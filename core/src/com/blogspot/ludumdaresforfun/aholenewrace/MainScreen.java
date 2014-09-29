@@ -113,11 +113,11 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+			this.map = new TmxMapLoader().load("tilemap_01.tmx");//load("tilemap_01.tmx");
 		else if (stageNumber == 2)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+			this.map = new TmxMapLoader().load("tilemap_02.tmx");//load("tilemap_02.tmx");
 		else if (stageNumber == 3)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
+			this.map = new TmxMapLoader().load("tilemap_03.tmx");//load("tilemap_03.tmx");
 
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
@@ -238,7 +238,10 @@ public class MainScreen extends BaseScreen {
 
 		this.hud = new HUD(Assets.hudBase);
 
-		Assets.musicRace.play();
+		if (!Assets.musicRace.isLooping()){
+			Assets.musicRace.setLooping(true);
+			Assets.musicRace.play();
+		}
 	}
 
 	@Override
@@ -663,16 +666,16 @@ public class MainScreen extends BaseScreen {
 		// else{
 		if (player.facesRight && camera.position.x + 10 < player.getX() + SCREEN_WIDTH / 8) {
 			if (this.player.MAX_VELOCITY > 120f)
-				camera.position.x += 7;
+				camera.position.x += 9;
 			else
-				camera.position.x += 5;
+				camera.position.x += 7;
 		} else if (player.facesRight && camera.position.x < player.getX() + SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() + SCREEN_WIDTH / 8;
 		else if (!player.facesRight && camera.position.x - 10 > player.getX() - SCREEN_WIDTH / 8) {
 			if (this.player.MAX_VELOCITY > 120f)
-				camera.position.x -= 7;
+				camera.position.x -= 9;
 			else
-				camera.position.x -= 5;
+				camera.position.x -= 7;
 		} else if (!player.facesRight && camera.position.x > player.getX() - SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
 		else if (player.facesRight && player.noControl)
@@ -702,16 +705,16 @@ public class MainScreen extends BaseScreen {
 		// update x
 		if (boss.facesRight && camera2.position.x + 10 < boss.getX() + SCREEN_WIDTH / 8) {
 			if (this.boss.MAX_VELOCITY > 120f)
-				camera2.position.x += 7;
+				camera2.position.x += 9;
 			else
-				camera2.position.x += 5;
+				camera2.position.x += 7;
 		} else if (boss.facesRight && camera2.position.x < boss.getX() + SCREEN_WIDTH / 8)
 			camera2.position.x = boss.getX() + SCREEN_WIDTH / 8;
 		else if (!boss.facesRight && camera2.position.x - 10 > boss.getX() - SCREEN_WIDTH / 8) {
 			if (this.boss.MAX_VELOCITY > 120f)
-				camera2.position.x -= 7;
+				camera2.position.x -= 9;
 			else
-				camera2.position.x -= 5;
+				camera2.position.x -= 7;
 		} else if (!boss.facesRight && camera2.position.x > boss.getX() - SCREEN_WIDTH / 8)
 			camera2.position.x = boss.getX() - SCREEN_WIDTH / 8;
 

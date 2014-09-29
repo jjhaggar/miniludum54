@@ -11,17 +11,23 @@ public class EndingScreen extends BaseScreen{
 
     public EndingScreen(int winner) {
 
-    	this.bg = new BGAnimated(Assets.intro_BADLY_DONE);		//put cutscene1
-    	this.stage.addActor(this.bg);
+    	if (winner == 0){
+    		this.bg = new BGAnimated(Assets.Ending1P);		//put cutscene1
+        	this.stage.addActor(this.bg);
+    	}
+    	else if (winner == 1){
+    		this.bg = new BGAnimated(Assets.Ending2P);		//put cutscene1
+        	this.stage.addActor(this.bg);
+    	}
+    	else if (winner == 2){
+    		this.bg = new BGAnimated(Assets.EndingDraw);		//put cutscene1
+        	this.stage.addActor(this.bg);
+    	}
 
     	this.stage.addAction(new Action() {
             @Override
             public boolean act(float delta) {
             	EndingScreen.this.bg.act(delta);
-
-                if (Assets.intro_BADLY_DONE.getKeyFrameIndex(EndingScreen.this.bg.stateTime) == Assets.intro_BADLY_DONE.keyFrames.length - 1) {
-                    return true;
-                }
                 return false;
             }
         });

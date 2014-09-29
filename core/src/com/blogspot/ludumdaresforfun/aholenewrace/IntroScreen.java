@@ -45,8 +45,8 @@ public class IntroScreen extends BaseScreen{
 
     @Override
     public void enterButtonPressed() {
-        this.configControllers.terminate();
-        // LD.getInstance().setScreen(new CreditsScreen());
+   	 AHoleNewRace.getInstance().MAIN_SCREEN = new MainScreen(1);
+     AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().MAIN_SCREEN);
     }
 
 	@Override

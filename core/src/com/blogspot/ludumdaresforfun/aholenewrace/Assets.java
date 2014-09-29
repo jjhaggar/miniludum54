@@ -50,17 +50,17 @@ public class Assets {
 		// Intro Logo
 		intro_screen_logo_base = atlasCutScenes.findRegion("intro_screen_logo_base");
 
-		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
-		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
-				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(2), regionsCutScenes.get(3)});
-
-		intro_screen_logo = new AnimationNinja(0.25f, regionsCutScenes);
-		float [] frameDurations =  {0.5f, 0.5f, 0.5f, 1.0f};
-		intro_screen_logo = new AnimationNinja(frameDurations, regionsCutScenes, AnimationNinja.NORMAL);
-
-		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
-		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { regionsCutScenes.get(3), regionsCutScenes.get(4)});
-		intro_screen_logo_loop =  new AnimationNinja(0.25f, regionsCutScenes);
+//		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
+//		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
+//				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(2), regionsCutScenes.get(3)});
+//
+//		intro_screen_logo = new AnimationNinja(0.25f, regionsCutScenes);
+//		float [] frameDurations =  {0.5f, 0.5f, 0.5f, 1.0f};
+//		intro_screen_logo = new AnimationNinja(frameDurations, regionsCutScenes, AnimationNinja.NORMAL);
+//
+//		regionsCutScenes = atlasCutScenes.findRegions("intro_screen_logo");
+//		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] { regionsCutScenes.get(3), regionsCutScenes.get(4)});
+//		intro_screen_logo_loop =  new AnimationNinja(0.25f, regionsCutScenes);
 
 		// Complete Intro (BADLY DONE) :(
 		regionsCutScenes = atlasCutScenes.findRegions("intro_BADLY_DONE");

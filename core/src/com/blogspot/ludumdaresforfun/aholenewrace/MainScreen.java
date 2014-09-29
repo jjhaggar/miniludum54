@@ -107,7 +107,7 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
-			this.map = new TmxMapLoader().load("tilemap_01.tmx");
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 		else if (stageNumber == 2)
 			this.map = new TmxMapLoader().load("tilemap_02.tmx");
 		else if (stageNumber == 3)

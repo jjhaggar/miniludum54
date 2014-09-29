@@ -75,6 +75,8 @@ public class MainScreen extends BaseScreen {
 	final int POS_LOWER_WORLD;
 	final int DISTANCESPAWN = 410;
 
+	private float FINISH_X = 0;
+
 	final int TILED_SIZE;
 	final float activateBossXPosition = 420;
 	private float xRightBossWall = 420 + 200;
@@ -202,6 +204,7 @@ public class MainScreen extends BaseScreen {
 									.add(new Object(new Vector2(x * this.TILED_SIZE, y
 											* this.TILED_SIZE), Assets.race_finish,
 											Object.Type.race_finish));
+							FINISH_X = x * this.TILED_SIZE;
 						} else if (type.equals("player")) {
 							this.player.setPosition(x * this.TILED_SIZE, y * this.TILED_SIZE);
 						} else if (type.equals("boss")) {
@@ -397,12 +400,9 @@ public class MainScreen extends BaseScreen {
 			}
 			if (object.getRect().overlaps(
 					new Rectangle(this.boss.getRect2().x, this.boss.getRect2().y, this.boss
-							.getRect2().width + 1, this.boss.getRect2().height))) { // +
-																					// 1
-																					// so
-																					// that
-																					// spikes
-																					// works
+							.getRect2().width + 1, this.boss.getRect2().height))) {
+				// +1 so that spikes works
+
 				switch (object.objectType) {
 				case item_apple:
 					if (this.boss.getLifes() < this.player.MAX_LIFES)
@@ -544,23 +544,16 @@ public class MainScreen extends BaseScreen {
 		batch.begin();
 		batch.draw(frame, 0, 0, frame.packedWidth, frame.packedHeight);
 		for (int pl = 0; pl < this.player.getLifes(); pl++) {
-			batch.draw(playerLife, Assets.offsetLifePlayer.x + (pl * 9), Assets.offsetLifePlayer.y); // JJ
-																										// dice
-																										// que
-																										// es
-																										// mas
-																										// facil
-																										// 9
+			batch.draw(playerLife, Assets.offsetLifePlayer.x +
+					(pl * 9), Assets.offsetLifePlayer.y); // JJ dice que es mas facil 9
 		}
 		for (int bl = 0; bl < this.boss.getLifes(); bl++) {
-			batch.draw(bossLife, Assets.offsetLifeBoss.x + (bl * 9), Assets.offsetLifeBoss.y); // JJ
-																								// dice
-																								// que
-																								// es
-																								// mas
-																								// facil
-																								// 9
+			batch.draw(bossLife, Assets.offsetLifeBoss.x + (bl * 9), Assets.offsetLifeBoss.y);
+			// JJ dice que es mas facil 9
 		}
+
+		batch.draw(positionBoss, Assets.offsetPositionBoss + 240 + (240 * ((this.boss.getX() - FINISH_X) / FINISH_X)), 0);
+		batch.draw(positionPlayer, Assets.offsetPositionPlayer + 240 + (240 * ((this.player.getX() - FINISH_X) / FINISH_X)), 0);
 
 		batch.end();
 
@@ -574,7 +567,8 @@ public class MainScreen extends BaseScreen {
 	private void spawnEnemies() {
 		if (this.spawns.size() > 0) {
 			Vector2 auxNextSpawn = this.spawnsPositions.first();
-			if ((this.camera.position.x + this.DISTANCESPAWN) >= auxNextSpawn.x) {
+			if ((this.camera.position.x + this.DISTANCESPAWN) >= auxNextSpawn.x ||
+					(this.camera2.position.x + this.DISTANCESPAWN) >= auxNextSpawn.x) {
 				Enemy auxShadow = new Enemy(Assets.enemyWalk);
 				auxShadow.enemyType = spawns.get(auxNextSpawn);
 				if (auxNextSpawn.y < 240) {
@@ -1763,8 +1757,8 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer.begin(ShapeType.Line);
 
 		this.shapeRenderer.setColor(Color.BLACK);
-		shapeRenderer.rect(this.boss.getRect2().x, this.boss.getRect2().y - this.SCREEN_HEIGHT
-				+ TILED_SIZE, this.boss.getRect2().width, this.boss.getRect2().height);
+		//shapeRenderer.rect(this.boss.getRect2().x, this.boss.getRect2().y - this.SCREEN_HEIGHT
+			//	+ TILED_SIZE, this.boss.getRect2().width, this.boss.getRect2().height);
 		// this.getTiles(0, 0, 25, 15, this.tiles);
 		// for (Rectangle tile : this.tiles) {
 		// shapeRenderer.rect(tile.x * 1.6f, tile.y * 2, tile.width * 2,

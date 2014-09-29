@@ -11,7 +11,7 @@ public class EndingScreen extends BaseScreen{
 
     public EndingScreen() {
 
-    	this.bg = new BGAnimated(Assets.intro_screen_logo);		//put cutscene1
+    	this.bg = new BGAnimated(Assets.intro_BADLY_DONE);		//put cutscene1
     	this.stage.addActor(this.bg);
 
     	this.stage.addAction(new Action() {
@@ -19,7 +19,7 @@ public class EndingScreen extends BaseScreen{
             public boolean act(float delta) {
             	EndingScreen.this.bg.act(delta);
 
-                if (Assets.intro_screen_logo.getKeyFrameIndex(EndingScreen.this.bg.stateTime) == Assets.intro_screen_logo.keyFrames.length - 1) {
+                if (Assets.intro_BADLY_DONE.getKeyFrameIndex(EndingScreen.this.bg.stateTime) == Assets.intro_BADLY_DONE.keyFrames.length - 1) {
                     return true;
                 }
                 return false;

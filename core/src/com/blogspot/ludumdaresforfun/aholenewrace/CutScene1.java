@@ -11,7 +11,7 @@ public class CutScene1 extends BaseScreen{
 
     public CutScene1() {
 
-    	this.bg = new BGAnimated(Assets.intro_screen_logo);		//put cutscene1
+    	this.bg = new BGAnimated(Assets.intro_BADLY_DONE);		//put cutscene1
     	this.stage.addActor(this.bg);
 
     	this.stage.addAction(new Action() {
@@ -19,7 +19,7 @@ public class CutScene1 extends BaseScreen{
             public boolean act(float delta) {
             	CutScene1.this.bg.act(delta);
 
-                if (Assets.intro_screen_logo.getKeyFrameIndex(CutScene1.this.bg.stateTime) == Assets.intro_screen_logo.keyFrames.length - 1) {
+                if (Assets.intro_BADLY_DONE.getKeyFrameIndex(CutScene1.this.bg.stateTime) == Assets.intro_BADLY_DONE.keyFrames.length - 1) {
                 	 AHoleNewRace.getInstance().MAIN_SCREEN = new MainScreen(2);
                      AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().MAIN_SCREEN);
                     return true;

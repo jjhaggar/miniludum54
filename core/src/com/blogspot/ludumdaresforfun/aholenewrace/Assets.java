@@ -25,7 +25,7 @@ public class Assets {
     static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding, CutScene1, CutScene2, Ending1P, Ending2P;
     static Animation hudBase, hudPositionBoss, hudPositionPlayer, hudLifeBoss, hudLifePlayer;
     static AtlasRegion intro_screen_logo_base;
-    static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
+    // static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
     static AnimationNinja intro_BADLY_DONE;
     static Animation item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
 	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetPositionBoss, offsetPositionPlayer;

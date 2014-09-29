@@ -10,30 +10,32 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class AHoleNewRace extends Game {
 	SpriteBatch batch;
 	Texture img;
-    static AHoleNewRace instance;
-    public CutScene1 CUT_SCENE1;
-    public CutScene2 CUT_SCENE2;
-    public IntroScreen INTRO_SCREEN;
-    public EndingScreen ENDING_SCREEN;
-    //public GameOverScreen GAMEOVER_SCREEN;
+	static AHoleNewRace instance;
+	public CutScene1 CUT_SCENE1;
+	public CutScene2 CUT_SCENE2;
+	public CutScenes CUT_SCENES;
+	public IntroScreen INTRO_SCREEN;
+	public EndingScreen ENDING_SCREEN;
+	// public GameOverScreen GAMEOVER_SCREEN;
 
-    public MainScreen MAIN_SCREEN;
+	public MainScreen MAIN_SCREEN;
 
-    @Override
-    public void create() {
-        instance = this;
-	    Assets.loadMusicAndSound();
-	    Assets.loadAnimation();
-        this.setScreen(new IntroScreen());//IntroScreen());			//(new MenuScreen());
+	@Override
+	public void create() {
+		instance = this;
+		Assets.loadMusicAndSound();
+		Assets.loadAnimation();
+		this.setScreen(new IntroScreen());// (IntroScreen()) (new MenuScreen())
+											// (new MainScreen(1))
 
-    }
+	}
 
-    @Override
-    public void render() {
-        super.render();
-    }
+	@Override
+	public void render() {
+		super.render();
+	}
 
-    public static AHoleNewRace getInstance() {
-        return instance;
-    }
+	public static AHoleNewRace getInstance() {
+		return instance;
+	}
 }

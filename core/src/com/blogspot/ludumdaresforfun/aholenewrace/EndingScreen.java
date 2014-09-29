@@ -9,7 +9,7 @@ public class EndingScreen extends BaseScreen{
     BGAnimated bg;
     private ConfigControllers configControllers;
 
-    public EndingScreen() {
+    public EndingScreen(int winner) {
 
     	this.bg = new BGAnimated(Assets.intro_BADLY_DONE);		//put cutscene1
     	this.stage.addActor(this.bg);

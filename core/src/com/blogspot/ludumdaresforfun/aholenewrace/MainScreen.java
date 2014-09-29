@@ -113,7 +113,7 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");//load("tilemap_01.tmx");
+			this.map = new TmxMapLoader().load("tilemap_02.tmx");//load("tilemap_01.tmx");
 		else if (stageNumber == 2)
 			this.map = new TmxMapLoader().load("tilemap_02.tmx");//load("tilemap_02.tmx");
 		else if (stageNumber == 3)
@@ -771,9 +771,7 @@ public class MainScreen extends BaseScreen {
 		this.player.velocity.scl(deltaTime);
 
 		// retreat if noControl //velocity y is changed in beingHit
-		if (this.player.pushedBack
-				&& !this.player.state.equals(Player.State.Die) && Assets.playerDie
-						.isAnimationFinished(this.player.stateTime)) {
+		if (this.player.pushedBack && !this.player.dead) {
 			if (this.player.facesRight)
 				this.player.velocity.x = -120f * deltaTime;
 			else

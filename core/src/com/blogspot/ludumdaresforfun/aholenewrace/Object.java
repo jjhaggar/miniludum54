@@ -40,10 +40,19 @@ public class Object extends Image{
     }
 
     public Object(Vector2 position, Type type) {
-    	this.setPosition(position.x, position.y);
-        this.objectType = type;
-        this.setWidth(16);			//if no frame a tile size
-        this.setHeight(17);
+    	if (type == Type.spikes){
+    		this.setPosition(position.x, position.y - 1);	//to get damage just down
+    		this.objectType = type;
+    		this.setWidth(16);			//if no frame a tile size
+    		this.setHeight(18);			//to get damage just on top
+    	}
+    	else{
+    		this.setPosition(position.x, position.y);
+    		this.objectType = type;
+    		this.setWidth(16);
+    		this.setHeight(16);
+    	}
+
     }
 
     public Rectangle getRect() {

@@ -1,8 +1,12 @@
 package com.blogspot.ludumdaresforfun.aholenewrace;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -22,16 +26,14 @@ public class CutScenes extends BaseScreen {
 	static String[] levelWinner = new String[] { "", "", "" };
 
 	/**
-	 *
+	 * 
 	 * @param sceneIndex
 	 *            (1, 2 or 3)
 	 * @param winner
 	 *            ("player" or "boss")
 	 */
 	public CutScenes(int sceneIndex, String winner) {
-		bg = new Background(Math.random() * 10);
-		currentSceneIndex = sceneIndex;
-		stage.addActor(bg);
+
 		// reset scores
 		if (sceneIndex == 1) {
 			playerPoints = 0;
@@ -45,6 +47,10 @@ public class CutScenes extends BaseScreen {
 			playerPoints += sceneIndex;
 		}
 		levelWinner[sceneIndex - 1] = winner;
+		// draw visual contents
+		bg = new Background(Math.random() * 10, new int[] { playerPoints, bossPoints });
+		currentSceneIndex = sceneIndex;
+		stage.addActor(bg);
 		// debug
 		System.out.println("Cut scene. Map ended: " + sceneIndex + " Winner: " + winner);
 		System.out.println("\tPlayer points: " + playerPoints);
@@ -61,7 +67,6 @@ public class CutScenes extends BaseScreen {
 			winnerForEnding = 1;
 		else
 			winnerForEnding = 2;
-
 
 		this.stage.addAction(Actions.sequence(Actions.delay(5f), new Action() {
 
@@ -105,21 +110,31 @@ public class CutScenes extends BaseScreen {
 
 	public class Background extends Actor {
 		Animation bg = Assets.CutSceneBase;
+		TextureRegion tr1 = Assets.CutScenePoints1P.getKeyFrame(0);
+		TextureRegion tr2 = Assets.CutScenePoints2P.getKeyFrame(0);
 		float random;
+		int[] scores;
 
-		public Background(double random) {
+		public Background(double random, int[] scores) {
 			this.random = (float) random;
-			System.out.println("La animacion tiene " + bg.getKeyFrames().length + " frames");
+			this.scores = scores;
 		}
 
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
-			// batch.draw(bg.getKeyFrame(1), 0, 0);
+			batch.draw(bg.getKeyFrame(random), 0, 0);
+			for (int i = 1; i <= scores[0]; i++) {
+				batch.draw(tr1, Assets.offsetCutScene1PX + i * 10, Assets.offsetCutScene1PY);
+			}
+			for (int i = 1; i <= scores[1]; i++) {
+				batch.draw(tr2, Assets.offsetCutScene2PX + i * 10, Assets.offsetCutScene2PY);
+			}
 		}
 
 		@Override
 		public void act(float delta) {
 			super.act(delta);
 		}
+
 	}
 }

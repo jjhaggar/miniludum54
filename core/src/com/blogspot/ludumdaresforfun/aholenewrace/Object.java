@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class Object extends Image{
 
     enum Type {
-    	item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed, race_start, race_finish;
+    	item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed, race_start, race_finish, spikes;
     }
 
     enum State {
@@ -35,10 +35,19 @@ public class Object extends Image{
         this.actualFrame = ((AtlasRegion)animation.getKeyFrame(0));
         this.setPosition(position.x, position.y);
         this.objectType = type;
+        this.setWidth(this.actualFrame.packedWidth);
+        this.setHeight(this.actualFrame.packedHeight);
+    }
+
+    public Object(Vector2 position, Type type) {
+    	this.setPosition(position.x, position.y);
+        this.objectType = type;
+        this.setWidth(16);			//if no frame a tile size
+        this.setHeight(17);
     }
 
     public Rectangle getRect() {
-        this.rect.set(this.getX(), this.getY(),this.actualFrame.packedWidth, this.actualFrame.packedHeight);
+        this.rect.set(this.getX(), this.getY(),this.getWidth(), this.getHeight());
         return this.rect;
 
     }

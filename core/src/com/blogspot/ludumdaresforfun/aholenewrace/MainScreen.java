@@ -86,7 +86,7 @@ public class MainScreen extends BaseScreen {
 	private OrthographicCamera camera2;
 	private int numberOfPlayers = 1;
 	private OrthographicCamera camera3;
-	private boolean startRace = false;
+	private boolean startRace = true; // must be false!! this is for testing!
 	private boolean raceFinish = false;
 	public int stageNumber;
 
@@ -107,11 +107,11 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
-			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
-		else if (stageNumber == 2)
 			this.map = new TmxMapLoader().load("tilemap_01.tmx");
-		else if (stageNumber == 3)
+		else if (stageNumber == 2)
 			this.map = new TmxMapLoader().load("tilemap_02.tmx");
+		else if (stageNumber == 3)
+			this.map = new TmxMapLoader().load("tilemap_03.tmx");
 
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");

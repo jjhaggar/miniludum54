@@ -19,12 +19,12 @@ public class IntroScreen extends BaseScreen{
             @Override
             public boolean act(float delta) {
                 IntroScreen.this.bg.act(delta);
-                		
+
                 System.out.println("IntroScreen.this.bg.stateTime = " + IntroScreen.this.bg.stateTime);
-                if (Assets.intro_BADLY_DONE.getKeyFrameIndex(IntroScreen.this.bg.stateTime) == Assets.intro_BADLY_DONE.keyFrames.length - 1) {
+                if (Assets.intro_BADLY_DONE.getKeyFrameIndexIfArray(IntroScreen.this.bg.stateTime) == Assets.intro_BADLY_DONE.keyFrames.length - 1) {
                 	System.out.println("Assets.intro_BADLY_DONE.keyFrames.length = " + Assets.intro_BADLY_DONE.keyFrames.length);
                 	System.out.println("IntroScreen.this.bg.stateTime = " + IntroScreen.this.bg.stateTime);
-                	
+
                 	 AHoleNewRace.getInstance().MAIN_SCREEN = new MainScreen(1);
                      AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().MAIN_SCREEN);
                     return true;

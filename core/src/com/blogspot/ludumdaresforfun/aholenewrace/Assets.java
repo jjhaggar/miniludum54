@@ -67,15 +67,26 @@ public class Assets {
 		regionsCutScenes = atlasCutScenes.findRegions("intro_BADLY_DONE");
 		
 		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
-				regionsCutScenes.get(0),
-				regionsCutScenes.get(1),
-				regionsCutScenes.get(2),
-				regionsCutScenes.get(3)
+				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
+				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
+				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
+				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
+				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
+				
+				regionsCutScenes.get(2), regionsCutScenes.get(3), regionsCutScenes.get(4)
 			});
-		float [] frameDurations2 =  {0.5f, 0.5f, 0.5f, 1.0f};
+		float [] frameDurations2 =  {
+				0.5f, 0.5f, 0.5f, 0.5f,
+				0.5f, 0.5f, 0.5f, 0.5f,
+				0.5f, 0.5f, 0.5f, 0.5f,
+				0.5f, 0.5f, 0.5f, 0.5f,
+				0.5f, 0.5f, 0.5f, 0.5f,
+				
+				2.5f, 2.5f, 2.5f};
 		
-		intro_BADLY_DONE =  new AnimationNinja(0.25f, regionsCutScenes);
-
+		// intro_BADLY_DONE =  new AnimationNinja(0.25f, regionsCutScenes);
+		
+		intro_BADLY_DONE =  new AnimationNinja(frameDurations2, regionsCutScenes, AnimationNinja.NORMAL);
 
 
         final String TEXTURE_ATLAS_OBJECTS = "characters.pack";

@@ -24,7 +24,7 @@ public class AHoleNewRace extends Game {
         instance = this;
 	    Assets.loadMusicAndSound();
 	    Assets.loadAnimation();
-        this.setScreen(new MainScreen(1));//IntroScreen());			//(new MenuScreen());
+        this.setScreen(new IntroScreen());//IntroScreen());			//(new MenuScreen());
 
     }
 

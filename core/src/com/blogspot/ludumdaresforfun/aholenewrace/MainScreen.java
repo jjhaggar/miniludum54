@@ -113,7 +113,7 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
-			this.map = new TmxMapLoader().load("tilemap_01.tmx");//load("tilemap_01.tmx");
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");//load("tilemap_01.tmx");
 		else if (stageNumber == 2)
 			this.map = new TmxMapLoader().load("tilemap_02.tmx");//load("tilemap_02.tmx");
 		else if (stageNumber == 3)
@@ -300,7 +300,7 @@ public class MainScreen extends BaseScreen {
 	private void updateFlowOfRace(float delta) {
 		for (Object object : this.objects) {
 			if (object.objectType == Object.Type.race_start
-					&& object.animation.getKeyFrameIndex(object.stateTime) == 7) {
+					&& object.animation.getKeyFrameIndex(object.stateTime) == 7 && this.startRace == false) {
 				this.boss.noControl = false;
 				this.player.noControl = false;
 				this.startRace = true;
@@ -772,8 +772,8 @@ public class MainScreen extends BaseScreen {
 
 		// retreat if noControl //velocity y is changed in beingHit
 		if (this.player.pushedBack
-				&& !(this.player.state.equals(Player.State.Die) && Assets.playerDie
-						.isAnimationFinished(this.player.stateTime))) {
+				&& !this.player.state.equals(Player.State.Die) && Assets.playerDie
+						.isAnimationFinished(this.player.stateTime)) {
 			if (this.player.facesRight)
 				this.player.velocity.x = -120f * deltaTime;
 			else
@@ -787,10 +787,17 @@ public class MainScreen extends BaseScreen {
 		this.player.desiredPosition.add(this.player.velocity);
 		this.player.velocity.scl(1 / deltaTime);
 
-		if (Assets.playerBeingHit.isAnimationFinished(this.player.stateTime) && !this.player.dead
-				&& this.startRace) {
-			this.player.noControl = false;
-			this.player.pushedBack = false;
+		if ((Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)
+				&& this.startRace)
+				//|| (Assets.playerDie.isAnimationFinished(this.player.stateTime) && this.startRace)
+				)
+		{
+			if (this.player.dead)
+				this.player.pushedBack = false;
+			else{
+				this.player.noControl = false;
+				this.player.pushedBack = false;
+			}
 		}
 
 		if (this.player.noControl == false)
@@ -805,7 +812,7 @@ public class MainScreen extends BaseScreen {
 					MainScreen.this.player.revive();
 				}
 			}, 0f);
-			this.player.velocity.x = 0;
+			this.player.pushedBack = false;
 		}
 
 	}
@@ -843,8 +850,7 @@ public class MainScreen extends BaseScreen {
 		this.boss.desiredPosition.add(this.boss.velocity);
 		this.boss.velocity.scl(1 / deltaTime);
 
-		if (Assets.bossGethit.isAnimationFinished(this.boss.stateTime) && !this.boss.dead
-				&& this.startRace)
+		if (!this.boss.dead	&& this.startRace)
 			this.boss.noControl = false;
 
 		if (this.boss.noControl == false)

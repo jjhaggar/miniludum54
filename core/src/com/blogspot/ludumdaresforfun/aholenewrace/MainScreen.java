@@ -198,6 +198,26 @@ public class MainScreen extends BaseScreen {
 				}
 			}
 		}
+
+		TiledMapTileLayer layerPlatfs = (TiledMapTileLayer) (this.map.getLayers().get("Platfs"));
+		this.rectPool.freeAll(this.tiles);
+		this.tiles.clear();
+
+		for (int x = 0; x <= layerPlatfs.getWidth(); x++) {
+			for (int y = 0; y <= layerPlatfs.getHeight(); y++) {
+				Cell cell = layerPlatfs.getCell(x, y);
+				if (cell != null) {
+					String type = (String) cell.getTile().getProperties().get("type");
+					if (type != null) {
+						if (type.equals("spikes")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Object.Type.spikes));
+						}
+					}
+				}
+			}
+		}
+
+
 		this.camera.position.x = this.player.getX()+ SCREEN_WIDTH/8; //
 	 	this.camera2.position.x = this.boss.getX()+ SCREEN_WIDTH/8; //
 
@@ -338,9 +358,13 @@ public class MainScreen extends BaseScreen {
 						object.stateTime = 0;
 					}
 					break;
+				case spikes:
+					this.player.beingHit();
+					break;
 				}
 			}
-			if (object.getRect().overlaps(this.boss.getRect2())) {
+			if (object.getRect().overlaps(new Rectangle(this.boss.getRect2().x,
+					this.boss.getRect2().y, this.boss.getRect2().width + 1, this.boss.getRect2().height))) {  // + 1 so that spikes works
 				switch (object.objectType) {
 				case item_apple:
 					if (this.boss.getLifes() < this.player.MAX_LIFES)
@@ -382,6 +406,9 @@ public class MainScreen extends BaseScreen {
 						object.animation.setPlayMode(PlayMode.NORMAL);
 						object.stateTime = 0;
 					}
+					break;
+				case spikes:
+					this.boss.beingHit();
 					break;
 				}
 			}
@@ -522,13 +549,14 @@ public class MainScreen extends BaseScreen {
 		this.renderPlayer(delta);
 
 		renderShots(delta);
-
-
 	}
 
 	private void renderObjects(float delta) {
 		AtlasRegion frame = null;
 		for (Object object : this.objects){
+
+			if (object.animation == null)
+				continue;
 
 			frame = (AtlasRegion)object.animation.getKeyFrame(object.stateTime);
 

@@ -22,7 +22,8 @@ public class Assets {
     static Animation playerShot, playerShotHit;
     static Animation enemyWalk, enemyRun, enemyHurt, enemyAppearing;
     static Animation bossGethit, bossStanding,  bossWalking, bossRunning, bossJumping, bossFalling, bossAttack, bossSummon, bossDie;
-    static Animation Ending, GameOver, Intro, SequenceIntro, SequenceEnding, CutScene1, CutScene2, Ending1P, Ending2P;
+    static Animation Ending, GameOver, Intro, CutScene1, CutScene2; // Borrable ? 
+    static Animation CutSceneBase, CutScenePoints1P, CutScenePoints2P, Ending1P, Ending2P, EndingDraw;
     static Animation hudBase, hudPositionBoss, hudPositionPlayer, hudLifeBoss, hudLifePlayer;
     static AtlasRegion intro_screen_logo_base;
     // static AnimationNinja intro_screen_logo, intro_screen_logo_loop;
@@ -64,7 +65,7 @@ public class Assets {
 
 		// Complete Intro (BADLY DONE) :(
 		regionsCutScenes = atlasCutScenes.findRegions("intro_BADLY_DONE");
-		/*
+		
 		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
 				regionsCutScenes.get(0),
 				regionsCutScenes.get(1),
@@ -72,7 +73,7 @@ public class Assets {
 				regionsCutScenes.get(3)
 			});
 		float [] frameDurations2 =  {0.5f, 0.5f, 0.5f, 1.0f};
-		*/
+		
 		intro_BADLY_DONE =  new AnimationNinja(0.25f, regionsCutScenes);
 
 
@@ -123,14 +124,6 @@ public class Assets {
 		GameOver = new Animation(0f, regions);
 		GameOver.setPlayMode(PlayMode.LOOP);
 
-		regions = atlas.findRegions("sequence_intro");
-		SequenceIntro = new Animation(0.55f, regions);
-		SequenceIntro.setPlayMode(PlayMode.NORMAL);
-
-		regions = atlas.findRegions("sequence_ending");
-		SequenceEnding = new Animation(0.55f, regions);
-		SequenceEnding.setPlayMode(PlayMode.NORMAL);
-
 		regions = atlas.findRegions("ending_2p_win");
 		Ending2P = new Animation(0.55f, regions);
 		Ending2P.setPlayMode(PlayMode.NORMAL);
@@ -138,6 +131,22 @@ public class Assets {
 		regions = atlas.findRegions("ending_1p_win");
 		Ending1P = new Animation(0.55f, regions);
 		Ending1P.setPlayMode(PlayMode.NORMAL);
+
+		regions = atlas.findRegions("ending_draw");
+		EndingDraw = new Animation(0.55f, regions);
+		EndingDraw.setPlayMode(PlayMode.NORMAL);
+
+		regions = atlas.findRegions("cutscene_base");
+		CutSceneBase = new Animation(0.55f, regions);
+		CutSceneBase.setPlayMode(PlayMode.NORMAL);
+
+		regions = atlas.findRegions("cutscene_points_1p");
+		CutScenePoints1P = new Animation(0.55f, regions);
+		CutScenePoints1P.setPlayMode(PlayMode.NORMAL);
+
+		regions = atlas.findRegions("cutscene_points_2p");
+		CutScenePoints2P = new Animation(0.55f, regions);
+		CutScenePoints2P.setPlayMode(PlayMode.NORMAL);
 
 //		regions = atlas.findRegions("cut_scene_1");
 //		CutScene1 = new Animation(0.55f, regions);

@@ -14,6 +14,7 @@ public class CutScenes extends BaseScreen {
 	static int bossPoints = 0;
 	Background bg;
 	int currentSceneIndex = -1;
+	int winnerForEnding;
 
 	/**
 	 * Values "boss" or "player". Indexes from 0 (level 1) to 2 (level 3)
@@ -21,7 +22,7 @@ public class CutScenes extends BaseScreen {
 	static String[] levelWinner = new String[] { "", "", "" };
 
 	/**
-	 * 
+	 *
 	 * @param sceneIndex
 	 *            (1, 2 or 3)
 	 * @param winner
@@ -53,6 +54,15 @@ public class CutScenes extends BaseScreen {
 		System.out.println("\tlevel 3 winner: " + levelWinner[2]);
 		// schedule next screen change
 		final int sceneIndexFinal = sceneIndex;
+
+		if (playerPoints > bossPoints)
+			winnerForEnding = 0;
+		else if (playerPoints < bossPoints)
+			winnerForEnding = 1;
+		else
+			winnerForEnding = 2;
+
+
 		this.stage.addAction(Actions.sequence(Actions.delay(5f), new Action() {
 
 			@Override
@@ -61,7 +71,7 @@ public class CutScenes extends BaseScreen {
 					AHoleNewRace.getInstance().MAIN_SCREEN = new MainScreen(sceneIndexFinal + 1);
 					AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().MAIN_SCREEN);
 				} else {
-					AHoleNewRace.getInstance().ENDING_SCREEN = new EndingScreen();
+					AHoleNewRace.getInstance().ENDING_SCREEN = new EndingScreen(winnerForEnding);
 					AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().ENDING_SCREEN);
 				}
 				return false;
@@ -82,7 +92,7 @@ public class CutScenes extends BaseScreen {
 			AHoleNewRace.getInstance().MAIN_SCREEN = new MainScreen(currentSceneIndex + 1);
 			AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().MAIN_SCREEN);
 		} else {
-			AHoleNewRace.getInstance().ENDING_SCREEN = new EndingScreen();
+			AHoleNewRace.getInstance().ENDING_SCREEN = new EndingScreen(this.winnerForEnding);
 			AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().ENDING_SCREEN);
 		}
 	}

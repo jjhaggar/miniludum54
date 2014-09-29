@@ -30,10 +30,11 @@ public class Assets {
     static AnimationNinja intro_BADLY_DONE;
     static Animation item_apple, item_banana, item_chicken, item_invulnerability, item_jump, item_speed;
 	static float offsetPlayer, offsetBoss, offsetShot, offsetEnemy, offsetPositionBoss, offsetPositionPlayer;
+	static float offsetCutScene1PX, offsetCutScene1PY, offsetCutScene2PX, offsetCutScene2PY;
 	static Vector2 offsetLifeBoss, offsetLifePlayer;
 
 	// Music and Sounds
-	public static Music musicBoss, musicStage;
+	public static Music musicBoss, musicStage, musicRace;
     public static HashMap<String, Sound> sounds = new HashMap<String, Sound>();
 
 	static void loadAnimation() {
@@ -92,11 +93,34 @@ public class Assets {
 		CutSceneBase = new Animation(0.55f, regionsCutScenes);
 		CutSceneBase.setPlayMode(PlayMode.NORMAL);
 
+		regionsCutScenes = atlasCutScenes.findRegions("cutscene_points_1p");
+		CutScenePoints1P = new Animation(0.55f, regionsCutScenes);
+		CutScenePoints1P.setPlayMode(PlayMode.NORMAL);
+		offsetCutScene1PX = regionsCutScenes.first().offsetX;
+		offsetCutScene1PY = regionsCutScenes.first().offsetY;
+
+		regionsCutScenes = atlasCutScenes.findRegions("cutscene_points_2p");
+		CutScenePoints2P = new Animation(0.55f, regionsCutScenes);
+		CutScenePoints2P.setPlayMode(PlayMode.NORMAL);
+		offsetCutScene2PX = regionsCutScenes.first().offsetX;
+		offsetCutScene2PY = regionsCutScenes.first().offsetY;
 
         final String TEXTURE_ATLAS_OBJECTS = "characters.pack";
 		assetManager = new AssetManager();
 		assetManager.load(TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
 		assetManager.finishLoading();
+
+		regionsCutScenes = atlasCutScenes.findRegions("ending_2p_win");
+		Ending2P = new Animation(0.55f, regionsCutScenes);
+		Ending2P.setPlayMode(PlayMode.NORMAL);
+
+		regionsCutScenes = atlasCutScenes.findRegions("ending_1p_win");
+		Ending1P = new Animation(0.55f, regionsCutScenes);
+		Ending1P.setPlayMode(PlayMode.NORMAL);
+
+		regionsCutScenes = atlasCutScenes.findRegions("ending_draw");
+		EndingDraw = new Animation(0.55f, regionsCutScenes);
+		EndingDraw.setPlayMode(PlayMode.NORMAL);
 
         TextureAtlas atlas = assetManager.get(TEXTURE_ATLAS_OBJECTS);
 		Array<AtlasRegion> regions;
@@ -138,26 +162,6 @@ public class Assets {
 		regions = atlas.findRegions("game_over");
 		GameOver = new Animation(0f, regions);
 		GameOver.setPlayMode(PlayMode.LOOP);
-
-		regions = atlas.findRegions("ending_2p_win");
-		Ending2P = new Animation(0.55f, regions);
-		Ending2P.setPlayMode(PlayMode.NORMAL);
-
-		regions = atlas.findRegions("ending_1p_win");
-		Ending1P = new Animation(0.55f, regions);
-		Ending1P.setPlayMode(PlayMode.NORMAL);
-
-		regions = atlas.findRegions("ending_draw");
-		EndingDraw = new Animation(0.55f, regions);
-		EndingDraw.setPlayMode(PlayMode.NORMAL);
-
-		regions = atlas.findRegions("cutscene_points_1p");
-		CutScenePoints1P = new Animation(0.55f, regions);
-		CutScenePoints1P.setPlayMode(PlayMode.NORMAL);
-
-		regions = atlas.findRegions("cutscene_points_2p");
-		CutScenePoints2P = new Animation(0.55f, regions);
-		CutScenePoints2P.setPlayMode(PlayMode.NORMAL);
 
 //		regions = atlas.findRegions("cut_scene_1");
 //		CutScene1 = new Animation(0.55f, regions);
@@ -318,8 +322,11 @@ public class Assets {
 	public static void loadMusicAndSound() {
 		musicStage = Gdx.audio.newMusic(Gdx.files.internal("music/mainTheme.ogg"));
 		musicBoss = Gdx.audio.newMusic(Gdx.files.internal("music/finalBoss.ogg"));
+		musicRace = Gdx.audio.newMusic(Gdx.files.internal("music/raceTheme.ogg"));
 		musicBoss.setVolume(0.5f);
 		musicStage.setVolume(0.5f);
+		musicRace.setVolume(0.5f);
+
 		// Player
         addSound("playerAttack");
         addSound("playerHurt");

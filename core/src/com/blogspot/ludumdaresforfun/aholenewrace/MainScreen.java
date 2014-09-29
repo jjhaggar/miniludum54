@@ -86,7 +86,7 @@ public class MainScreen extends BaseScreen {
 	private OrthographicCamera camera2;
 	private int numberOfPlayers = 1;
 	private OrthographicCamera camera3;
-	private boolean startRace = true; // must be false!! this is for testing!
+	private boolean startRace = false; // must be false!! this is for testing!
 	private boolean raceFinish = false;
 	private boolean cutSceneScheduled = false;
 	public int stageNumber;
@@ -237,6 +237,8 @@ public class MainScreen extends BaseScreen {
 		this.camera2.position.x = this.boss.getX() + SCREEN_WIDTH / 8; //
 
 		this.hud = new HUD(Assets.hudBase);
+
+		Assets.musicRace.play();
 	}
 
 	@Override
@@ -2003,8 +2005,8 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 * 
-		 * 
+		 *
+		 *
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */

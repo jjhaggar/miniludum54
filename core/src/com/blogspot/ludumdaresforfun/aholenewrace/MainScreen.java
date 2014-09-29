@@ -64,7 +64,7 @@ public class MainScreen extends BaseScreen {
 			return new Rectangle();
 		}
 	};
-	 HUD hud;
+	HUD hud;
 
 	private final float GRAVITY = -600f; // -10 * 60
 	final int SCREEN_HEIGHT = 240;
@@ -88,7 +88,13 @@ public class MainScreen extends BaseScreen {
 	private OrthographicCamera camera3;
 	private boolean startRace = true; // must be false!! this is for testing!
 	private boolean raceFinish = false;
+	private boolean cutSceneScheduled = false;
 	public int stageNumber;
+
+	/**
+	 * Game winner ("boss" or "player")
+	 */
+	private String winner;
 
 	@Override
 	public void backButtonPressed() {
@@ -109,9 +115,9 @@ public class MainScreen extends BaseScreen {
 		if (stageNumber == 1)
 			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 		else if (stageNumber == 2)
-			this.map = new TmxMapLoader().load("tilemap_02.tmx");
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 		else if (stageNumber == 3)
-			this.map = new TmxMapLoader().load("tilemap_03.tmx");
+			this.map = new TmxMapLoader().load("tilemap_debug.tmx");
 
 		this.MAP_HEIGHT = (Integer) this.map.getProperties().get("height");
 		this.MAP_WIDTH = (Integer) this.map.getProperties().get("width");
@@ -128,10 +134,9 @@ public class MainScreen extends BaseScreen {
 		this.camera = new OrthographicCamera();
 		this.camera3 = new OrthographicCamera();
 		this.camera3.setToOrtho(false, this.SCREEN_WIDTH, TILED_SIZE);
-		if (this.numberOfPlayers  == 1){
+		if (this.numberOfPlayers == 1) {
 			this.camera.setToOrtho(false, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
-		}
-		else{
+		} else {
 			this.camera.setToOrtho(false, this.SCREEN_WIDTH / 2, this.SCREEN_HEIGHT);
 
 			this.camera2 = new OrthographicCamera();
@@ -158,35 +163,45 @@ public class MainScreen extends BaseScreen {
 					String type = (String) cell.getTile().getProperties().get("type");
 					if (type != null) {
 						if (type.equals("spider")) {
-							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Enemy.Type.Spider);
-							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
-						}else if (type.equals("bat")) {
-							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Enemy.Type.Bat);
-							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE));
-						}else if (type.equals("item_bananas")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.item_banana, Object.Type.item_banana));
-						}else if (type.equals("item_chicken")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.item_chicken, Object.Type.item_chicken));
-						}else if (type.equals("powerup_invencibility")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.item_invulnerability, Object.Type.item_invulnerability));
-						}else if (type.equals("powerup_jump")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.item_jump, Object.Type.item_jump));
-						}else if (type.equals("powerup_speed")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.item_speed, Object.Type.item_speed));
-						}else if (type.equals("item_apple")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.item_apple, Object.Type.item_apple));
-						}else if (type.equals("race_start")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.race_start, Object.Type.race_start));
-						}else if (type.equals("race_finish")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
-									Assets.race_finish, Object.Type.race_finish));
+							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Enemy.Type.Spider);
+							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE));
+						} else if (type.equals("bat")) {
+							this.spawns.put(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE),
+									Enemy.Type.Bat);
+							this.spawnsPositions.add(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE));
+						} else if (type.equals("item_bananas")) {
+							this.objects
+									.add(new Object(new Vector2(x * this.TILED_SIZE, y
+											* this.TILED_SIZE), Assets.item_banana,
+											Object.Type.item_banana));
+						} else if (type.equals("item_chicken")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Assets.item_chicken,
+									Object.Type.item_chicken));
+						} else if (type.equals("powerup_invencibility")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Assets.item_invulnerability,
+									Object.Type.item_invulnerability));
+						} else if (type.equals("powerup_jump")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Assets.item_jump, Object.Type.item_jump));
+						} else if (type.equals("powerup_speed")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Assets.item_speed, Object.Type.item_speed));
+						} else if (type.equals("item_apple")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Assets.item_apple, Object.Type.item_apple));
+						} else if (type.equals("race_start")) {
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Assets.race_start, Object.Type.race_start));
+						} else if (type.equals("race_finish")) {
+							this.objects
+									.add(new Object(new Vector2(x * this.TILED_SIZE, y
+											* this.TILED_SIZE), Assets.race_finish,
+											Object.Type.race_finish));
 						} else if (type.equals("player")) {
 							this.player.setPosition(x * this.TILED_SIZE, y * this.TILED_SIZE);
 						} else if (type.equals("boss")) {
@@ -210,18 +225,18 @@ public class MainScreen extends BaseScreen {
 					String type = (String) cell.getTile().getProperties().get("type");
 					if (type != null) {
 						if (type.equals("spikes")) {
-							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y * this.TILED_SIZE), Object.Type.spikes));
+							this.objects.add(new Object(new Vector2(x * this.TILED_SIZE, y
+									* this.TILED_SIZE), Object.Type.spikes));
 						}
 					}
 				}
 			}
 		}
 
+		this.camera.position.x = this.player.getX() + SCREEN_WIDTH / 8; //
+		this.camera2.position.x = this.boss.getX() + SCREEN_WIDTH / 8; //
 
-		this.camera.position.x = this.player.getX()+ SCREEN_WIDTH/8; //
-	 	this.camera2.position.x = this.boss.getX()+ SCREEN_WIDTH/8; //
-
-	 	this.hud = new HUD(Assets.hudBase);
+		this.hud = new HUD(Assets.hudBase);
 	}
 
 	@Override
@@ -229,27 +244,30 @@ public class MainScreen extends BaseScreen {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		//updateWorld
+		// updateWorld
 		updateWorld(delta);
 
-		if (this.numberOfPlayers == 1){
+		if (this.numberOfPlayers == 1) {
 			updateCameraForOnePlayer();
 			drawFirstWorld(delta);
-		}
-		else{
-			//Down Half
-			Gdx.gl.glViewport( 0,0,(Gdx.graphics.getWidth() / 2) - 1,Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15);
+		} else {
+			// Down Half
+			Gdx.gl.glViewport(0, 0, (Gdx.graphics.getWidth() / 2) - 1, Gdx.graphics.getHeight()
+					- Gdx.graphics.getHeight() / 15);
 
 			updateCameraForTwoPlayersTemplar();
 			drawFirstWorld(delta);
 
-			//Upper Half
-			Gdx.gl.glViewport( ((Gdx.graphics.getWidth() / 2) + 1),0,(Gdx.graphics.getWidth() / 2 - 1),Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15);
+			// Upper Half
+			Gdx.gl.glViewport(((Gdx.graphics.getWidth() / 2) + 1), 0,
+					(Gdx.graphics.getWidth() / 2 - 1),
+					Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15);
 
 			updateCameraForTwoPlayersBoss();
 			drawSecondWorld(delta);
 		}
-		Gdx.gl.glViewport( 0,Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15,Gdx.graphics.getWidth(),Gdx.graphics.getHeight() / 15);
+		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() - Gdx.graphics.getHeight() / 15,
+				Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 15);
 		renderHUD(delta);
 
 	}
@@ -275,37 +293,45 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void updateFlowOfRace(float delta) {
-		for (Object object : this.objects){
-			if (object.objectType == Object.Type.race_start && object.animation.getKeyFrameIndex(object.stateTime) == 7){
+		for (Object object : this.objects) {
+			if (object.objectType == Object.Type.race_start
+					&& object.animation.getKeyFrameIndex(object.stateTime) == 7) {
 				this.boss.noControl = false;
 				this.player.noControl = false;
-				this.startRace  = true;
+				this.startRace = true;
 			}
 		}
-		if (raceFinish){
-            Timer.schedule(new Task() {
-                @Override
-                public void run() {
-                    MainScreen.this.player.noControl = true;
-                    MainScreen.this.boss.noControl = true;
+		if (raceFinish && !cutSceneScheduled) {
+			cutSceneScheduled = true; // don't enter here multiple times.
+			Timer.schedule(new Task() {
+				@Override
+				public void run() {
+					MainScreen.this.player.noControl = true;
+					MainScreen.this.boss.noControl = true;
 
-                    if (MainScreen.this.stageNumber == 1){
-                    	AHoleNewRace.getInstance().CUT_SCENE1 = new CutScene1();
-                    	AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENE1);
-                    }
-                    else if (MainScreen.this.stageNumber == 2){
-                    	AHoleNewRace.getInstance().CUT_SCENE2 = new CutScene2();
-                    	AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENE2);
-                    }
-                    else if (MainScreen.this.stageNumber == 3){
-                    	AHoleNewRace.getInstance().ENDING_SCREEN = new EndingScreen();
-                    	AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().ENDING_SCREEN);
-                    }
+					if (MainScreen.this.stageNumber == 1) {
+						AHoleNewRace.getInstance().CUT_SCENES = new CutScenes(1, winner);
+						AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENES);
+						// AHoleNewRace.getInstance().CUT_SCENE1 = new
+						// CutScene1();
+						// AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENE1);
+					} else if (MainScreen.this.stageNumber == 2) {
+						AHoleNewRace.getInstance().CUT_SCENES = new CutScenes(2, winner);
+						AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENES);
+						// AHoleNewRace.getInstance().CUT_SCENE2 = new
+						// CutScene2();
+						// AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENE2);
+					} else if (MainScreen.this.stageNumber == 3) {
+						AHoleNewRace.getInstance().CUT_SCENES = new CutScenes(3, winner);
+						AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().CUT_SCENES);
+						// AHoleNewRace.getInstance().ENDING_SCREEN = new
+						// EndingScreen();
+						// AHoleNewRace.getInstance().setScreen(AHoleNewRace.getInstance().ENDING_SCREEN);
+					}
 
-                }
-            }, 1.0f);
+				}
+			}, 1.0f);
 		}
-
 
 	}
 
@@ -351,8 +377,9 @@ public class MainScreen extends BaseScreen {
 					Assets.playSound("gainLifePlayer");
 					break;
 				case race_finish:
-					if (!this.raceFinish){
-						this.raceFinish  = true;
+					if (!this.raceFinish) {
+						this.raceFinish = true;
+						winner = "player";
 						Assets.playSound("gainLifePlayer");
 						object.animation.setPlayMode(PlayMode.NORMAL);
 						object.stateTime = 0;
@@ -363,8 +390,14 @@ public class MainScreen extends BaseScreen {
 					break;
 				}
 			}
-			if (object.getRect().overlaps(new Rectangle(this.boss.getRect2().x,
-					this.boss.getRect2().y, this.boss.getRect2().width + 1, this.boss.getRect2().height))) {  // + 1 so that spikes works
+			if (object.getRect().overlaps(
+					new Rectangle(this.boss.getRect2().x, this.boss.getRect2().y, this.boss
+							.getRect2().width + 1, this.boss.getRect2().height))) { // +
+																					// 1
+																					// so
+																					// that
+																					// spikes
+																					// works
 				switch (object.objectType) {
 				case item_apple:
 					if (this.boss.getLifes() < this.player.MAX_LIFES)
@@ -400,8 +433,9 @@ public class MainScreen extends BaseScreen {
 					Assets.playSound("gainLifePlayer");
 					break;
 				case race_finish:
-					if (!this.raceFinish){
-						this.raceFinish  = true;
+					if (!this.raceFinish) {
+						this.raceFinish = true;
+						winner = "boss";
 						Assets.playSound("gainLifePlayer");
 						object.animation.setPlayMode(PlayMode.NORMAL);
 						object.stateTime = 0;
@@ -418,36 +452,38 @@ public class MainScreen extends BaseScreen {
 
 	private void updateAttackBoss(float delta) {
 		this.playerRect = this.rectPool.obtain();
-		if (this.boss.shooting){
-			if (this.boss.facesRight){
-				this.playerRect = new Rectangle(this.boss.getRect().x + this.boss.getRect2().width,		//
-						this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
-			}
-			else{
-				this.playerRect = new Rectangle(this.boss.getRect().x,		//
-						this.boss.getRect().y, this.boss.getRect().width - this.boss.getRect2().width, this.boss.getRect().height);
+		if (this.boss.shooting) {
+			if (this.boss.facesRight) {
+				this.playerRect = new Rectangle(this.boss.getRect().x + this.boss.getRect2().width, //
+						this.boss.getRect().y, this.boss.getRect().width
+								- this.boss.getRect2().width, this.boss.getRect().height);
+			} else {
+				this.playerRect = new Rectangle(this.boss.getRect().x, //
+						this.boss.getRect().y, this.boss.getRect().width
+								- this.boss.getRect2().width, this.boss.getRect().height);
 			}
 			System.out.println("playerRect" + this.playerRect.x + " width" + this.playerRect.width);
 
-			for (Enemy enemy : this.enemies){	//attack kill
+			for (Enemy enemy : this.enemies) { // attack kill
 				System.out.println("enemy x" + enemy.getX());
 				if (this.playerRect.overlaps(enemy.getRect())) {
 					if (!enemy.dying)
 						enemy.die();
 				}
-				if (this.boss.getRect2().overlaps(enemy.getRect())){	//touch kill
-					if (!enemy.dying && !this.boss.invincible){
+				if (this.boss.getRect2().overlaps(enemy.getRect())) { // touch
+																		// kill
+					if (!enemy.dying && !this.boss.invincible) {
 						enemy.die();
 						this.boss.beingHit();
 					}
 				}
 			}
 
-		}
-		else{
-			for (Enemy enemy : this.enemies){
-				if (this.boss.getRect2().overlaps(enemy.getRect())) {	//touch kill
-					if (!enemy.dying && !this.boss.invincible){
+		} else {
+			for (Enemy enemy : this.enemies) {
+				if (this.boss.getRect2().overlaps(enemy.getRect())) { // touch
+																		// kill
+					if (!enemy.dying && !this.boss.invincible) {
 						enemy.die();
 						this.boss.beingHit();
 						break;
@@ -457,7 +493,7 @@ public class MainScreen extends BaseScreen {
 		}
 	}
 
-	private void renderShot(Shot shot, float deltaTime){
+	private void renderShot(Shot shot, float deltaTime) {
 		AtlasRegion frame = null;
 		if (shot.state == Shot.State.Normal)
 			frame = (AtlasRegion) Assets.playerShot.getKeyFrame(shot.stateTime);
@@ -465,12 +501,11 @@ public class MainScreen extends BaseScreen {
 			frame = (AtlasRegion) Assets.playerShotHit.getKeyFrame(shot.stateTime);
 
 		if (!this.normalGravity) {
-		    if (!frame.isFlipY())
-                frame.flip(false, true);
-		}
-		else {
-		    if (frame.isFlipY())
-                frame.flip(false, true);
+			if (!frame.isFlipY())
+				frame.flip(false, true);
+		} else {
+			if (frame.isFlipY())
+				frame.flip(false, true);
 		}
 
 		Batch batch = this.renderer.getSpriteBatch();
@@ -492,29 +527,43 @@ public class MainScreen extends BaseScreen {
 
 		this.renderer.setView(this.camera3);
 		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
-        AtlasRegion frame = (AtlasRegion)Assets.hudBase.getKeyFrame(this.hud.stateTime);
-        AtlasRegion playerLife = (AtlasRegion)Assets.hudLifePlayer.getKeyFrame(this.hud.stateTime);
-        AtlasRegion bossLife = (AtlasRegion)Assets.hudLifeBoss.getKeyFrame(this.hud.stateTime);
-        AtlasRegion positionBoss = (AtlasRegion)Assets.hudPositionBoss.getKeyFrame(this.hud.stateTime);
-        AtlasRegion positionPlayer = (AtlasRegion)Assets.hudPositionPlayer.getKeyFrame(this.hud.stateTime);
+		AtlasRegion frame = (AtlasRegion) Assets.hudBase.getKeyFrame(this.hud.stateTime);
+		AtlasRegion playerLife = (AtlasRegion) Assets.hudLifePlayer.getKeyFrame(this.hud.stateTime);
+		AtlasRegion bossLife = (AtlasRegion) Assets.hudLifeBoss.getKeyFrame(this.hud.stateTime);
+		AtlasRegion positionBoss = (AtlasRegion) Assets.hudPositionBoss
+				.getKeyFrame(this.hud.stateTime);
+		AtlasRegion positionPlayer = (AtlasRegion) Assets.hudPositionPlayer
+				.getKeyFrame(this.hud.stateTime);
 
-        Batch batch = this.renderer.getSpriteBatch();
-        batch.begin();
-        batch.draw(frame, 0, 0, frame.packedWidth, frame.packedHeight);
-        for (int pl=0; pl < this.player.getLifes(); pl++) {
-        	batch.draw(playerLife, Assets.offsetLifePlayer.x + (pl * 9), Assets.offsetLifePlayer.y);	//JJ dice que es mas facil 9
-        }
-        for (int bl=0; bl < this.boss.getLifes(); bl++) {
-        	batch.draw(bossLife, Assets.offsetLifeBoss.x + (bl * 9), Assets.offsetLifeBoss.y);	//JJ dice que es mas facil 9
-        }
+		Batch batch = this.renderer.getSpriteBatch();
+		batch.begin();
+		batch.draw(frame, 0, 0, frame.packedWidth, frame.packedHeight);
+		for (int pl = 0; pl < this.player.getLifes(); pl++) {
+			batch.draw(playerLife, Assets.offsetLifePlayer.x + (pl * 9), Assets.offsetLifePlayer.y); // JJ
+																										// dice
+																										// que
+																										// es
+																										// mas
+																										// facil
+																										// 9
+		}
+		for (int bl = 0; bl < this.boss.getLifes(); bl++) {
+			batch.draw(bossLife, Assets.offsetLifeBoss.x + (bl * 9), Assets.offsetLifeBoss.y); // JJ
+																								// dice
+																								// que
+																								// es
+																								// mas
+																								// facil
+																								// 9
+		}
 
-        batch.end();
+		batch.end();
 
-        this.shapeRenderer.begin(ShapeType.Filled);
-        this.shapeRenderer.setColor(Color.BLACK);
-        this.getTiles(0, 0, 25, 15, this.tiles);
-        this.shapeRenderer.setColor(Color.RED);
-        this.shapeRenderer.end();
+		this.shapeRenderer.begin(ShapeType.Filled);
+		this.shapeRenderer.setColor(Color.BLACK);
+		this.getTiles(0, 0, 25, 15, this.tiles);
+		this.shapeRenderer.setColor(Color.RED);
+		this.shapeRenderer.end();
 	}
 
 	private void spawnEnemies() {
@@ -534,8 +583,8 @@ public class MainScreen extends BaseScreen {
 				this.enemies.add(auxShadow);
 				this.spawnsPositions.removeIndex(0);
 				this.spawns.remove(auxNextSpawn);
-				}
 			}
+		}
 	}
 
 	private void drawFirstWorld(float delta) {
@@ -553,21 +602,21 @@ public class MainScreen extends BaseScreen {
 
 	private void renderObjects(float delta) {
 		AtlasRegion frame = null;
-		for (Object object : this.objects){
+		for (Object object : this.objects) {
 
 			if (object.animation == null)
 				continue;
 
-			frame = (AtlasRegion)object.animation.getKeyFrame(object.stateTime);
+			frame = (AtlasRegion) object.animation.getKeyFrame(object.stateTime);
 
-//			if (!this.normalGravity) {
-//			    if (!frame.isFlipY())
-//	                frame.flip(false, true);
-//			}
-//			else {
-//			    if (frame.isFlipY())
-//	                frame.flip(false, true);
-//			}
+			// if (!this.normalGravity) {
+			// if (!frame.isFlipY())
+			// frame.flip(false, true);
+			// }
+			// else {
+			// if (frame.isFlipY())
+			// frame.flip(false, true);
+			// }
 
 			Batch batch = this.renderer.getSpriteBatch();
 			batch.begin();
@@ -579,10 +628,10 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void renderShots(float delta) {
-		for (Shot shot : this.shotArray){
+		for (Shot shot : this.shotArray) {
 			if (shot != null)
 				this.renderShot(shot, delta);
-			}
+		}
 	}
 
 	private void drawSecondWorld(float delta) {
@@ -597,54 +646,48 @@ public class MainScreen extends BaseScreen {
 
 		renderShots(delta);
 
-
 	}
 
 	private void updateCameraForTwoPlayersTemplar() {
 
 		// update x
-//		if (camera.position.x - this.SCREEN_WIDTH / 8 > this.player.getX() ){
-//				camera.position.x = player.getX() - SCREEN_WIDTH / 8;
-//		}
-//		else if (camera.position.x + this.SCREEN_WIDTH / 8 < this.player.getX()){
-//				camera.position.x = player.getX() + SCREEN_WIDTH / 8;
-//		}
-//		else{
-		if (player.facesRight && camera.position.x + 10 < player.getX() + SCREEN_WIDTH / 8){
+		// if (camera.position.x - this.SCREEN_WIDTH / 8 > this.player.getX() ){
+		// camera.position.x = player.getX() - SCREEN_WIDTH / 8;
+		// }
+		// else if (camera.position.x + this.SCREEN_WIDTH / 8 <
+		// this.player.getX()){
+		// camera.position.x = player.getX() + SCREEN_WIDTH / 8;
+		// }
+		// else{
+		if (player.facesRight && camera.position.x + 10 < player.getX() + SCREEN_WIDTH / 8) {
 			if (this.player.MAX_VELOCITY > 120f)
 				camera.position.x += 7;
 			else
 				camera.position.x += 5;
-		}
-		else if (player.facesRight && camera.position.x < player.getX() + SCREEN_WIDTH / 8)
+		} else if (player.facesRight && camera.position.x < player.getX() + SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() + SCREEN_WIDTH / 8;
-		else if (!player.facesRight && camera.position.x - 10 > player.getX() - SCREEN_WIDTH / 8){
+		else if (!player.facesRight && camera.position.x - 10 > player.getX() - SCREEN_WIDTH / 8) {
 			if (this.player.MAX_VELOCITY > 120f)
 				camera.position.x -= 7;
 			else
 				camera.position.x -= 5;
-		}
-		else if (!player.facesRight && camera.position.x > player.getX() - SCREEN_WIDTH / 8)
+		} else if (!player.facesRight && camera.position.x > player.getX() - SCREEN_WIDTH / 8)
 			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
 		else if (player.facesRight && player.noControl)
 			camera.position.x = player.getX() + SCREEN_WIDTH / 8;
 		else if (!player.facesRight && player.noControl)
 			camera.position.x = player.getX() - SCREEN_WIDTH / 8;
 
-		//}
-
+		// }
 
 		// update y
-		if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-				+ TILED_SIZE)
+		if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD + TILED_SIZE)
 			this.camera.position.y = this.player.getY();
 		else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-			this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-			+ TILED_SIZE;
+			this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
 		else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
 				+ TILED_SIZE)
-			this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-			+ TILED_SIZE;
+			this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
 		else
 			this.camera.position.y = this.player.getY();
 
@@ -655,34 +698,28 @@ public class MainScreen extends BaseScreen {
 	private void updateCameraForTwoPlayersBoss() {
 
 		// update x
-		if (boss.facesRight && camera2.position.x + 10 < boss.getX() + SCREEN_WIDTH / 8){
+		if (boss.facesRight && camera2.position.x + 10 < boss.getX() + SCREEN_WIDTH / 8) {
 			if (this.boss.MAX_VELOCITY > 120f)
 				camera2.position.x += 7;
 			else
 				camera2.position.x += 5;
-		}
-		else if (boss.facesRight && camera2.position.x < boss.getX() + SCREEN_WIDTH / 8)
+		} else if (boss.facesRight && camera2.position.x < boss.getX() + SCREEN_WIDTH / 8)
 			camera2.position.x = boss.getX() + SCREEN_WIDTH / 8;
-		else if (!boss.facesRight && camera2.position.x - 10 > boss.getX() - SCREEN_WIDTH / 8){
+		else if (!boss.facesRight && camera2.position.x - 10 > boss.getX() - SCREEN_WIDTH / 8) {
 			if (this.boss.MAX_VELOCITY > 120f)
 				camera2.position.x -= 7;
 			else
 				camera2.position.x -= 5;
-		}
-		else if (!boss.facesRight && camera2.position.x > boss.getX() - SCREEN_WIDTH / 8)
+		} else if (!boss.facesRight && camera2.position.x > boss.getX() - SCREEN_WIDTH / 8)
 			camera2.position.x = boss.getX() - SCREEN_WIDTH / 8;
 
 		// update y
-		if ((this.boss.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-				+ TILED_SIZE)
+		if ((this.boss.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD + TILED_SIZE)
 			this.camera2.position.y = this.boss.getY();
 		else if (this.boss.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-			this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-			+ TILED_SIZE;
-		else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-				+ TILED_SIZE)
-			this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-			+ TILED_SIZE;
+			this.camera2.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
+		else if ((this.boss.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD + TILED_SIZE)
+			this.camera2.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
 		else
 			this.camera2.position.y = this.boss.getY();
 
@@ -691,29 +728,26 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void updateCameraForOnePlayer() {
-			// update x
-			if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
-				this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
-			else if ((this.player.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
-				this.camera.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
-			else
-				this.camera.position.x = this.player.getX();
+		// update x
+		if ((this.player.getX() - (this.SCREEN_WIDTH / 2)) < this.TILED_SIZE)
+			this.camera.position.x = (this.SCREEN_WIDTH / 2) + this.TILED_SIZE;
+		else if ((this.player.getX() + (this.SCREEN_WIDTH / 2)) > (this.MAP_WIDTH * this.TILED_SIZE))
+			this.camera.position.x = (this.MAP_WIDTH * 16) - (this.SCREEN_WIDTH / 2);
+		else
+			this.camera.position.x = this.player.getX();
 
-			// update y
-			if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera.position.y = this.player.getY();
-			else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
-				this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
-					+ TILED_SIZE)
-				this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2)
-						+ TILED_SIZE;
-			else
-				this.camera.position.y = this.player.getY();
+		// update y
+		if ((this.player.getY() - (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD + TILED_SIZE)
+			this.camera.position.y = this.player.getY();
+		else if (this.player.getY() + TILED_SIZE > this.POS_LOWER_WORLD)
+			this.camera.position.y = this.POS_LOWER_WORLD + (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
+		else if ((this.player.getY() + (this.SCREEN_HEIGHT / 2)) >= this.POS_LOWER_WORLD
+				+ TILED_SIZE)
+			this.camera.position.y = this.POS_LOWER_WORLD - (this.SCREEN_HEIGHT / 2) + TILED_SIZE;
+		else
+			this.camera.position.y = this.player.getY();
 
-			this.camera.update();
+		this.camera.update();
 	}
 
 	private void updatePlayer(float deltaTime) {
@@ -748,7 +782,8 @@ public class MainScreen extends BaseScreen {
 		this.player.desiredPosition.add(this.player.velocity);
 		this.player.velocity.scl(1 / deltaTime);
 
-		if (Assets.playerBeingHit.isAnimationFinished(this.player.stateTime) && !this.player.dead && this.startRace){
+		if (Assets.playerBeingHit.isAnimationFinished(this.player.stateTime) && !this.player.dead
+				&& this.startRace) {
 			this.player.noControl = false;
 			this.player.pushedBack = false;
 		}
@@ -758,12 +793,13 @@ public class MainScreen extends BaseScreen {
 
 		this.player.setPosition(this.player.desiredPosition.x, this.player.desiredPosition.y);
 
-
-		if (Assets.playerDie.isAnimationFinished(this.player.stateTime) && this.player.dead){
+		if (Assets.playerDie.isAnimationFinished(this.player.stateTime) && this.player.dead) {
 			Timer.schedule(new Task() {
-				@Override public void run() { MainScreen.this.player.revive();
+				@Override
+				public void run() {
+					MainScreen.this.player.revive();
 				}
-				}, 0f);
+			}, 0f);
 			this.player.velocity.x = 0;
 		}
 
@@ -786,14 +822,14 @@ public class MainScreen extends BaseScreen {
 		this.boss.velocity.scl(deltaTime);
 
 		// retreat if noControl //velocity y is changed in beingHit
-//		if (this.boss.noControl
-//				&& !(this.boss.state.equals(Boss.State.Die) && Assets.bossDie
-//						.isAnimationFinished(this.boss.stateTime))) {
-//			if (this.boss.facesRight)
-//				this.boss.velocity.x = -120f * deltaTime;
-//			else
-//				this.boss.velocity.x = 120 * deltaTime;
-//		}
+		// if (this.boss.noControl
+		// && !(this.boss.state.equals(Boss.State.Die) && Assets.bossDie
+		// .isAnimationFinished(this.boss.stateTime))) {
+		// if (this.boss.facesRight)
+		// this.boss.velocity.x = -120f * deltaTime;
+		// else
+		// this.boss.velocity.x = 120 * deltaTime;
+		// }
 
 		// boolean collisionSpike = this.collisionWallsAndSpike();
 
@@ -802,7 +838,8 @@ public class MainScreen extends BaseScreen {
 		this.boss.desiredPosition.add(this.boss.velocity);
 		this.boss.velocity.scl(1 / deltaTime);
 
-		if (Assets.bossGethit.isAnimationFinished(this.boss.stateTime) && !this.boss.dead && this.startRace)
+		if (Assets.bossGethit.isAnimationFinished(this.boss.stateTime) && !this.boss.dead
+				&& this.startRace)
 			this.boss.noControl = false;
 
 		if (this.boss.noControl == false)
@@ -810,11 +847,13 @@ public class MainScreen extends BaseScreen {
 
 		this.boss.setPosition(this.boss.desiredPosition.x, this.boss.desiredPosition.y);
 
-		if (Assets.bossDie.isAnimationFinished(this.boss.stateTime) && this.boss.dead){
+		if (Assets.bossDie.isAnimationFinished(this.boss.stateTime) && this.boss.dead) {
 			Timer.schedule(new Task() {
-				@Override public void run() { MainScreen.this.boss.revive();
+				@Override
+				public void run() {
+					MainScreen.this.boss.revive();
 				}
-				}, 0f);
+			}, 0f);
 			this.boss.velocity.x = 0;
 		}
 	}
@@ -853,11 +892,11 @@ public class MainScreen extends BaseScreen {
 		// gravityAndClampingBoss(deltaTime);
 	}
 
-    public boolean updateShot(Shot shot, float deltaTime){
-    	boolean killMe = false;
-        shot.desiredPosition.y = shot.getY();
+	public boolean updateShot(Shot shot, float deltaTime) {
+		boolean killMe = false;
+		shot.desiredPosition.y = shot.getY();
 
-        shot.stateTime += deltaTime;
+		shot.stateTime += deltaTime;
 
 		if (this.normalGravity && !shot.state.equals(Shot.State.Exploding))
 			shot.velocity.add(0, this.GRAVITY * deltaTime);
@@ -866,7 +905,7 @@ public class MainScreen extends BaseScreen {
 
 		shot.velocity.scl(deltaTime);
 
-		//collision (destroy if necessary)
+		// collision (destroy if necessary)
 		boolean collided = this.collisionShotEnemy(shot);
 
 		if (!collided)
@@ -874,33 +913,33 @@ public class MainScreen extends BaseScreen {
 
 		// unscale the velocity by the inverse delta time and set
 		// the latest position
-		if (shot != null){
+		if (shot != null) {
 			shot.desiredPosition.add(shot.velocity);
 			shot.velocity.scl(1 / deltaTime);
 
 			shot.setPosition(shot.desiredPosition.x, shot.desiredPosition.y);
 			if (shot.normalGravity && (shot.getY() < this.POS_LOWER_WORLD))
-				collided = true;	//dont traspass to the other world
+				collided = true; // dont traspass to the other world
 			else if (!shot.normalGravity && (shot.getY() >= this.POS_LOWER_WORLD))
 				collided = true;
 			else if ((shot.getY() > (this.MAP_HEIGHT * this.TILED_SIZE)) || (shot.getY() < 0))
 				collided = true;
 		}
 
-		if (collided && !shot.state.equals(Shot.State.Exploding)){
-            Assets.playSound("holyWaterBroken");
-            shot.state = Shot.State.Exploding;
-            shot.stateTime = 0;
-            shot.velocity.x = 0f;
-            shot.velocity.y = 0f;
+		if (collided && !shot.state.equals(Shot.State.Exploding)) {
+			Assets.playSound("holyWaterBroken");
+			shot.state = Shot.State.Exploding;
+			shot.stateTime = 0;
+			shot.velocity.x = 0f;
+			shot.velocity.y = 0f;
 		}
 
-		if (Assets.playerShotHit.isAnimationFinished(shot.stateTime) && shot.state.equals(Shot.State.Exploding))
+		if (Assets.playerShotHit.isAnimationFinished(shot.stateTime)
+				&& shot.state.equals(Shot.State.Exploding))
 			killMe = true;
 
 		return killMe;
-    }
-
+	}
 
 	private boolean collisionShotEnemy(Shot shot) {
 		boolean collided = false;
@@ -912,9 +951,9 @@ public class MainScreen extends BaseScreen {
 
 		this.playerRect = shot.getRect();
 
-		for (Enemy enemy : this.enemies){
+		for (Enemy enemy : this.enemies) {
 			if (this.playerRect.overlaps(enemy.getRect())) {
-				if (!enemy.dying){
+				if (!enemy.dying) {
 					enemy.die();
 					collided = true;
 					break;
@@ -927,19 +966,16 @@ public class MainScreen extends BaseScreen {
 			if (!this.boss.invincible)
 				this.boss.beingHit();
 
-		    if (!this.boss.setToDie){
-		    	this.boss.invincible = true;		//activates also the flickering
-		    }
-		    else if (this.boss.state != Boss.State.Die){
-		    	this.boss.state = Boss.State.Die;
-		    }
-		    collided = true;
+			if (!this.boss.setToDie) {
+				this.boss.invincible = true; // activates also the flickering
+			} else if (this.boss.state != Boss.State.Die) {
+				this.boss.state = Boss.State.Die;
+			}
+			collided = true;
 		}
-
 
 		return collided;
 	}
-
 
 	private boolean collisionShot(Shot shot) {
 		this.playerRect = this.rectPool.obtain();
@@ -951,186 +987,179 @@ public class MainScreen extends BaseScreen {
 
 		int startX, startY, endX, endY;
 
-		if (shot.velocity.x > 0) {	//this.raya.velocity.x > 0
-			startX = endX = (int)((shot.desiredPosition.x + shot.velocity.x + shot.actualFrame.packedWidth) / 16);
-		}
-		else {
-			startX = endX = (int)((shot.desiredPosition.x + shot.velocity.x) / 16);
+		if (shot.velocity.x > 0) { // this.raya.velocity.x > 0
+			startX = endX = (int) ((shot.desiredPosition.x + shot.velocity.x + shot.actualFrame.packedWidth) / 16);
+		} else {
+			startX = endX = (int) ((shot.desiredPosition.x + shot.velocity.x) / 16);
 		}
 
-		startY = (int)((shot.desiredPosition.y) / 16);
-		endY = (int)((shot.desiredPosition.y + shot.actualFrame.packedHeight) / 16);
+		startY = (int) ((shot.desiredPosition.y) / 16);
+		endY = (int) ((shot.desiredPosition.y + shot.actualFrame.packedHeight) / 16);
 
 		this.getTiles(startX, startY, endX, endY, this.tiles);
 
 		this.playerRect.x += shot.velocity.x;
 
-		for (Rectangle tile : this.tiles){
+		for (Rectangle tile : this.tiles) {
 			if (this.playerRect.overlaps(tile)) {
 				shot = null;
 				return true;
-				}
+			}
 		}
 
 		this.playerRect.x = shot.desiredPosition.x;
 
-		if (this.normalGravity){
+		if (this.normalGravity) {
 			if (shot.velocity.y > 0) {
-				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y + shot.actualFrame.packedHeight) / 16f);
+				startY = endY = (int) ((shot.desiredPosition.y + shot.velocity.y + shot.actualFrame.packedHeight) / 16f);
+			} else {
+				startY = endY = (int) ((shot.desiredPosition.y + shot.velocity.y) / 16f);
 			}
-			else {
-				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y) / 16f);
-			}
-		}
-		else{
+		} else {
 			if (shot.velocity.y < 0) {
 
-				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y) / 16f);
-			}
-			else {
-				startY = endY = (int)((shot.desiredPosition.y + shot.velocity.y + shot.actualFrame.packedHeight ) / 16f);
+				startY = endY = (int) ((shot.desiredPosition.y + shot.velocity.y) / 16f);
+			} else {
+				startY = endY = (int) ((shot.desiredPosition.y + shot.velocity.y + shot.actualFrame.packedHeight) / 16f);
 			}
 		}
 
-		startX = (int)((shot.desiredPosition.x + shot.offSetX) / 16);					//16 tile size
-		endX = (int)((shot.desiredPosition.x + shot.actualFrame.packedWidth) / 16);
-
+		startX = (int) ((shot.desiredPosition.x + shot.offSetX) / 16); // 16
+																		// tile
+																		// size
+		endX = (int) ((shot.desiredPosition.x + shot.actualFrame.packedWidth) / 16);
 
 		// System.out.println(startX + " " + startY + " " + endX + " " + endY);
 
 		this.getTiles(startX, startY, endX, endY, this.tiles);
 
-		shot.desiredPosition.y += (int)(shot.velocity.y);
+		shot.desiredPosition.y += (int) (shot.velocity.y);
 
 		for (Rectangle tile : this.tiles) {
 			if (this.playerRect.overlaps(tile)) {
 				shot = null;
 				return true;
-				}
 			}
+		}
 		return false;
 	}
 
 	private void updateEnemies(float deltaTime) {
-	    for (Enemy enemy : this.enemies) {
+		for (Enemy enemy : this.enemies) {
 
-	    	this.isEnemyInScreen(enemy);
-	    	this.isEnemyFinishedInvoking(enemy);
+			this.isEnemyInScreen(enemy);
+			this.isEnemyFinishedInvoking(enemy);
 
-	        // Collision between player vs enemy
-	    	if (!enemy.dying){
-	    		if (this.player.getRect2().overlaps(enemy.getRect())) {
-	    			this.player.beingHit();
-	    		}
-	    	}
+			// Collision between player vs enemy
+			if (!enemy.dying) {
+				if (this.player.getRect2().overlaps(enemy.getRect())) {
+					this.player.beingHit();
+				}
+			}
 
+			enemy.stateTime += deltaTime;
+			// Check if player is invincible and check distance to player for
+			// attack him.
+			if (!enemy.running && !enemy.dying && !enemy.beingInvoked && enemy.canMove) {
+				// Attack
+				if (!this.player.invincible
+						&& (Math.abs(enemy.getCenterX() - this.player.getCenterX()) <= enemy.ATTACK_DISTANCE)
+						&& (Math.abs(((enemy.getCenterY() - this.player.getCenterY()))) <= this.player
+								.getHeight())) {
+					if (enemy.getCenterX() < this.player.getCenterX()) {
+						enemy.dir = Enemy.Direction.Right;
+						enemy.run();
+						enemy.attackHereX = this.player.getX();
+						enemy.attackRight = true;
+					} else {
+						enemy.dir = Enemy.Direction.Left;
+						enemy.run();
+						enemy.attackHereX = this.player.getX();
+						enemy.attackRight = false;
+					}
+				} else if (!this.boss.invincible
+						&& (Math.abs(enemy.getCenterX() - this.boss.getCenterX()) <= enemy.ATTACK_DISTANCE)
+						&& (Math.abs(((enemy.getCenterY() - this.boss.getCenterY()))) <= this.boss
+								.getHeight())) {
+					if (enemy.getCenterX() < this.boss.getCenterX()) {
+						enemy.dir = Enemy.Direction.Right;
+						enemy.run();
+						enemy.attackHereX = this.boss.getX();
+						enemy.attackRight = true;
+					} else {
+						enemy.dir = Enemy.Direction.Left;
+						enemy.run();
+						enemy.attackHereX = this.boss.getX();
+						enemy.attackRight = false;
+					}
+				} else if (enemy.dir == Enemy.Direction.Left) {
+					if (-enemy.RANGE >= enemy.diffInitialPos) {
+						enemy.dir = Enemy.Direction.Right;
+					}
+					enemy.walk();
+				} else if (enemy.dir == Enemy.Direction.Right) {
+					if (enemy.diffInitialPos >= enemy.RANGE) {
+						enemy.dir = Enemy.Direction.Left;
+					}
+					enemy.walk();
+				}
+			} else if ((enemy.getX() > enemy.attackHereX) && enemy.attackRight)
+				enemy.running = false;
+			else if ((enemy.getX() < enemy.attackHereX) && !enemy.attackRight)
+				enemy.running = false;
 
-	        enemy.stateTime += deltaTime;
-	        // Check if player is invincible and check distance to player for attack him.
-	        if (!enemy.running && !enemy.dying && !enemy.beingInvoked && enemy.canMove){
-	            // Attack
-	        	if (!this.player.invincible &&
-	        			(Math.abs(enemy.getCenterX() - this.player.getCenterX()) <= enemy.ATTACK_DISTANCE) &&
-	        			(Math.abs(((enemy.getCenterY() - this.player.getCenterY()))) <= this.player.getHeight())) {
-	        		if (enemy.getCenterX() < this.player.getCenterX()) {
-	        			enemy.dir = Enemy.Direction.Right;
-	        			enemy.run();
-	        			enemy.attackHereX = this.player.getX();
-	        			enemy.attackRight = true;
-	        		}
-	        		else {
-	        			enemy.dir = Enemy.Direction.Left;
-	        			enemy.run();
-	        			enemy.attackHereX = this.player.getX();
-	        			enemy.attackRight = false;
-	        		}
-	        	}
-	        	else if (!this.boss.invincible &&
-	        			(Math.abs(enemy.getCenterX() - this.boss.getCenterX()) <= enemy.ATTACK_DISTANCE) &&
-	        			(Math.abs(((enemy.getCenterY() - this.boss.getCenterY()))) <= this.boss.getHeight())) {
-	        		if (enemy.getCenterX() < this.boss.getCenterX()) {
-	        			enemy.dir = Enemy.Direction.Right;
-	        			enemy.run();
-	        			enemy.attackHereX = this.boss.getX();
-	        			enemy.attackRight = true;
-	        		}
-	        		else {
-	        			enemy.dir = Enemy.Direction.Left;
-	        			enemy.run();
-	        			enemy.attackHereX = this.boss.getX();
-	        			enemy.attackRight = false;
-	        		}
-	        	}
-	        	else if (enemy.dir == Enemy.Direction.Left) {
-	        		if (-enemy.RANGE >= enemy.diffInitialPos) {
-	        			enemy.dir = Enemy.Direction.Right;
-	        		}
-	        		enemy.walk();
-	        	}
-	        	else if (enemy.dir == Enemy.Direction.Right) {
-	        		if (enemy.diffInitialPos >= enemy.RANGE) {
-	        			enemy.dir = Enemy.Direction.Left;
-	        		}
-	        		enemy.walk();
-	        	}
-	        }
-	        else if ((enemy.getX() > enemy.attackHereX) && enemy.attackRight)
-	        	enemy.running = false;
-	        else if ((enemy.getX() < enemy.attackHereX) && !enemy.attackRight)
-	        	enemy.running = false;
+			enemy.velocity.scl(deltaTime);
 
-            enemy.velocity.scl(deltaTime);
+			// Enviroment collision
+			enemy.desiredPosition.y = Math.round(enemy.getY());
+			enemy.desiredPosition.x = Math.round(enemy.getX());
+			int startX, startY, endX, endY;
+			if (enemy.velocity.x > 0) {
+				startX = endX = (int) ((enemy.desiredPosition.x + enemy.velocity.x + enemy
+						.getWidth()) / this.TILED_SIZE);
+			} else {
+				startX = endX = (int) ((enemy.desiredPosition.x + enemy.velocity.x) / this.TILED_SIZE);
+			}
+			startY = (int) enemy.getY() / this.TILED_SIZE;
+			endY = (int) (enemy.getY() + enemy.getHeight()) / this.TILED_SIZE;
 
-            // Enviroment collision
-            enemy.desiredPosition.y = Math.round(enemy.getY());
-            enemy.desiredPosition.x = Math.round(enemy.getX());
-            int startX, startY, endX, endY;
-            if (enemy.velocity.x > 0) {
-                startX = endX = (int)((enemy.desiredPosition.x + enemy.velocity.x + enemy.getWidth()) / this.TILED_SIZE);
-            }
-            else {
-                startX = endX = (int)((enemy.desiredPosition.x + enemy.velocity.x) / this.TILED_SIZE);
-            }
-            startY = (int) enemy.getY() / this.TILED_SIZE;
-            endY =  (int) (enemy.getY() + enemy.getHeight()) / this.TILED_SIZE;
+			this.getTiles(startX, startY, endX, endY, this.tiles);
 
-            this.getTiles(startX, startY, endX, endY, this.tiles);
+			enemy.getRect();
+			enemy.rect.x += enemy.velocity.x;
 
-            enemy.getRect();
-            enemy.rect.x += enemy.velocity.x;
+			for (Rectangle tile : this.tiles) {
+				if (enemy.rect.overlaps(tile)) {
+					enemy.velocity.x = 0;
+					enemy.running = false;
+					break;
+				}
+			}
 
-            for (Rectangle tile : this.tiles) {
-                if (enemy.rect.overlaps(tile)) {
-                    enemy.velocity.x = 0;
-                    enemy.running = false;
-                    break;
-                }
-            }
+			enemy.rect.x = enemy.desiredPosition.x;
 
-            enemy.rect.x = enemy.desiredPosition.x;
+			enemy.desiredPosition.add(enemy.velocity);
+			enemy.velocity.scl(1 / deltaTime);
 
-            enemy.desiredPosition.add(enemy.velocity);
-            enemy.velocity.scl(1 / deltaTime);
+			enemy.setPosition(enemy.desiredPosition.x, enemy.desiredPosition.y);
 
-            enemy.setPosition(enemy.desiredPosition.x, enemy.desiredPosition.y);
+			if (Assets.playerDie.isAnimationFinished(enemy.stateTime) && enemy.dying) {
+				enemy.setToDie = true;
+			}
 
-            if (Assets.playerDie.isAnimationFinished(enemy.stateTime) && enemy.dying){
-    			enemy.setToDie = true;
-    		}
+		}
 
-        }
-
-	    int i = 0;
+		int i = 0;
 		boolean[] toBeDeleted = new boolean[this.enemies.size];
-		for (Enemy enemy : this.enemies){
-			if (enemy != null){
-				if(enemy.setToDie == true) //&& animation finished
+		for (Enemy enemy : this.enemies) {
+			if (enemy != null) {
+				if (enemy.setToDie == true) // && animation finished
 					toBeDeleted[i] = true;
 			}
 			i++;
 		}
 
-		for(int j = 0; j < toBeDeleted.length; j++){
+		for (int j = 0; j < toBeDeleted.length; j++) {
 			if (toBeDeleted[j] && (this.enemies.size >= (j + 1)))
 				this.enemies.removeIndex(j);
 		}
@@ -1138,24 +1167,25 @@ public class MainScreen extends BaseScreen {
 
 	private void isEnemyFinishedInvoking(Enemy enemy) {
 
-		if (Assets.enemyAppearing.isAnimationFinished(enemy.stateTime) && enemy.state.equals(Enemy.State.BeingInvoked)){
+		if (Assets.enemyAppearing.isAnimationFinished(enemy.stateTime)
+				&& enemy.state.equals(Enemy.State.BeingInvoked)) {
 			enemy.beingInvoked = false;
 		}
 
 	}
 
 	private void isEnemyInScreen(Enemy enemy) {
-	    if (enemy.canMove)
-	        return;
-	    Rectangle cameraRect = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
-	    cameraRect.setCenter(this.camera.position.x, this.camera.position.y);
-	    Rectangle cameraRect2 = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
-	    cameraRect2.setCenter(this.camera2.position.x, this.camera2.position.y);
-	    if (enemy.rect.overlaps(cameraRect) || enemy.rect.overlaps(cameraRect2)) {
-		    if ((this.player.getX() - enemy.getX()) < 0 || this.boss.getX() - enemy.getX() < 0)
-		        enemy.dir = Enemy.Direction.Left;
-		    else
-		        enemy.dir = Enemy.Direction.Right;
+		if (enemy.canMove)
+			return;
+		Rectangle cameraRect = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+		cameraRect.setCenter(this.camera.position.x, this.camera.position.y);
+		Rectangle cameraRect2 = new Rectangle(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+		cameraRect2.setCenter(this.camera2.position.x, this.camera2.position.y);
+		if (enemy.rect.overlaps(cameraRect) || enemy.rect.overlaps(cameraRect2)) {
+			if ((this.player.getX() - enemy.getX()) < 0 || this.boss.getX() - enemy.getX() < 0)
+				enemy.dir = Enemy.Direction.Left;
+			else
+				enemy.dir = Enemy.Direction.Right;
 			enemy.canMove = true;
 		}
 	}
@@ -1193,7 +1223,19 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void checkCollisionWalls(float deltaTime) {
-		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto
+																									// debería
+																									// ser
+																									// "Collisions",
+																									// lo
+																									// cambio
+																									// momentáneamente
+																									// para
+																									// editar
+																									// las
+																									// fases
+																									// más
+																									// rápido
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
 
@@ -1247,14 +1289,27 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void checkCollisionWallsBoss(float deltaTime) {
-		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto debería ser "Collisions", lo cambio momentáneamente para editar las fases más rápido
+		TiledMapTileLayer layerTiles = (TiledMapTileLayer) (this.map.getLayers().get("Platfs")); // Esto
+																									// debería
+																									// ser
+																									// "Collisions",
+																									// lo
+																									// cambio
+																									// momentáneamente
+																									// para
+																									// editar
+																									// las
+																									// fases
+																									// más
+																									// rápido
 		this.rectPool.freeAll(this.tiles);
 		this.tiles.clear();
 
 		// stop him in X
 		if (boss.velocity.x > 0) {
 			int startX = (int) Math.ceil((boss.getX() + boss.getWidth()) / 16f);
-			int finalX = (int) Math.floor((boss.getX() + boss.getWidth() + boss.velocity.x	* deltaTime) / 16f); // donde esté
+			int finalX = (int) Math.floor((boss.getX() + boss.getWidth() + boss.velocity.x
+					* deltaTime) / 16f); // donde esté
 			int startY = (int) Math.floor(boss.getY() / 16f);
 			int finalY = (int) Math.floor((boss.getY() + boss.getHeight()) / 16f);
 
@@ -1313,7 +1368,7 @@ public class MainScreen extends BaseScreen {
 					 * "playerRect y is " + playerRect.y + " and height is " +
 					 * playerRect.height);
 					 */if (playerRect.overlaps(rect)) {
-						//System.out.println(x);
+						// System.out.println(x);
 						this.player.setX(x * this.TILED_SIZE - this.TILED_SIZE);
 						this.player.velocity.x = 0;
 						return;
@@ -1345,7 +1400,7 @@ public class MainScreen extends BaseScreen {
 					 * "playerRect y is " + playerRect.y + " and height is " +
 					 * playerRect.height);
 					 */if (playerRect.overlaps(rect)) {
-						//System.out.println(x);
+						// System.out.println(x);
 						this.player.setX(x * this.TILED_SIZE + this.TILED_SIZE);
 						this.player.velocity.x = 0;
 						return;
@@ -1440,7 +1495,7 @@ public class MainScreen extends BaseScreen {
 					 * + rect.y + " height is " + rect.height + "bossRect y is "
 					 * + bossRect.y + " and height is " + bossRect.height);
 					 */if (bossRect.overlaps(rect)) {
-						//System.out.println(x);
+						// System.out.println(x);
 						this.boss.desiredPosition.x = (x * this.TILED_SIZE - this.boss.getRect2().width);
 						this.boss.velocity.x = 0;
 						return;
@@ -1470,8 +1525,8 @@ public class MainScreen extends BaseScreen {
 					 * + rect.y + " height is " + rect.height + "bossRect y is "
 					 * + bossRect.y + " and height is " + bossRect.height);
 					 */if (bossRect.overlaps(rect)) {
-						//System.out.println(x);
-						 this.boss.desiredPosition.x = (x * this.TILED_SIZE + this.TILED_SIZE);
+						// System.out.println(x);
+						this.boss.desiredPosition.x = (x * this.TILED_SIZE + this.TILED_SIZE);
 						this.boss.velocity.x = 0;
 						return;
 					}
@@ -1499,7 +1554,8 @@ public class MainScreen extends BaseScreen {
 
 					if (bossRect.overlaps(rect)) {
 						this.boss.desiredPosition.y = y * this.TILED_SIZE + this.TILED_SIZE;
-						//System.out.println(" " + this.boss.desiredPosition.y);
+						// System.out.println(" " +
+						// this.boss.desiredPosition.y);
 						this.boss.velocity.y = 0;
 						if (normalGravityBoss)
 							this.boss.grounded = true;
@@ -1526,11 +1582,11 @@ public class MainScreen extends BaseScreen {
 							this.boss.getRect2().y,
 							this.boss.getRect2().width - 2,
 							this.boss.getRect2().height
-							+ Math.abs(this.boss.velocity.y * deltaTime));
+									+ Math.abs(this.boss.velocity.y * deltaTime));
 
-					System.out.println("cell is not null and x from tile is "
-							+ rect.x + " width is " + rect.width + "bossRect x is "
-							+ bossRect.x + " and width is " + bossRect.width);
+					System.out.println("cell is not null and x from tile is " + rect.x
+							+ " width is " + rect.width + "bossRect x is " + bossRect.x
+							+ " and width is " + bossRect.width);
 					if (bossRect.overlaps(rect)) {
 						this.boss.desiredPosition.y = y * this.TILED_SIZE - this.boss.getHeight();
 						System.out.println(" " + this.boss.desiredPosition.y);
@@ -1616,8 +1672,10 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer.begin(ShapeType.Line);
 
 		this.shapeRenderer.setColor(Color.BLACK);
-		//shapeRenderer.rect(this.player.getRect2().x, this.player.getRect2().y - this.SCREEN_HEIGHT
-			//	+ TILED_SIZE, this.player.getRect2().width, this.player.getRect2().height);
+		// shapeRenderer.rect(this.player.getRect2().x, this.player.getRect2().y
+		// - this.SCREEN_HEIGHT
+		// + TILED_SIZE, this.player.getRect2().width,
+		// this.player.getRect2().height);
 		// this.getTiles(0, 0, 25, 15, this.tiles);
 		// for (Rectangle tile : this.tiles) {
 		// shapeRenderer.rect(tile.x * 1.6f, tile.y * 2, tile.width * 2,
@@ -1711,62 +1769,69 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void renderEnemies(float deltaTime) {
-	    for (Enemy enemy : this.enemies) {
-	    		enemy.actualFrame = null;
-	    		if (enemy.enemyType == Enemy.Type.Spider){
-	    			switch (enemy.state) {
-	    			case Walking:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			case Running:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_attack.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			case Hurting:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_dying.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			case BeingInvoked:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_spider_walk.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			}
-	    		}
-	    		else if (enemy.enemyType == Enemy.Type.Bat){
-	    			switch (enemy.state) {
-	    			case Walking:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			case Running:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			case Hurting:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_dying.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			case BeingInvoked:
-	    				enemy.actualFrame = (AtlasRegion)Assets.enemy_bat_fly.getKeyFrame(enemy.stateTime);
-	    				break;
-	    			}
-	    		}
+		for (Enemy enemy : this.enemies) {
+			enemy.actualFrame = null;
+			if (enemy.enemyType == Enemy.Type.Spider) {
+				switch (enemy.state) {
+				case Walking:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_spider_walk
+							.getKeyFrame(enemy.stateTime);
+					break;
+				case Running:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_spider_attack
+							.getKeyFrame(enemy.stateTime);
+					break;
+				case Hurting:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_spider_dying
+							.getKeyFrame(enemy.stateTime);
+					break;
+				case BeingInvoked:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_spider_walk
+							.getKeyFrame(enemy.stateTime);
+					break;
+				}
+			} else if (enemy.enemyType == Enemy.Type.Bat) {
+				switch (enemy.state) {
+				case Walking:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_bat_fly
+							.getKeyFrame(enemy.stateTime);
+					break;
+				case Running:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_bat_fly
+							.getKeyFrame(enemy.stateTime);
+					break;
+				case Hurting:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_bat_dying
+							.getKeyFrame(enemy.stateTime);
+					break;
+				case BeingInvoked:
+					enemy.actualFrame = (AtlasRegion) Assets.enemy_bat_fly
+							.getKeyFrame(enemy.stateTime);
+					break;
+				}
+			}
 
-            Batch batch = this.renderer.getSpriteBatch();
-            batch.begin();
-    		if (enemy.getY() < POS_LOWER_WORLD && !enemy.actualFrame.isFlipY()) {
-    			enemy.actualFrame.flip(false, true);
-    			enemy.offsetY = 4;
-    		} else if (enemy.getY() >= POS_LOWER_WORLD && enemy.actualFrame.isFlipY()) {
-    			enemy.actualFrame.flip(false, true);
-    			enemy.offsetY = 0;
-    		}
+			Batch batch = this.renderer.getSpriteBatch();
+			batch.begin();
+			if (enemy.getY() < POS_LOWER_WORLD && !enemy.actualFrame.isFlipY()) {
+				enemy.actualFrame.flip(false, true);
+				enemy.offsetY = 4;
+			} else if (enemy.getY() >= POS_LOWER_WORLD && enemy.actualFrame.isFlipY()) {
+				enemy.actualFrame.flip(false, true);
+				enemy.offsetY = 0;
+			}
 
-            if (enemy.dir == Enemy.Direction.Right) {
-                if (enemy.actualFrame.isFlipX())
-                	enemy.actualFrame.flip(true, false);
-                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY() + enemy.offsetY);
-            } else {
-                if (!enemy.actualFrame.isFlipX())
-                	enemy.actualFrame.flip(true, false);
-                batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY() + enemy.offsetY);
-            }
-            batch.end();
-	    }
+			if (enemy.dir == Enemy.Direction.Right) {
+				if (enemy.actualFrame.isFlipX())
+					enemy.actualFrame.flip(true, false);
+				batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY() + enemy.offsetY);
+			} else {
+				if (!enemy.actualFrame.isFlipX())
+					enemy.actualFrame.flip(true, false);
+				batch.draw(enemy.actualFrame, enemy.getX(), enemy.getY() + enemy.offsetY);
+			}
+			batch.end();
+		}
 	}
 
 	private void movingShootingJumping(float deltaTime) {
@@ -1785,12 +1850,12 @@ public class MainScreen extends BaseScreen {
 			if (Gdx.input.isKeyPressed(Keys.RIGHT) || this.configControllers.rightPressed)
 				moveRight();
 
-			if (Gdx.input.isKeyJustPressed(Keys.S) || this.configControllers.activateJump){
+			if (Gdx.input.isKeyJustPressed(Keys.S) || this.configControllers.activateJump) {
 				this.jump();
 				this.configControllers.activateJump = false;
 			}
 
-			if (Gdx.input.isKeyJustPressed(Keys.D)|| this.configControllers.activateShoot) {
+			if (Gdx.input.isKeyJustPressed(Keys.D) || this.configControllers.activateShoot) {
 				this.shoot();
 				this.configControllers.activateShoot = false;
 			}
@@ -1802,32 +1867,35 @@ public class MainScreen extends BaseScreen {
 
 	private void updateShots(float deltaTime) {
 		int i = 0;
-		 boolean[] toBeDeleted = new boolean[3];
-		 for (Shot shot : this.shotArray){
-			 if (shot != null){
-				 if(this.updateShot(shot, deltaTime) == true){
-					 toBeDeleted[i] = true; //pool of shots?
-					 }
-				 i++;
-				 }
-		 }
+		boolean[] toBeDeleted = new boolean[3];
+		for (Shot shot : this.shotArray) {
+			if (shot != null) {
+				if (this.updateShot(shot, deltaTime) == true) {
+					toBeDeleted[i] = true; // pool of shots?
+				}
+				i++;
+			}
+		}
 
-		 for(int j = 0; j < toBeDeleted.length; j++){
-			 if (toBeDeleted[j] && (this.shotArray.size >= (j + 1)))
-				 this.shotArray.removeIndex(j);
-			 }
+		for (int j = 0; j < toBeDeleted.length; j++) {
+			if (toBeDeleted[j] && (this.shotArray.size >= (j + 1)))
+				this.shotArray.removeIndex(j);
+		}
 	}
 
 	public void shoot() {
-		if  (this.shotArray.size < 3){
+		if (this.shotArray.size < 3) {
 			Assets.playSound("playerAttack");
 			Shot shot = new Shot(Assets.playerShot);
-			if (this.player.facesRight){
-				//-1 necessary to be exactly the same as the other facing
-				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.getVelocityX());
-			}
-			else {
-				shot.Initialize((this.player.getCenterX()), ((this.player.getY() + (this.player.getHeight() / 2)) - 10), this.player.facesRight, this.normalGravity, this.player.getVelocityX());
+			if (this.player.facesRight) {
+				// -1 necessary to be exactly the same as the other facing
+				shot.Initialize((this.player.getCenterX()),
+						((this.player.getY() + (this.player.getHeight() / 2)) - 10),
+						this.player.facesRight, this.normalGravity, this.player.getVelocityX());
+			} else {
+				shot.Initialize((this.player.getCenterX()),
+						((this.player.getY() + (this.player.getHeight() / 2)) - 10),
+						this.player.facesRight, this.normalGravity, this.player.getVelocityX());
 			}
 			this.shotArray.add(shot);
 
@@ -1838,15 +1906,14 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void moveRight() {
-		if (!this.player.run){
+		if (!this.player.run) {
 			this.player.velocity.x = this.player.MAX_VELOCITY;
 			if (this.player.grounded
 					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
 					&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
 				this.player.state = Player.State.Walking;
 			}
-		}
-		else {
+		} else {
 			this.player.velocity.x = this.player.MAX_VELOCITY * 2f;
 			if (this.player.grounded
 					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
@@ -1858,15 +1925,14 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void moveLeft() {
-		if (!this.player.run){
+		if (!this.player.run) {
 			this.player.velocity.x = -this.player.MAX_VELOCITY;
 			if (this.player.grounded
 					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
 					&& Assets.playerBeingHit.isAnimationFinished(this.player.stateTime)) {
 				this.player.state = Player.State.Walking;
 			}
-		}
-		else {
+		} else {
 			this.player.velocity.x = -this.player.MAX_VELOCITY * 2f;
 			if (this.player.grounded
 					&& Assets.playerAttack.isAnimationFinished(this.player.stateTime)
@@ -1937,15 +2003,15 @@ public class MainScreen extends BaseScreen {
 		 * int i = 0; boolean[] toBeDeleted = new boolean[3]; for (Shot shot :
 		 * this.shotArray){ if (shot != null){ if(this.updateShot(shot,
 		 * deltaTime) == true) toBeDeleted[i] = true; //pool of shots? } i++; }
-		 *
-		 *
+		 * 
+		 * 
 		 * for(int j = 0; j < toBeDeleted.length; j++){ if (toBeDeleted[j] &&
 		 * (this.shotArray.size >= (j + 1))) this.shotArray.removeIndex(j); }
 		 */
 	}
 
-	private void shootBoss(){
-		if (!this.boss.shooting){
+	private void shootBoss() {
+		if (!this.boss.shooting) {
 			this.boss.state = Boss.State.Attack;
 			this.boss.stateTime = 0;
 			this.boss.shooting = true;
@@ -1953,17 +2019,14 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void moveRightBoss() {
-		if (!this.boss.run){
+		if (!this.boss.run) {
 			this.boss.velocity.x = this.boss.MAX_VELOCITY;
-			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
+			if (this.boss.grounded && Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Walking;
 			}
-		}
-		else {
+		} else {
 			this.boss.velocity.x = this.boss.MAX_VELOCITY * 2f;
-			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
+			if (this.boss.grounded && Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Running;
 			}
 		}
@@ -1980,17 +2043,14 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void moveLeftBoss() {
-		if (!this.boss.run){
+		if (!this.boss.run) {
 			this.boss.velocity.x = -this.boss.MAX_VELOCITY;
-			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
+			if (this.boss.grounded && Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Walking;
 			}
-		}
-		else {
+		} else {
 			this.boss.velocity.x = -this.boss.MAX_VELOCITY * 2f;
-			if (this.boss.grounded
-					&& Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
+			if (this.boss.grounded && Assets.bossAttack.isAnimationFinished(this.boss.stateTime)) {
 				this.boss.state = Boss.State.Running;
 			}
 		}
@@ -2021,37 +2081,40 @@ public class MainScreen extends BaseScreen {
 	}
 
 	private void getTiles(int startX, int startY, int endX, int endY, Array<Rectangle> tiles) {
-	    this.getTiles(startX, startY, endX, endY, tiles, null);
-    }
+		this.getTiles(startX, startY, endX, endY, tiles, null);
+	}
 
-	private void getTiles(int startX, int startY, int endX, int endY, Array<Rectangle> tiles, Array<Rectangle> spikes) {
-		TiledMapTileLayer layer = (TiledMapTileLayer)(this.map.getLayers().get("Platfs"));
-		TiledMapTileLayer layer2 = (TiledMapTileLayer)(this.map.getLayers().get("Platfs"));
+	private void getTiles(int startX, int startY, int endX, int endY, Array<Rectangle> tiles,
+			Array<Rectangle> spikes) {
+		TiledMapTileLayer layer = (TiledMapTileLayer) (this.map.getLayers().get("Platfs"));
+		TiledMapTileLayer layer2 = (TiledMapTileLayer) (this.map.getLayers().get("Platfs"));
 		this.rectPool.freeAll(tiles);
 		tiles.clear();
-        if (spikes != null) {
-            this.rectPool.freeAll(spikes);
-            spikes.clear();
-        }
+		if (spikes != null) {
+			this.rectPool.freeAll(spikes);
+			spikes.clear();
+		}
 		for (int y = startY; y <= endY; y++) {
 			for (int x = startX; x <= endX; x++) {
 				Cell cell = layer.getCell(x, y);
 				if (cell != null) {
 					Rectangle rect = this.rectPool.obtain();
-					rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
+					rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
+							this.TILED_SIZE);
 					tiles.add(rect);
-                }
-				if (spikes != null) {
-                    Cell cell2 = layer2.getCell(x, y);
-                    if (cell2 != null) {
-                        Rectangle rect = this.rectPool.obtain();
-                        rect.set(x * this.TILED_SIZE, y  * this.TILED_SIZE, this.TILED_SIZE, this.TILED_SIZE);
-                        spikes.add(rect);
-                        tiles.add(rect);
-                    }
 				}
-            }
-        }
-    }
+				if (spikes != null) {
+					Cell cell2 = layer2.getCell(x, y);
+					if (cell2 != null) {
+						Rectangle rect = this.rectPool.obtain();
+						rect.set(x * this.TILED_SIZE, y * this.TILED_SIZE, this.TILED_SIZE,
+								this.TILED_SIZE);
+						spikes.add(rect);
+						tiles.add(rect);
+					}
+				}
+			}
+		}
+	}
 
 }

@@ -69,22 +69,82 @@ public class Assets {
 		regionsCutScenes = atlasCutScenes.findRegions("intro_BADLY_DONE");
 
 		regionsCutScenes = new Array<AtlasRegion>(new AtlasRegion[] {
+				// Battle between 1P & 2P in "A Hole New World"
 				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
 				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
 				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
 				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
 				regionsCutScenes.get(0), regionsCutScenes.get(1), regionsCutScenes.get(0), regionsCutScenes.get(1),
+				regionsCutScenes.get(2), regionsCutScenes.get(3), regionsCutScenes.get(4), // Text
 
-				regionsCutScenes.get(2), regionsCutScenes.get(3), regionsCutScenes.get(4)
+				regionsCutScenes.get(20), // Fade to Black XD
+
+				regionsCutScenes.get(5), // Meanwhile...
+				regionsCutScenes.get(6), regionsCutScenes.get(7), regionsCutScenes.get(6), // Floating Ghosts 
+				regionsCutScenes.get(7), regionsCutScenes.get(6), regionsCutScenes.get(7),
+
+				regionsCutScenes.get(8), regionsCutScenes.get(9), regionsCutScenes.get(10), // I'm pacifist 
+
+				regionsCutScenes.get(8), regionsCutScenes.get(11), // But we are here to conquer your world
+
+				regionsCutScenes.get(8), regionsCutScenes.get(12), // Ok, lets...
+
+				regionsCutScenes.get(9), regionsCutScenes.get(13), // If I win...
+
+				regionsCutScenes.get(9), regionsCutScenes.get(14), regionsCutScenes.get(9), regionsCutScenes.get(8),// If you win...
+
+				regionsCutScenes.get(15), //...
+				regionsCutScenes.get(16), regionsCutScenes.get(17), regionsCutScenes.get(18), regionsCutScenes.get(19), // It's a deal!
+
+				regionsCutScenes.get(20), // Fade to Black 
+
+				// Title Change
+				regionsCutScenes.get(21), regionsCutScenes.get(22), regionsCutScenes.get(23), regionsCutScenes.get(24),
+
+				// Title blinking
+				regionsCutScenes.get(25), regionsCutScenes.get(24), regionsCutScenes.get(25), regionsCutScenes.get(24), 
+				regionsCutScenes.get(25), regionsCutScenes.get(24), regionsCutScenes.get(25), regionsCutScenes.get(24),
+				regionsCutScenes.get(25), regionsCutScenes.get(24), regionsCutScenes.get(25), regionsCutScenes.get(24),
+				regionsCutScenes.get(25), regionsCutScenes.get(24), regionsCutScenes.get(25), regionsCutScenes.get(24),
+				
+				regionsCutScenes.get(20) // Fade to Black XD
 			});
 		float [] frameDurations2 =  {
-				0.5f, 0.5f, 0.5f, 0.5f,
-				0.5f, 0.5f, 0.5f, 0.5f,
-				0.5f, 0.5f, 0.5f, 0.5f,
-				0.5f, 0.5f, 0.5f, 0.5f,
-				0.5f, 0.5f, 0.5f, 0.5f,
+				0.25f, 0.25f, 0.25f, 0.25f, // Battle between 1P & 2P in "A Hole New World"
+				0.25f, 0.25f, 0.25f, 0.25f,
+				0.25f, 0.25f, 0.25f, 0.25f,
+				0.25f, 0.25f, 0.25f, 0.25f,
+				0.25f, 0.25f, 0.25f, 0.25f,
+				3.5f, 3.5f, 3.5f, // Text
 
-				2.5f, 2.5f, 2.5f};
+				0.5f, // Fade to Black
+
+				2.25f,  // Meanwhile...
+				0.75f, 0.75f, 0.75f, // Floating Ghosts
+				0.75f, 0.75f, 0.75f,
+
+				0.15f, 0.15f, 5.0f, // I'm pacifist 
+
+				1.50f, 5.0f, // But we are here to conquer your world 
+
+				1.50f, 5.0f,  // Ok, lets...
+				0.75f, 5.0f,  // If I win
+				0.75f, 5.0f, 0.50f, 1.0f,  // If you win
+
+				3.0f,  // ...
+				1.50f, 1.50f, 1.50f, 4.0f,  // It's a deal
+
+				0.5f, // Fade to Black
+
+				2.25f, 1.0f, 2.25f, 2.25f, // Title Change
+
+				0.25f, 0.25f, 0.25f, 0.25f, // Title blinking
+				0.25f, 0.25f, 0.25f, 0.25f,
+				0.25f, 0.25f, 0.25f, 0.25f,
+				0.25f, 0.25f, 0.25f, 0.25f,
+
+				3.5f // Fade to Black
+			};
 
 		// intro_BADLY_DONE =  new AnimationNinja(0.25f, regionsCutScenes);
 

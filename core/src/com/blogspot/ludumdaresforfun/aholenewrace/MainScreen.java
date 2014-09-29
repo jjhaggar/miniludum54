@@ -513,8 +513,7 @@ public class MainScreen extends BaseScreen {
 
 	private void drawFirstWorld(float delta) {
 		this.renderer.setView(this.camera);
-		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
-														// mistery
+		this.renderer.render(new int[] { 0, 1, 2 }); // the tmx layers to paint
 		this.renderEnemies(delta);
 
 		renderObjects(delta);
@@ -560,8 +559,7 @@ public class MainScreen extends BaseScreen {
 
 	private void drawSecondWorld(float delta) {
 		this.renderer.setView(this.camera2);
-		this.renderer.render(new int[] { 0, 1, 3 }); // this line is totally a
-														// mistery
+		this.renderer.render(new int[] { 0, 1, 2 }); // the tmx layers to paint
 		this.renderEnemies(delta);
 
 		renderObjects(delta);

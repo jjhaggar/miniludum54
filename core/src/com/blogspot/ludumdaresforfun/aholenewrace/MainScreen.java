@@ -115,7 +115,7 @@ public class MainScreen extends BaseScreen {
 		this.shapeRenderer = new ShapeRenderer();
 
 		if (stageNumber == 1)
-			this.map = new TmxMapLoader().load("tilemap_02.tmx");//load("tilemap_01.tmx");
+			this.map = new TmxMapLoader().load("tilemap_01.tmx");//load("tilemap_01.tmx");
 		else if (stageNumber == 2)
 			this.map = new TmxMapLoader().load("tilemap_02.tmx");//load("tilemap_02.tmx");
 		else if (stageNumber == 3)
@@ -307,6 +307,10 @@ public class MainScreen extends BaseScreen {
 				this.boss.noControl = false;
 				this.player.noControl = false;
 				this.startRace = true;
+			}
+			if (object.objectType == Object.Type.race_finish && this.startRace == false){
+				object.animation.setPlayMode(PlayMode.REVERSED);
+				object.stateTime = 0;
 			}
 		}
 		if (raceFinish && !cutSceneScheduled) {
